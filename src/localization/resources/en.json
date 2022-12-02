@@ -1,0 +1,14 @@
+{
+  "time-stamping-form": {
+    "enter-hash": "Enter your Hash:",
+    "clear": "✖",
+    "create-time-stamp": "Create time stamp",
+    "check": "Check",
+    "load": "Load",
+    "result": "Result",
+    "error": "Error",
+    "created": "Created",
+    "somethings-gone-wrong": "Something’s Gone Wrong",
+    "time-stamping": "Time stamping"
+  }
+}
