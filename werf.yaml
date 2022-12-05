@@ -1,0 +1,38 @@
+configVersion: 1
+project: "web-client"
+---
+image: builder # Название собираемого образа.
+from: registry.gitlab.com/tokend/devops/docker-containers:front14-8f59ce732e426d630f320b725dc514010e171fad # Базовый образ.
+git: # Секция с директивами для добавления исходных файлов из git-репозитория.
+  - add: / # Исходный путь в репозитории.
+    to: /app # Путь назначения в образе.
+    stageDependencies: # Настройка перевыполнения сборочных инструкций при изменениях определённых файлов в репозитории.
+      install: # Для стадии Install.
+        - package.json
+        - yarn.lock
+      setup: # Для стадии Setup.
+        - "**/*"
+shell: # Shell сборочные инструкции.
+  install: # Для стадии Install.
+    - cd /app
+    #- yarn autoclean --init
+    #- yarn autoclean --force
+    - yarn install
+  setup: # Для стадии Setup.
+    - cd /app
+    - yarn build
+    - sh -c '[ -d /app/dist/files ] && echo "$FILE exist." || mkdir -p /app/dist/files'
+    - sh -c '[ -d /app/files ] && echo "$FILE exist." || mkdir -p /app/files'
+    - sh -c '[ -z "`ls /app/files`" ] && echo "Empty" || cp -r /app/files/* /app/dist/files'
+
+---
+image: web
+from: nginx:alpine
+git:
+  - add: /nginx.conf
+    to: /etc/nginx/nginx.conf
+import:
+  - image: builder
+    add: /app/dist
+    to: /usr/share/nginx/html
+    after: setup
