@@ -68,6 +68,7 @@
 import { computed, ref } from 'vue'
 import UploadFile from '@/helpers/UploadFile.helper.js'
 import UploadHash from '@/helpers/UploadHash.helper.js'
+import { ErrorHandler } from '@/helpers/error.helper.js'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -124,10 +125,9 @@ const createTimeStamp = async () => {
       await UploadHash.sendForCreate(inputData.value)
     }
     result.value = t('time-stamping-form.created')
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
     isError.value = true
-    result.value = t('time-stamping-form.somethings-gone-wrong')
+    result.value = ErrorHandler.process(error)
   }
   isProcessing.value = false
 }
@@ -145,9 +145,9 @@ const checkTimeStamp = async () => {
       response = await UploadHash.sendForCheck(inputData.value)
     }
     result.value = new Date(parseInt(response.data.attributes.value) * 1000)
-  } catch (e) {
+  } catch (error) {
     isError.value = true
-    result.value = t('time-stamping-form.somethings-gone-wrong')
+    result.value = ErrorHandler.process(error)
   }
 
   isProcessing.value = false

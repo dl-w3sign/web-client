@@ -9,6 +9,8 @@
     "error": "Error",
     "created": "Created",
     "somethings-gone-wrong": "Something’s Gone Wrong",
-    "time-stamping": "Time stamping"
+    "time-stamping": "Time stamping",
+    "hash-already-exists": "Hash already exists",
+    "hash-not-found": "Hash not found"
   }
 }
