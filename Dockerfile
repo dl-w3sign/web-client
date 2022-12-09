@@ -20,4 +20,3 @@ FROM nginx:1.21.6-perl
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /build/dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
-
