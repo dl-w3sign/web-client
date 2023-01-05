@@ -25,9 +25,10 @@ imagePullSecret:
   password: "z9BTxQDciPfTGN2TjwZT"
 
 config:
-  create: false
+  create: true
   name: env.js
   mountPath: "/usr/share/nginx/html/static/env.js"
+  mountPath2: "/usr/share/nginx/html/env.js"
   data:
       NODE_ENV: "default"
       HORIZON_SERVER: ""
