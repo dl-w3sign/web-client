@@ -1,16 +1,118 @@
 {
-  "time-stamping-form": {
-    "enter-hash": "Enter your Hash:",
-    "clear": "✖",
-    "create-time-stamp": "Create time stamp",
-    "check": "Check",
-    "load": "Load",
-    "result": "Result",
-    "error": "Error",
-    "created": "Created",
-    "somethings-gone-wrong": "Something’s Gone Wrong",
-    "time-stamping": "Time stamping",
-    "hash-already-exists": "Hash already exists",
-    "hash-not-found": "Hash not found"
+  "navbar": {
+    "logo": "TTS",
+    "create-document-button": "Create Document",
+    "verify-document-button": "Verify Document"
+  },
+  "connect-ethereum": {
+    "connect-button-text": "Connect to MetaMask",
+    "connect-button-text-connecting": "Connecting...",
+    "connect-button-text-loading": "Loading...",
+    "connect-button-text-failed-load": "Failed load"
+  },
+  "main-page": {
+    "welcome-beginning": "Welcome to",
+    "welcome-continuing": "Time Stamping Service",
+    "description": "You can sign a document with other counterparties and time stamp it on the blockchain and further confirm the authenticity of the document and signatures",
+    "start-button-text": "Let’s Start"
+  },
+  "doc-creation-modal": {
+    "title": "Document Creation",
+    "close-button-text": "Ok"
+  },
+  "doc-verification-modal": {
+    "title": "Document Verification",
+    "close-button-text": "Ok"
+  },
+  "doc-creation-form": {
+    "wallet-input-label": "Wallet Address",
+    "wallet-input-placeholder": "Enter Wallet Address",
+    "submit-button-text": "Create Document",
+    "reset-button-text": "Create Another Document",
+    "please-wait-msg": "Please, wait a moment...",
+    "success-msg": "Your document was successfully created",
+    "document-hash-label": "Document Hash"
+  },
+  "doc-verification-form": {
+    "submit-button-text": "Verify Document",
+    "reset-button-text": "Upload Another Document",
+    "sign-button-text": "Sign",
+    "please-wait-msg": "Please, wait a moment...",
+    "success-msg": "The document was found",
+    "document-hash-label": "Document Hash",
+    "list-title": "List of signatory addresses"
+  },
+  "file-field": {
+    "title": "Select a file or drag and drop here",
+    "require": "JPG, PNG or PDF, file size no more than 10MB",
+    "label": "Select file"
+  },
+  "validations": {
+    "field-error_required": "Please fill out this field",
+    "field-error_email": "Field must be a valid email"
+  },
+  "errors": {
+    "default": "Oops... Something went wrong",
+    "provider-user-rejected-request": "User rejected request.",
+    "provider-unauthorized": "The requested method and/or account has not been authorized by the user.",
+    "provider-unsupported-method": "The Provider does not support the requested method.",
+    "provider-disconnected": "The Provider is disconnected from all chains.",
+    "provider-chain-disconnected": "The Provider is not connected to the requested chain.",
+    "provider-parse-error": "Invalid JSON standard",
+    "provider-invalid-request": "JSON is not a valid request object standard",
+    "provider-method-not-found": "Method does not exist standard",
+    "provider-invalid-params": "Invalid method parameters standard",
+    "provider-internal-error": "Internal JSON-RPC error standard",
+    "provider-invalid-input": "Missing or invalid parameters non-standard",
+    "provider-resource-not-found": "equested resource not found non-standard",
+    "provider-resource-unavailable": "Requested resource not available non-standard",
+    "provider-transaction-rejected": "Transaction creation failed non-standard",
+    "provider-method-not-supported": "Method is not implemented non-standard",
+    "provider-limit-exceeded": "Request exceeds defined limit non-standard",
+    "provider-json-rpc-version-not-supported": "Version of JSON-RPC protocol is not supported non-standard",
+    "provider-wrapper-method-not-found": "provider not exist or hasn't this method"
+  },
+  "notification": {
+    "default-title-success": "Success",
+    "default-title-error": "Error",
+    "default-title-warning": "Warning",
+    "default-title-info": "Info",
+    "default-title-default": "Just a message",
+    "default-message-success": "Action successful",
+    "default-message-error": "Something went wrong",
+    "default-message-warning": "Something you are doing is not recommended",
+    "default-message-info": "Something is happening. Just want you to know that",
+    "default-message-default": "Just a message"
+  },
+  "login-form": {
+    "login-lbl": "Login",
+    "password-lbl": "Password",
+    "login-success-msg": "Access granted",
+    "submit-btn": "Submit"
+  },
+  "ui-kit-page": {
+    "button": "Button",
+    "some-placeholder": "placeholder",
+    "some-label": "label",
+    "some-error-message": "error-message",
+    "modal-btn": "Open modal",
+    "collapse-btn": "Toggle Collapse",
+    "collapse-text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "loading-error-msg": "Oops, something went wrong",
+    "no-data-msg": "Empty data, please add new"
+  },
+  "web3-page": {
+    "loading-error-msg": "Oops... Something went wrong"
+  },
+  "erc20": {
+    "loading-error-msg": "Oops... Something went wrong",
+    "title": "ERC20",
+    "name-lbl": "Name",
+    "symbol-lbl": "Symbol",
+    "decimals-lbl": "Decimals",
+    "total-supply-lbl": "Total supply",
+    "balance-lbl": "Balance",
+    "transfer-lbl": "Transfer",
+    "mint-lbl": "Mint"
   }
 }

@@ -1,0 +1,104 @@
+$white: #ffffff;
+$white-rgb: hexToRGB($white);
+$black: #000000;
+$black-rgb: hexToRGB($black);
+
+$background-primary-weak: #ffffff;
+$background-primary-main: #ffffff;
+$background-primary-dark: #f8f5ff;
+
+$background-secondary-weak: #f4efff;
+$background-secondary-main: #e6ddfb;
+$background-secondary-dark: #d6caf5;
+
+/* status colors */
+
+$success-light: #9ad7a4;
+$success-main: #5cc56e;
+$success-dark: #278337;
+
+$error-light: #f2b8b5;
+$error-main: #e46962;
+$error-dark: #b3261e;
+
+$warning-light: #f16709;
+$warning-main: #ff6d00;
+$warning-dark: #c43c00;
+
+$info-light: #82f7ff;
+$info-main: #40c4ff;
+$info-dark: #0094cc;
+
+/* brand colors */
+
+$primary-weak: #9a82db;
+$primary-main: #ffa500;
+$primary-dark: #a67213;
+
+$primary-weak-rgb: hexToRGB($primary-weak);
+$primary-main-rgb: hexToRGB($primary-main);
+$primary-dark-rgb: hexToRGB($primary-dark);
+
+$secondary-weak: #ccc2dc;
+$secondary-main: rgba(0, 0, 0, 0.3);
+$secondary-dark: #625b71;
+
+$tertiary-light: #ffff6b;
+$tertiary-main: #fdd835;
+$tertiary-dark: #c6a700;
+
+$primary: #ffa500;
+$basic: #ed9a00;
+$initial: #d58a00;
+$secondary: rgba(0, 0, 0, 0.3);
+$genius: #404040;
+$wise: #353535;
+$smart: #303030;
+$intense: #ffffff;
+$trendy: #b9b9b9;
+$peaceful: #a7b5de;
+$quiet: #90a3da;
+$calm: #8197d8;
+$pesky: rgba(0, 0, 0, 0.4);
+$weak: rgba(0, 0, 0, 0.25);
+$clear: rgb(65, 65, 65);
+$pure: rgb(108, 108, 108);
+$simple: rgba(174, 174, 174, 0.63);
+$net: rgb(105, 105, 105);
+$wet: #616161;
+$crude: #545454;
+$accent: #dd3a31;
+$spot: #bb0000;
+$dangerous: #ffedf3;
+$soft: #d8dbe6;
+$mild: #b6c1e1;
+$tender: #a7b5de;
+$alt: #3f3f3f;
+$home: #363D47;
+$lucky: #F2F5FF;
+$positive: #b4b4b4;
+$negative: #d0d2d3;
+
+/* typography colors */
+
+$text-primary-weak: #4e4848;
+$text-primary-main: #212121;
+$text-primary-dark: #000000;
+
+$text-secondary-weak: #4f5b62;
+$text-secondary-main: #263238;
+$text-secondary-dark: #000a12;
+
+$text-primary-invert-light: #ffffff;
+$text-primary-invert-main: #ffffff;
+$text-primary-invert-dark: #ffffff;
+
+$text-secondary-invert-light: #ffffff;
+$text-secondary-invert-main: #ffffff;
+$text-secondary-invert-dark: #ffffff;
+
+/* border colors */
+
+$border-primary-weak: #d8dbe6;
+$border-primary-main: #b6c1e1;
+$border-primary-strong: #a7b5de;

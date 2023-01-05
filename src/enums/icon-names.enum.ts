@@ -1,0 +1,16 @@
+export enum ICON_NAMES {
+  arrowRight = 'arrow-right',
+  checkCircle = 'check-circle',
+  clipboardCopy = 'clipboard-copy',
+  cloudUpload = 'cloud-upload',
+  cloudUploadActive = 'cloud-upload-active',
+  confirmation = 'confirmation',
+  document = 'document',
+  exclamationCircle = 'exclamation-circle',
+  exclamation = 'exclamation',
+  fileExtDoc = 'file-ext-doc',
+  informationCircle = 'information-circle',
+  metamask = 'metamask',
+  minus = 'minus',
+  plus = 'plus',
+}

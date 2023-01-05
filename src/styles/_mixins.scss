@@ -1,0 +1,106 @@
+@use 'sass:map';
+
+$media-breakpoints: (
+  xsmall: 480px,
+  small: 600px,
+  tablet: 868px,
+  medium: 1024px,
+  xmedium: 1280px,
+  large: 1400px,
+  xlarge: 1920px,
+  xlarge2k: 2048px,
+  xlarge4k: 4096px,
+);
+
+@mixin respond-to ($media) {
+  $breakpoint: map.get($media-breakpoints, $media);
+
+  @if $breakpoint {
+    @media (max-width: ($breakpoint - 1)) {
+      @content;
+    }
+  }
+
+  @else {
+    @media (max-width: ($media - 1)) {
+      @content;
+    }
+  }
+}
+
+@mixin text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin field-text {
+  font-size: #{toRem(12)};
+  line-height: 1.5;
+  color: var(--col-alt);
+  transition: color var(--transition-duration) ease;
+  font-weight: 400;
+  padding: toRem(11);
+}
+
+@mixin field-label {
+  font-size: var(--field-label-font-size);
+  line-height: var(--field-label-line-height);
+  color: var(--field-label);
+  transition: color var(--field-transition-duration) ease;
+  margin-bottom: toRem(8);
+}
+
+@mixin field-border {
+  border: toRem(1) solid var(--col-soft);
+  border-radius: toRem(2);
+
+  &:hover {
+    border-color: var(--col-mild);
+  }
+
+  &:active {
+    border-color: var(--col-tender);
+  }
+}
+
+@mixin field-placeholder {
+  @include field-text;
+
+  color: var(--col-secondary);
+  transition: color var(--transition-duration) ease;
+  transition-property: opacity, color;
+  padding: 0;
+}
+
+@mixin field-error {
+  overflow: hidden;
+  color: var(--field-error);
+  font-size: toRem(10);
+  line-height: 1.4;
+  transition: var(--field-transition-duration) ease;
+  transition-property: opacity, color, font-size, transform;
+  margin-top: toRem(4);
+}
+
+@mixin field-readonly {
+  font-size: toRem(14);
+  border: none;
+  background: var(--col-lucky);
+  color: var(--col-home);
+  padding: toRem(13.5) toRem(12);
+  border-radius: toRem(2);
+}
+
+@mixin note-error {
+  font-size: toRem(16);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: toRem(12);
+  background: var(--col-dangerous);
+  color: var(--col-accent);
+  fill: var(--col-accent);
+  border-left: toRem(1) solid var(--col-accent);
+  padding: toRem(14) toRem(9);
+}
