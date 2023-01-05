@@ -57,9 +57,9 @@ Build and Publish:
     - werf build --dev
   except: [schedules]
   interruptible: true
-  only:
-    refs:
-      - master
+  # only:
+  #   refs:
+  #     - master
 
 
 
@@ -67,10 +67,10 @@ Build and Publish Tag:
   stage: build-and-publish
   tags:
     - tokend
-  only:
-    refs:
-      - tags
-      - master
+  # only:
+  #   refs:
+  #     - tags
+  #     - master
   services:
       - docker:18-dind
   image: 
