@@ -1,5 +1,6 @@
 {
   "name": "time-stamp-service-web-client",
+  "version": "1.0.0-rc.1",
   "license": "UNLICENSED",
   "scripts": {
     "vite-dev-server": "vite",
