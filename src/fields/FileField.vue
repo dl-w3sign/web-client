@@ -34,6 +34,11 @@ const fileDialog = useFileDialog({
   accept: props.accept,
 })
 
+const openFileDialog = () => {
+  fileDialog.reset()
+  fileDialog.open()
+}
+
 const cancelFile = () => {
   emit('update:modelValue', null)
   emit('blur')
@@ -78,10 +83,7 @@ watch(
         <p class="file-field__require">
           {{ $t('file-field.require') }}
         </p>
-        <button
-          class="file-field__open-button"
-          @click.prevent="fileDialog.open"
-        >
+        <button class="file-field__open-button" @click.prevent="openFileDialog">
           {{ $t('file-field.label') }}
         </button>
       </div>
