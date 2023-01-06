@@ -1,122 +1,3 @@
-<script lang="ts" setup>
-import { ref, reactive, computed, inject } from 'vue'
-import { Icon, AppBtn, Spinner } from '@/common'
-import {
-  useForm,
-  useFormValidation,
-  UseProvider,
-  useTimestamp,
-  useWeb3,
-} from '@/composables'
-import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
-import { FileField, TextField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
-import { required } from '@/validators'
-import { EthProviderRpcError, Keccak256Hash } from '@/types'
-
-type Wallet = {
-  id: number
-  address: string
-}
-
-type Form = {
-  file: File | null
-  wallets: Wallet[]
-}
-
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-const { contractsInfo } = useWeb3()
-
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
-    : undefined
-})
-
-const emit = defineEmits<{
-  (event: 'complete'): void
-}>()
-
-const {
-  isFormDisabled,
-  isSubmitting,
-  isConfirmationShown,
-  isFailureSnown,
-  showConfirmation,
-  showFailure,
-  disableForm,
-  enableForm,
-} = useForm()
-
-const fileHash = ref<Keccak256Hash | null>(null)
-const errorMessage = ref('')
-
-let currentId = 0
-const form: Form = reactive({
-  file: null,
-  wallets: [{ id: currentId, address: '' }],
-})
-
-const { isFormValid } = useFormValidation(form, {
-  file: { required },
-})
-
-const addWallet = () => {
-  form.wallets.push({
-    id: ++currentId,
-    address: '',
-  })
-}
-
-const removeWallet = (id: number) => {
-  form.wallets = form.wallets.filter(wallet => wallet.id !== id)
-}
-
-const reset = () => {
-  fileHash.value = null
-
-  form.file = null
-  form.wallets = [{ id: ++currentId, address: '' }]
-
-  isConfirmationShown.value = false
-  isFailureSnown.value = false
-  isFormDisabled.value = false
-}
-
-const submit = async () => {
-  disableForm()
-  isSubmitting.value = true
-  try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
-    const addresses = form.wallets.map(wallet => wallet.address)
-
-    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
-    }
-
-    await timestampContractInstance.value?.createStamp(
-      fileHash.value,
-      addresses,
-    )
-
-    showConfirmation()
-    emit('complete')
-  } catch (error) {
-    if (timestampContractInstance.value) {
-      errorMessage.value = timestampContractInstance.value.getErrorMessage(
-        error as EthProviderRpcError,
-      )
-    }
-    ErrorHandler.processWithoutFeedback(error)
-    showFailure()
-  }
-  isSubmitting.value = false
-  enableForm()
-}
-
-Bus.on(Bus.eventList.openModal, reset)
-</script>
-
 <template>
   <form class="doc-creation-form">
     <div v-if="isSubmitting" class="doc-creation-form__loader">
@@ -192,7 +73,7 @@ Bus.on(Bus.eventList.openModal, reset)
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
         :state="
-          isFormDisabled || !isFormValid()
+          isFormDisabled || !isFieldsValid
             ? BUTTON_STATES.notAllowed
             : undefined
         "
@@ -203,6 +84,135 @@ Bus.on(Bus.eventList.openModal, reset)
     </div>
   </form>
 </template>
+
+<script lang="ts" setup>
+import { ref, reactive, computed, inject } from 'vue'
+import { Icon, AppBtn, Spinner } from '@/common'
+import {
+  useForm,
+  useFormValidation,
+  UseProvider,
+  useTimestamp,
+  useWeb3,
+} from '@/composables'
+import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
+import { FileField, TextField } from '@/fields'
+import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
+import { required, forEach } from '@/validators'
+import { EthProviderRpcError, Keccak256Hash } from '@/types'
+import { utils } from 'ethers'
+
+type Wallet = {
+  id: number
+  address: string
+}
+
+type Form = {
+  file: File | null
+  wallets: Wallet[]
+}
+
+const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+const { contractsInfo } = useWeb3()
+
+const timestampContractInstance = computed(() => {
+  return web3Provider
+    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
+    : undefined
+})
+
+const emit = defineEmits<{
+  (event: 'complete'): void
+}>()
+
+const {
+  isFormDisabled,
+  isSubmitting,
+  isConfirmationShown,
+  isFailureSnown,
+  showConfirmation,
+  showFailure,
+  disableForm,
+  enableForm,
+} = useForm()
+
+const fileHash = ref<Keccak256Hash | null>(null)
+const errorMessage = ref('')
+
+let currentId = 0
+const form: Form = reactive({
+  file: null,
+  wallets: [{ id: currentId, address: '' }],
+})
+
+const { isFieldsValid } = useFormValidation(form, {
+  file: { required },
+  wallets: {
+    $each: forEach({
+      address: {
+        validator: (address: string) => {
+          return utils.isAddress(address)
+        },
+      },
+    }),
+  },
+})
+
+const addWallet = () => {
+  form.wallets.push({
+    id: ++currentId,
+    address: '',
+  })
+}
+
+const removeWallet = (id: number) => {
+  form.wallets = form.wallets.filter(wallet => wallet.id !== id)
+}
+
+const reset = () => {
+  fileHash.value = null
+
+  form.file = null
+  form.wallets = [{ id: ++currentId, address: '' }]
+
+  isConfirmationShown.value = false
+  isFailureSnown.value = false
+  isFormDisabled.value = false
+}
+
+const submit = async () => {
+  disableForm()
+  isSubmitting.value = true
+  try {
+    fileHash.value = await getKeccak256FileHash(form.file as File)
+    const addresses = form.wallets.map(wallet => wallet.address)
+
+    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
+      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+    }
+
+    await timestampContractInstance.value?.createStamp(
+      fileHash.value,
+      addresses,
+    )
+
+    showConfirmation()
+    emit('complete')
+  } catch (error) {
+    if (timestampContractInstance.value) {
+      errorMessage.value = timestampContractInstance.value.getErrorMessage(
+        error as EthProviderRpcError,
+      )
+    }
+    ErrorHandler.processWithoutFeedback(error)
+    showFailure()
+  }
+  isSubmitting.value = false
+  enableForm()
+}
+
+Bus.on(Bus.eventList.openModal, reset)
+</script>
 
 <style lang="scss" scoped>
 .doc-creation-form {

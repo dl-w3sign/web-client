@@ -4,6 +4,7 @@ import {
   minLength as _minLength,
   maxLength as _maxLength,
   sameAs as _sameAs,
+  helpers,
 } from '@vuelidate/validators'
 import { ValidationRule } from '@vuelidate/core'
 import { Ref } from 'vue'
@@ -31,3 +32,5 @@ export const maxLength = (length: number): ValidationRule =>
 export const sameAs = (field: Ref): ValidationRule => {
   return <ValidationRule>withI18nMessage(_sameAs(field, get(field, '_key')))
 }
+
+export const forEach = helpers.forEach
