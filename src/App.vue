@@ -65,7 +65,7 @@ init()
 
 <style lang="scss" scoped>
 .app__wrapper {
-  min-height: vh(101);
+  min-height: vh(100);
   background-image: url('/branding/background-main.jpg');
   background-position: center;
   background-size: cover;

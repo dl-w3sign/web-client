@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { EIP1474 } from '@/enums'
 import { i18n } from '@/localization'
 import {
   UseProvider,
@@ -79,9 +78,9 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
   }
 
   const getErrorMessage = (error: EthProviderRpcError): string => {
-    switch (error.code) {
-      case EIP1474.internalError:
-        return t('timestamp-contract.error-internal')
+    switch (error.message) {
+      case 'execution reverted: TimeStamping: Hash collision.':
+        return t('timestamp-contract.error-hash-collision')
       default:
         return t('timestamp-contract.error-default')
     }

@@ -11,7 +11,7 @@ import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
 import { EthProviderRpcError, Keccak256Hash, UseProvider } from '@/types'
-import { required } from '@/validators'
+import { required, maxValue } from '@/validators'
 import { DateUtil } from '@/utils'
 import { ref, reactive, inject, computed } from 'vue'
 
@@ -30,7 +30,7 @@ const { $t } = useContext()
 
 const fileHash = ref<Keccak256Hash | null>(null)
 
-const errorMessage = ref($t('timestamp-contract.error-default'))
+const errorMessage = ref($t('timestamp-contract.error-doc-not-found'))
 const isComplete = ref(false)
 
 const timestampContractInstance = computed(() => {
@@ -50,7 +50,13 @@ const isSignerInListWithoutSignature = computed(() =>
 )
 
 const { isFormValid } = useFormValidation(form, {
-  file: { required },
+  file: {
+    required,
+    size: {
+      required,
+      maxValue: maxValue(10 * 1000000),
+    },
+  },
 })
 
 const {
@@ -71,7 +77,7 @@ const reset = () => {
   isComplete.value = false
   resetState()
 }
-Bus.success('sd')
+
 const formatTimestamp = (timestamp: number): string => {
   return timestamp
     ? DateUtil.format(timestamp, 'X', 'MMM DD, YYYY [at] HH:mm')
@@ -99,13 +105,13 @@ const submitVerification = async () => {
     } else {
       showFailure()
     }
-  } catch (error) {
+  } catch (err) {
     if (timestampContractInstance.value) {
       errorMessage.value = timestampContractInstance.value.getErrorMessage(
-        error as EthProviderRpcError,
+        err?.error as EthProviderRpcError,
       )
     }
-    ErrorHandler.processWithoutFeedback(error)
+    ErrorHandler.processWithoutFeedback(err)
     showFailure()
   }
   isSubmitting.value = false
