@@ -72,6 +72,12 @@ withDefaults(
     &.app-button--waiting {
       background: var(--col-initial);
     }
+
+    &.app-button--not-allowed {
+      background: var(--col-negative);
+      color: var(--col-positive);
+      fill: var(--col-positive);
+    }
   }
 
   &--outline-primary {
@@ -106,6 +112,27 @@ withDefaults(
     &:not([disabled]):active,
     &.app-button--waiting {
       background-color: var(--col-smart);
+    }
+  }
+
+  &--outline-accent {
+    border: toRem(1) solid var(--col-speck);
+    color: var(--col-speck);
+    fill: var(--col-speck);
+
+    &:not([disabled]):hover {
+      border-color: var(--col-accent);
+      background: var(--col-accent);
+      color: var(--col-intense);
+      fill: var(--col-intense);
+    }
+
+    &:not([disabled]):active,
+    &.app-button--waiting {
+      border-color: var(--col-spot);
+      background: var(--col-spot);
+      color: var(--col-intense);
+      fill: var(--col-intense);
     }
   }
 }

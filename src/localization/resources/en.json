@@ -40,7 +40,11 @@
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "The document was found",
     "document-hash-label": "Document Hash",
-    "list-title": "List of signatory addresses"
+    "doc-timestamp-title": "Document Creation Date:",
+    "signature-timestamp-title": "Signed",
+    "message-instead-timestamp": "The document has not been signed yet",
+    "list-title": "List of signatory addresses",
+    "sign-success-message": "You have successfully signed the document"
   },
   "file-field": {
     "title": "Select a file or drag and drop here",
@@ -114,5 +118,9 @@
     "balance-lbl": "Balance",
     "transfer-lbl": "Transfer",
     "mint-lbl": "Mint"
+  },
+  "timestamp-contract": {
+    "error-internal": "This document has already been uploaded and sent for signatures before",
+    "error-default": "Something went wrong"
   }
 }

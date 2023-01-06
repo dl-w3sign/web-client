@@ -18,10 +18,12 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: File | null): void
+  (e: 'blur'): void
 }>()
 
 const dropZone = ref<HTMLLabelElement>()
 const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
+  emit('blur')
   props.modelValue
     ? emit('update:modelValue', files?.length ? files[0] : props.modelValue)
     : emit('update:modelValue', files?.length ? files[0] : null)
@@ -34,9 +36,11 @@ const fileDialog = useFileDialog({
 
 const cancelFile = () => {
   emit('update:modelValue', null)
+  emit('blur')
 }
 
 const emitFileFromFileDialog = (fileList: FileList | null) => {
+  emit('blur')
   emit('update:modelValue', fileList?.length ? fileList[0] : null)
 }
 

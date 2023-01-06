@@ -13,4 +13,5 @@ export enum ICON_NAMES {
   metamask = 'metamask',
   minus = 'minus',
   plus = 'plus',
+  xCircle = 'x-circle',
 }

@@ -1,4 +1,3 @@
-export * from './clipboard.helpers'
 export * from './file.helpers'
 export * from './error-handler'
 export * from './event-bus'
