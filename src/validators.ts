@@ -3,6 +3,7 @@ import {
   email as _email,
   minLength as _minLength,
   maxLength as _maxLength,
+  maxValue as _maxValue,
   sameAs as _sameAs,
   helpers,
 } from '@vuelidate/validators'
@@ -28,6 +29,9 @@ export const minLength = (length: number): ValidationRule =>
 
 export const maxLength = (length: number): ValidationRule =>
   <ValidationRule>withI18nMessage(_maxLength(length))
+
+export const maxValue = (value: number): ValidationRule =>
+  <ValidationRule>withI18nMessage(_maxValue(value))
 
 export const sameAs = (field: Ref): ValidationRule => {
   return <ValidationRule>withI18nMessage(_sameAs(field, get(field, '_key')))

@@ -98,7 +98,7 @@ import {
 import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
-import { required, forEach } from '@/validators'
+import { required, forEach, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { utils } from 'ethers'
 
@@ -146,7 +146,13 @@ const form: Form = reactive({
 })
 
 const { isFieldsValid } = useFormValidation(form, {
-  file: { required },
+  file: {
+    required,
+    size: {
+      required,
+      maxValue: maxValue(10 * 1000000),
+    },
+  },
   wallets: {
     $each: forEach({
       address: {
@@ -198,13 +204,13 @@ const submit = async () => {
 
     showConfirmation()
     emit('complete')
-  } catch (error) {
+  } catch (err) {
     if (timestampContractInstance.value) {
       errorMessage.value = timestampContractInstance.value.getErrorMessage(
-        error as EthProviderRpcError,
+        err?.error as EthProviderRpcError,
       )
     }
-    ErrorHandler.processWithoutFeedback(error)
+    ErrorHandler.processWithoutFeedback(err)
     showFailure()
   }
   isSubmitting.value = false

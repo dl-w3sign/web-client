@@ -1,6 +1,6 @@
 {
   "navbar": {
-    "logo": "TTS",
+    "logo": "TSS",
     "create-document-button": "Create Document",
     "verify-document-button": "Verify Document"
   },
@@ -120,7 +120,8 @@
     "mint-lbl": "Mint"
   },
   "timestamp-contract": {
-    "error-internal": "This document has already been uploaded and sent for signatures before",
+    "error-hash-collision": "This document has already been uploaded and sent for signatures before",
+    "error-doc-not-found": "This document has not been uploaded yet ",
     "error-default": "Something went wrong"
   }
 }

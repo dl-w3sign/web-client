@@ -77,7 +77,7 @@ export default defineComponent({
   width: 100vw;
   height: vh(100);
   background: var(--col-pesky);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .modal__pane-wrapper {
