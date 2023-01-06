@@ -69,6 +69,7 @@
   --col-net: #{$net};
   --col-wet: #{$wet};
   --col-crude: #{$crude};
+  --col-speck: #{$speck};
   --col-accent: #{$accent};
   --col-spot: #{$spot};
   --col-dangerous: #{$dangerous};
@@ -80,6 +81,8 @@
   --col-lucky: #{$lucky};
   --col-positive: #{$positive};
   --col-negative: #{$negative};
+  --col-neutral: #{$neutral};
+  --col-glossy: #{$glossy};
 
   --border-radius: #{toRem(4)};
   --border-radius-large: #{toRem(10)};

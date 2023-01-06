@@ -12,4 +12,5 @@ export enum BUTTON_PRESETS {
   primary = 'primary',
   outlinePrimary = 'outline-primary',
   genius = 'genius',
+  outlineAccent = 'outline-accent',
 }

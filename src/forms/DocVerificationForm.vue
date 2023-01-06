@@ -1,23 +1,57 @@
 <script lang="ts" setup>
 import { AppBtn, Spinner, Icon } from '@/common'
-import { useForm } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
+import {
+  useForm,
+  useFormValidation,
+  useWeb3,
+  useTimestamp,
+  useContext,
+} from '@/composables'
+import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
-import { Keccak256Hash } from '@/types'
-import { ref } from 'vue'
-import { ethers } from 'ethers'
-import ContractArtifact from '../../src/abi/timestamp.json'
+import { EthProviderRpcError, Keccak256Hash, UseProvider } from '@/types'
+import { required } from '@/validators'
+import { DateUtil } from '@/utils'
+import { ref, reactive, inject, computed } from 'vue'
 
 const emit = defineEmits<{
   (event: 'complete'): void
 }>()
 
-const file = ref<File | null>(null)
+const form = reactive({
+  file: null as File | null,
+})
+
+const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+
+const { contractsInfo } = useWeb3()
+const { $t } = useContext()
+
 const fileHash = ref<Keccak256Hash | null>(null)
-const signers = ref<string[]>([])
-const signerAddress = ref<string | null>(null)
-const isSignerInList = ref(false)
+
+const errorMessage = ref($t('timestamp-contract.error-default'))
+const isComplete = ref(false)
+
+const timestampContractInstance = computed(() => {
+  return web3Provider
+    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
+    : undefined
+})
+
+const isSignerInListWithoutSignature = computed(() =>
+  timestampContractInstance.value?.signers.value.find(
+    signer =>
+      signer.address === web3Provider?.selectedAddress.value &&
+      signer.signatureTimestamp === 0,
+  )
+    ? true
+    : false,
+)
+
+const { isFormValid } = useFormValidation(form, {
+  file: { required },
+})
 
 const {
   isFormDisabled,
@@ -32,41 +66,47 @@ const {
 } = useForm()
 
 const reset = () => {
-  file.value = null
+  form.file = null
   fileHash.value = null
-  signers.value = []
-  signerAddress.value = null
-  isSignerInList.value = false
+  isComplete.value = false
   resetState()
+}
+Bus.success('sd')
+const formatTimestamp = (timestamp: number): string => {
+  return timestamp
+    ? DateUtil.format(timestamp, 'X', 'MMM DD, YYYY [at] HH:mm')
+    : $t('doc-verification-form.message-instead-timestamp')
 }
 
 const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-    signerAddress.value = await signer.getAddress()
+    fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    const timestampContract = new ethers.Contract(
-      '0x540962EA33ba4da87dD97c93E1592844f1ce06D1',
-      ContractArtifact,
-      signer,
-    )
-
-    fileHash.value = await getKeccak256FileHash(file.value as File)
-    const tx = await timestampContract.getStampsInfo([fileHash.value])
-
-    if (tx[0].timestamp._hex === '0x00') {
-      isSubmitting.value = false
-      showFailure()
-      return
+    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
+      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
     }
 
-    signers.value = tx[0].signersInfo
-    showConfirmation()
+    await timestampContractInstance.value?.getStampsInfo([fileHash.value])
+
+    if (timestampContractInstance.value?.signers.value.length) {
+      showConfirmation()
+      if (!isSignerInListWithoutSignature.value) {
+        emit('complete')
+        isComplete.value = true
+      }
+    } else {
+      showFailure()
+    }
   } catch (error) {
+    if (timestampContractInstance.value) {
+      errorMessage.value = timestampContractInstance.value.getErrorMessage(
+        error as EthProviderRpcError,
+      )
+    }
     ErrorHandler.processWithoutFeedback(error)
+    showFailure()
   }
   isSubmitting.value = false
   enableForm()
@@ -77,21 +117,13 @@ const submitSignature = async () => {
   isSubmitting.value = true
   isConfirmationShown.value = false
   try {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-
-    const timestampContract = new ethers.Contract(
-      '0x540962EA33ba4da87dD97c93E1592844f1ce06D1',
-      ContractArtifact,
-      signer,
-    )
-
-    await timestampContract.sign(fileHash.value)
+    await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
+    Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
     ErrorHandler.processWithoutFeedback(error)
   }
   emit('complete')
-  isSignerInList.value = false
+  isComplete.value = true
   isSubmitting.value = false
   showConfirmation()
   enableForm()
@@ -121,26 +153,48 @@ Bus.on(Bus.eventList.openModal, reset)
         :is-copied="true"
         :label="$t('doc-verification-form.document-hash-label')"
       />
+      <div class="doc-verification-form__timestamp-info">
+        <p class="doc-verification-form__timestamp-title">
+          {{ $t('doc-verification-form.doc-timestamp-title') }}
+        </p>
+        <p class="doc-verification-form__timestamp">
+          {{
+            formatTimestamp(timestampContractInstance?.docTimestamp.value || 0)
+          }}
+        </p>
+      </div>
       <h5 class="doc-verification-form__list-title">
         {{ $t('doc-verification-form.list-title') }}
       </h5>
-      <text-field
-        class="doc-verification-form__signer-address"
-        v-for="signer in signers"
-        :key="signer.signer"
-        :model-value="signer.signer"
-        :is-readonly="true"
-        :right-icon="
-          signer.signatureTimestamp._hex !== '0x00'
-            ? $icons.checkCircle
-            : undefined
-        "
-      />
+      <div
+        class="doc-verification-form__signer"
+        v-for="signer in timestampContractInstance?.signers.value"
+        :key="signer.address"
+      >
+        <text-field
+          :model-value="signer.address"
+          :is-readonly="true"
+          :right-icon="
+            signer.signatureTimestamp ? $icons.checkCircle : undefined
+          "
+        />
+        <div class="doc-verification-form__timestamp-info">
+          <p
+            class="doc-verification-form__timestamp-title"
+            v-if="signer.signatureTimestamp"
+          >
+            {{ $t('doc-verification-form.signature-timestamp-title') }}
+          </p>
+          <p class="doc-verification-form__timestamp">
+            {{ formatTimestamp(signer.signatureTimestamp || 0) }}
+          </p>
+        </div>
+      </div>
       <app-btn
-        v-if="isSignerInList"
+        v-if="isSignerInListWithoutSignature && !isComplete"
         :class="[
           'doc-verification-form__button',
-          'doc-verification-form__button--sign',
+          'doc-verification-form__button--signer',
         ]"
         :preset="BUTTON_PRESETS.primary"
         @click.prevent="submitSignature"
@@ -149,13 +203,13 @@ Bus.on(Bus.eventList.openModal, reset)
       </app-btn>
     </div>
     <div v-else-if="isFailureSnown">
-      <file-field v-model="file" :is-readonly="true" />
+      <file-field :model-value="form.file" :is-readonly="true" />
       <div class="doc-verification-form__note-error">
         <icon
           class="doc-verification-form__note-error-icon"
           :name="$icons.exclamationCircle"
         />
-        <!-- This document has not been uploaded yet -->
+        {{ errorMessage }}
       </div>
       <app-btn
         class="doc-verification-form__button"
@@ -166,11 +220,15 @@ Bus.on(Bus.eventList.openModal, reset)
       </app-btn>
     </div>
     <div v-else>
-      <file-field v-model="file" />
+      <file-field v-model="form.file" />
       <app-btn
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"
-        :state="isFormDisabled ? BUTTON_STATES.notAllowed : undefined"
+        :state="
+          isFormDisabled || !isFormValid()
+            ? BUTTON_STATES.notAllowed
+            : undefined
+        "
         @click.prevent="submitVerification"
       >
         {{ $t('doc-verification-form.submit-button-text') }}
@@ -188,7 +246,7 @@ Bus.on(Bus.eventList.openModal, reset)
   margin-top: toRem(50);
   height: toRem(48);
 
-  &--sign {
+  &--signer {
     margin-top: toRem(40);
   }
 }
@@ -222,13 +280,31 @@ Bus.on(Bus.eventList.openModal, reset)
   font-size: toRem(16);
   line-height: 1.2;
   color: var(--col-alt);
-  margin: toRem(32) 0 toRem(19);
+  margin: toRem(42) 0 toRem(20);
 }
 
-.doc-verification-form__signer-address {
+.doc-verification-form__signer {
   &:not(:last-child) {
     margin-bottom: toRem(10);
   }
+}
+
+.doc-verification-form__timestamp-info {
+  display: flex;
+  justify-content: end;
+  gap: toRem(8);
+  margin: toRem(10) auto 0;
+  font-size: toRem(14);
+  line-height: 1.2;
+}
+
+.doc-verification-form__timestamp-title {
+  color: var(--col-neutral);
+}
+
+.doc-verification-form__timestamp {
+  color: var(--col-glossy);
+  font-weight: 600;
 }
 
 .doc-verification-form__note-error {

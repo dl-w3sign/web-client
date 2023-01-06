@@ -141,6 +141,10 @@ export class BN {
     })
   }
 
+  toNumber(): number {
+    return this.#bn.toNumber()
+  }
+
   toJSON(): string {
     return this.toString()
   }

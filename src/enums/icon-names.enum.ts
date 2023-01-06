@@ -1,5 +1,6 @@
 export enum ICON_NAMES {
   arrowRight = 'arrow-right',
+  check = 'check',
   checkCircle = 'check-circle',
   clipboardCopy = 'clipboard-copy',
   cloudUpload = 'cloud-upload',
@@ -13,4 +14,5 @@ export enum ICON_NAMES {
   metamask = 'metamask',
   minus = 'minus',
   plus = 'plus',
+  xCircle = 'x-circle',
 }
