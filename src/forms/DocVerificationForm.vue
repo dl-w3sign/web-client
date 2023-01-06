@@ -68,9 +68,10 @@ const {
 const reset = () => {
   form.file = null
   fileHash.value = null
+  isComplete.value = false
   resetState()
 }
-
+Bus.success('sd')
 const formatTimestamp = (timestamp: number): string => {
   return timestamp
     ? DateUtil.format(timestamp, 'X', 'MMM DD, YYYY [at] HH:mm')
