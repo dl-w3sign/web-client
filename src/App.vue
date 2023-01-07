@@ -17,7 +17,9 @@ const init = async () => {
     useNotifications()
 
     await web3Store.detectProviders()
-    web3Provider.init(web3Store.metamask as DesignatedProvider)
+
+    if (web3Store.metamask)
+      web3Provider.init(web3Store.metamask as DesignatedProvider)
 
     document.title = config.APP_NAME
   } catch (error) {
@@ -71,6 +73,8 @@ init()
   background-size: cover;
   background-attachment: fixed;
   transition: background-image var(--transation-duration-slow) ease-in-out;
+  -webkit-transition: background-image var(--transation-duration-slow)
+    ease-in-out;
 }
 
 .fade-enter-active {

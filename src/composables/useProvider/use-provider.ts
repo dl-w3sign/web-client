@@ -80,6 +80,7 @@ export const useProvider = (): UseProvider => {
         providerWrp.value = useMetamask(provider.instance)
         break
       default:
+        isIniting.value = false
         isInitFailed.value = true
         throw new Error('Invalid Provider')
     }

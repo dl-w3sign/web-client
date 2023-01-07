@@ -7,10 +7,16 @@ import { computed, inject } from 'vue'
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const startButtonState = computed<BUTTON_STATES | undefined>(() => {
   if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
-  else if (!web3Provider?.isInitiated.value) return BUTTON_STATES.waiting
-  else if (web3Provider.isConnecting.value) return BUTTON_STATES.waiting
+  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
+  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
   else return undefined
 })
+
+const connectOrReferToInstallMetamask = () => {
+  web3Provider?.selectedProvider.value
+    ? web3Provider.connect()
+    : window.open('https://metamask.io/download/')
+}
 </script>
 
 <template>
@@ -34,7 +40,7 @@ const startButtonState = computed<BUTTON_STATES | undefined>(() => {
           :preset="BUTTON_PRESETS.primary"
           :size="BUTTON_SIZES.large"
           :state="startButtonState"
-          @click.prevent="web3Provider?.connect"
+          @click.prevent="connectOrReferToInstallMetamask"
         >
           {{ $t('main-page.start-button-text') }}
           <icon class="main-page__button-icon" :name="$icons.arrowRight" />
