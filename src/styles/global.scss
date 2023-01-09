@@ -2,7 +2,7 @@
 /* stylelint-disable unit-disallowed-list */
 html {
   font-family: var(--app-font-family);
-  overflow: auto !important;
+  overflow: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -114,4 +114,25 @@ a {
   &:active {
     text-decoration: none;
   }
+}
+
+::-webkit-scrollbar {
+  width: toRem(16); // 2px to accept
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--col-clear);
+  border-radius: toRem(10);
+
+  &:hover {
+    background: var(--col-net);
+  }
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }

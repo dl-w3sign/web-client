@@ -4,6 +4,7 @@ import { AppBtn, Icon } from '@/common'
 import { useContext, UseProvider } from '@/composables'
 import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
 import { abbrCenter } from '@/helpers'
+import { config } from '@/config'
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t } = useContext()
@@ -29,10 +30,13 @@ const buttonText = computed<string>(() => {
   else return $t('connect-ethereum.connect-button-text')
 })
 
-const connectOrReferToInstallMetamask = () => {
-  web3Provider?.selectedProvider.value
-    ? web3Provider.connect()
-    : window.open('https://metamask.io/download/')
+const connectOrReferToInstallMetamask = async () => {
+  if (web3Provider?.selectedProvider.value) {
+    await web3Provider.connect()
+    await web3Provider.switchChain(config.CHAIN_ID)
+  } else {
+    window.open('https://metamask.io/download/')
+  }
 }
 </script>
 

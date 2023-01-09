@@ -56,12 +56,14 @@ init()
 
 <template>
   <div v-if="isAppInitialized" class="app__wrapper" ref="appWrapper">
-    <app-navbar class="app__navbar" />
-    <router-view v-slot="{ Component, route }" v-show="isContentShown">
-      <transition :name="route.meta.transition || 'fade'" mode="out-in">
-        <component class="app__main" :is="Component" />
-      </transition>
-    </router-view>
+    <div class="app__scroll">
+      <app-navbar class="app__navbar" />
+      <router-view v-slot="{ Component, route }" v-show="isContentShown">
+        <transition :name="route.meta.transition || 'fade'" mode="out-in">
+          <component class="app__main" :is="Component" />
+        </transition>
+      </router-view>
+    </div>
   </div>
 </template>
 
@@ -75,6 +77,24 @@ init()
   transition: background-image var(--transation-duration-slow) ease-in-out;
   -webkit-transition: background-image var(--transation-duration-slow)
     ease-in-out;
+}
+
+.app__scroll {
+  overflow-y: scroll;
+  height: 100vh;
+  width: 100vw;
+}
+
+.app__navbar {
+  position: fixed;
+  z-index: 1000;
+  margin: toRem(60) 2.365% 0;
+  width: calc(100% - 2.365% * 2);
+}
+
+.app__main {
+  position: relative;
+  top: toRem(180);
 }
 
 .fade-enter-active {

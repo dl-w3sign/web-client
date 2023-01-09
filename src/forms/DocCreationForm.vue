@@ -74,7 +74,7 @@
         :preset="BUTTON_PRESETS.primary"
         :state="
           isFormDisabled || !isFieldsValid
-            ? BUTTON_STATES.notAllowed
+            ? BUTTON_STATES.noneEvents
             : undefined
         "
         @click.prevent="submit"
@@ -95,7 +95,12 @@ import {
   useTimestamp,
   useWeb3,
 } from '@/composables'
-import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
+import {
+  APP_KEYS,
+  BUTTON_PRESETS,
+  BUTTON_STATES,
+  ETHERS_ERROR_CODES,
+} from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, forEach, maxValue } from '@/validators'
@@ -150,7 +155,7 @@ const { isFieldsValid } = useFormValidation(form, {
     required,
     size: {
       required,
-      maxValue: maxValue(10 * 1000000),
+      maxValue: maxValue(10 * 1000 * 1000),
     },
   },
   wallets: {
@@ -205,13 +210,18 @@ const submit = async () => {
     showConfirmation()
     emit('complete')
   } catch (err) {
-    if (timestampContractInstance.value) {
+    if (timestampContractInstance.value && err?.error) {
       errorMessage.value = timestampContractInstance.value.getErrorMessage(
         err?.error as EthProviderRpcError,
       )
     }
-    ErrorHandler.processWithoutFeedback(err)
-    showFailure()
+
+    if (err?.code === ETHERS_ERROR_CODES.userRejectedRequest) {
+      ErrorHandler.processWithoutFeedback(err)
+    } else {
+      ErrorHandler.processWithoutFeedback(err)
+      showFailure()
+    }
   }
   isSubmitting.value = false
   enableForm()

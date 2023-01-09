@@ -54,7 +54,7 @@ const { isFormValid } = useFormValidation(form, {
     required,
     size: {
       required,
-      maxValue: maxValue(10 * 1000000),
+      maxValue: maxValue(10 * 1000 * 1000),
     },
   },
 })
@@ -106,7 +106,7 @@ const submitVerification = async () => {
       showFailure()
     }
   } catch (err) {
-    if (timestampContractInstance.value) {
+    if (timestampContractInstance.value && err?.error) {
       errorMessage.value = timestampContractInstance.value.getErrorMessage(
         err?.error as EthProviderRpcError,
       )
@@ -124,12 +124,12 @@ const submitSignature = async () => {
   isConfirmationShown.value = false
   try {
     await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
+    emit('complete')
+    isComplete.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
     ErrorHandler.processWithoutFeedback(error)
   }
-  emit('complete')
-  isComplete.value = true
   isSubmitting.value = false
   showConfirmation()
   enableForm()
@@ -232,7 +232,7 @@ Bus.on(Bus.eventList.openModal, reset)
         :preset="BUTTON_PRESETS.primary"
         :state="
           isFormDisabled || !isFormValid()
-            ? BUTTON_STATES.notAllowed
+            ? BUTTON_STATES.noneEvents
             : undefined
         "
         @click.prevent="submitVerification"

@@ -72,12 +72,15 @@ export default defineComponent({
 .modal__wrapper {
   display: flex;
   position: fixed;
+  z-index: 5000;
   top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
   width: 100vw;
   height: vh(100);
   background: var(--col-pesky);
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .modal__pane-wrapper {

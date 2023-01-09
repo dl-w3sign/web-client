@@ -86,9 +86,9 @@ const showDocVerificationModal = () => {
     var(--col-net)
   );
   backdrop-filter: blur(toRem(1.7));
-  margin: toRem(60) 2.365% 0;
   height: toRem(120);
   border-radius: toRem(4);
+  min-width: toRem(1000);
 }
 
 .app-navbar__logo {

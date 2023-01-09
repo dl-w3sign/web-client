@@ -73,7 +73,7 @@ withDefaults(
       background: var(--col-initial);
     }
 
-    &.app-button--not-allowed {
+    &.app-button--none-events {
       background: var(--col-negative);
       color: var(--col-positive);
       fill: var(--col-positive);

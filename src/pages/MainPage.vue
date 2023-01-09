@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { AppBtn, Icon } from '@/common'
 import { UseProvider } from '@/composables'
+import { config } from '@/config'
 import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
 import { computed, inject } from 'vue'
 
@@ -12,10 +13,13 @@ const startButtonState = computed<BUTTON_STATES | undefined>(() => {
   else return undefined
 })
 
-const connectOrReferToInstallMetamask = () => {
-  web3Provider?.selectedProvider.value
-    ? web3Provider.connect()
-    : window.open('https://metamask.io/download/')
+const connectOrReferToInstallMetamask = async () => {
+  if (web3Provider?.selectedProvider.value) {
+    await web3Provider.connect()
+    await web3Provider.switchChain(config.CHAIN_ID)
+  } else {
+    window.open('https://metamask.io/download/')
+  }
 }
 </script>
 
@@ -52,7 +56,7 @@ const connectOrReferToInstallMetamask = () => {
 
 <style lang="scss" scoped>
 .main-page {
-  margin: toRem(116) 7.362% toRem(145);
+  padding: toRem(116) 7.362% toRem(145);
 }
 
 .main-page__welcome-top {
