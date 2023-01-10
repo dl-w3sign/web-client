@@ -21,14 +21,8 @@ export const useWeb3 = () => {
     const ethProviders = window?.ethereum
       ? window?.ethereum?.providers || [window?.ethereum]
       : undefined
-    const phantomProvider = window?.solana
-    const solflareProvider = window?.solflare
 
-    _browserProviders.value = [
-      ...(ethProviders ? ethProviders : []),
-      ...(phantomProvider ? [phantomProvider] : []),
-      ...(solflareProvider ? [solflareProvider] : []),
-    ]
+    _browserProviders.value = [...(ethProviders ? ethProviders : [])]
   }
   const _defineProviders = async () => {
     if (_browserProviders.value.length) {

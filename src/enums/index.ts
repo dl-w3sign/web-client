@@ -1,6 +1,5 @@
 export * from './app-keys.enum'
 export * from './buttons.enum'
-export * from './chains.enum'
 export * from './ethers-error-codes.enum'
 export * from './route-names.enum'
 export * from './icon-names.enum'

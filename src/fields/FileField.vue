@@ -73,7 +73,13 @@ watch(
         <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
       </button>
     </div>
-    <div v-else-if="!isReadonly" class="file-field__drop-zone">
+    <div
+      v-else-if="!isReadonly"
+      :class="[
+        'file-field__drop-zone',
+        isOverDropZone ? 'file-field__drop-zone--active' : '',
+      ]"
+    >
       <label ref="dropZone" class="file-field__drop-zone-label" />
       <div v-show="!isOverDropZone" class="file-field__not-drag-block">
         <icon class="file-field__icon" :name="$icons.cloudUpload" />
@@ -133,12 +139,16 @@ watch(
 
 .file-field__drop-zone {
   position: relative;
-  background: url('/branding/background-file-field-drop-zone.svg');
+  background: url('/branding/background-file-field-drop-zone.png');
   display: flex;
   margin: auto;
   height: toRem(172);
   width: toRem(523);
   border-radius: var(--border-radius);
+
+  &--active {
+    background: url('/branding/background-file-field-drop-zone-active.png');
+  }
 }
 
 .file-field__not-drag-block {

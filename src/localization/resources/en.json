@@ -32,7 +32,8 @@
     "reset-button-text": "Create Another Document",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "Your document was successfully created",
-    "document-hash-label": "Document Hash"
+    "document-hash-label": "Document Hash",
+    "error-default": "Something went wrong"
   },
   "doc-verification-form": {
     "submit-button-text": "Verify Document",
@@ -45,7 +46,8 @@
     "signature-timestamp-title": "Signed",
     "message-instead-timestamp": "The document has not been signed yet",
     "list-title": "List of signatory addresses",
-    "sign-success-message": "You have successfully signed the document"
+    "sign-success-message": "You have successfully signed the document",
+    "error-default": "Something went wrong"
   },
   "file-field": {
     "title": "Select a file or drag and drop here",
@@ -57,7 +59,7 @@
     "field-error_email": "Field must be a valid email"
   },
   "errors": {
-    "default": "Oops... Something went wrong",
+    "default": "Something went wrong",
     "provider-user-rejected-request": "User rejected request.",
     "provider-unauthorized": "The requested method and/or account has not been authorized by the user.",
     "provider-unsupported-method": "The Provider does not support the requested method.",
@@ -88,37 +90,6 @@
     "default-message-warning": "Something you are doing is not recommended",
     "default-message-info": "Something is happening. Just want you to know that",
     "default-message-default": "Just a message"
-  },
-  "login-form": {
-    "login-lbl": "Login",
-    "password-lbl": "Password",
-    "login-success-msg": "Access granted",
-    "submit-btn": "Submit"
-  },
-  "ui-kit-page": {
-    "button": "Button",
-    "some-placeholder": "placeholder",
-    "some-label": "label",
-    "some-error-message": "error-message",
-    "modal-btn": "Open modal",
-    "collapse-btn": "Toggle Collapse",
-    "collapse-text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    "loading-error-msg": "Oops, something went wrong",
-    "no-data-msg": "Empty data, please add new"
-  },
-  "web3-page": {
-    "loading-error-msg": "Oops... Something went wrong"
-  },
-  "erc20": {
-    "loading-error-msg": "Oops... Something went wrong",
-    "title": "ERC20",
-    "name-lbl": "Name",
-    "symbol-lbl": "Symbol",
-    "decimals-lbl": "Decimals",
-    "total-supply-lbl": "Total supply",
-    "balance-lbl": "Balance",
-    "transfer-lbl": "Transfer",
-    "mint-lbl": "Mint"
   },
   "timestamp-contract": {
     "error-hash-collision": "This document has already been uploaded and sent for signatures before",

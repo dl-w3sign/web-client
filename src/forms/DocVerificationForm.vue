@@ -14,6 +14,7 @@ import { EthProviderRpcError, Keccak256Hash, UseProvider } from '@/types'
 import { required, maxValue } from '@/validators'
 import { DateUtil } from '@/utils'
 import { ref, reactive, inject, computed } from 'vue'
+import { errors } from '@/errors'
 
 const emit = defineEmits<{
   (event: 'complete'): void
@@ -30,7 +31,7 @@ const { $t } = useContext()
 
 const fileHash = ref<Keccak256Hash | null>(null)
 
-const errorMessage = ref($t('timestamp-contract.error-doc-not-found'))
+const errorMessage = ref($t('doc-verification-form.error-default'))
 const isComplete = ref(false)
 
 const timestampContractInstance = computed(() => {
@@ -63,7 +64,7 @@ const {
   isFormDisabled,
   isSubmitting,
   isConfirmationShown,
-  isFailureSnown,
+  isFailureShown,
   disableForm,
   enableForm,
   showConfirmation,
@@ -72,6 +73,7 @@ const {
 } = useForm()
 
 const reset = () => {
+  errorMessage.value = $t('doc-verification-form.error-default')
   form.file = null
   fileHash.value = null
   isComplete.value = false
@@ -91,7 +93,11 @@ const submitVerification = async () => {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
     if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+      try {
+        await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+      } catch (err) {
+        if (!err?.error) throw new errors.ProviderUserRejectedRequest()
+      }
     }
 
     await timestampContractInstance.value?.getStampsInfo([fileHash.value])
@@ -111,8 +117,13 @@ const submitVerification = async () => {
         err?.error as EthProviderRpcError,
       )
     }
-    ErrorHandler.processWithoutFeedback(err)
-    showFailure()
+
+    if (err?.constructor === errors.ProviderUserRejectedRequest) {
+      ErrorHandler.processWithoutFeedback(err)
+    } else {
+      ErrorHandler.processWithoutFeedback(err)
+      showFailure()
+    }
   }
   isSubmitting.value = false
   enableForm()
@@ -123,7 +134,12 @@ const submitSignature = async () => {
   isSubmitting.value = true
   isConfirmationShown.value = false
   try {
+    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
+      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+    }
+
     await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
+
     emit('complete')
     isComplete.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
@@ -208,7 +224,7 @@ Bus.on(Bus.eventList.openModal, reset)
         {{ $t('doc-verification-form.sign-button-text') }}
       </app-btn>
     </div>
-    <div v-else-if="isFailureSnown">
+    <div v-else-if="isFailureShown">
       <file-field :model-value="form.file" :is-readonly="true" />
       <div class="doc-verification-form__note-error">
         <icon

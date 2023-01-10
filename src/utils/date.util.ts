@@ -2,6 +2,7 @@ import dayjs, { ConfigType, OptionType, Dayjs } from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
+
 export class DateUtil {
   private static _dayjs(date: ConfigType, format?: OptionType): Dayjs {
     return format ? dayjs(date, format) : dayjs(date)

@@ -20,7 +20,7 @@
         :label="$t('doc-creation-form.document-hash-label')"
       />
     </div>
-    <div v-else-if="isFailureSnown">
+    <div v-else-if="isFailureShown">
       <file-field v-model="form.file" :is-readonly="true" />
       <div class="doc-creation-form__note-error">
         <icon
@@ -89,6 +89,7 @@
 import { ref, reactive, computed, inject } from 'vue'
 import { Icon, AppBtn, Spinner } from '@/common'
 import {
+  useContext,
   useForm,
   useFormValidation,
   UseProvider,
@@ -106,6 +107,7 @@ import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, forEach, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { utils } from 'ethers'
+import { errors } from '@/errors'
 
 type Wallet = {
   id: number
@@ -119,6 +121,7 @@ type Form = {
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { contractsInfo } = useWeb3()
+const { $t } = useContext()
 
 const timestampContractInstance = computed(() => {
   return web3Provider
@@ -134,7 +137,7 @@ const {
   isFormDisabled,
   isSubmitting,
   isConfirmationShown,
-  isFailureSnown,
+  isFailureShown,
   showConfirmation,
   showFailure,
   disableForm,
@@ -142,7 +145,7 @@ const {
 } = useForm()
 
 const fileHash = ref<Keccak256Hash | null>(null)
-const errorMessage = ref('')
+const errorMessage = ref($t('doc-creation-form.error-default'))
 
 let currentId = 0
 const form: Form = reactive({
@@ -181,13 +184,14 @@ const removeWallet = (id: number) => {
 }
 
 const reset = () => {
+  errorMessage.value = $t('doc-creation-form.error-default')
   fileHash.value = null
 
   form.file = null
   form.wallets = [{ id: ++currentId, address: '' }]
 
   isConfirmationShown.value = false
-  isFailureSnown.value = false
+  isFailureShown.value = false
   isFormDisabled.value = false
 }
 
@@ -199,7 +203,11 @@ const submit = async () => {
     const addresses = form.wallets.map(wallet => wallet.address)
 
     if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+      try {
+        await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
+      } catch (err) {
+        if (!err?.error) throw new errors.ProviderUserRejectedRequest()
+      }
     }
 
     await timestampContractInstance.value?.createStamp(
@@ -216,7 +224,10 @@ const submit = async () => {
       )
     }
 
-    if (err?.code === ETHERS_ERROR_CODES.userRejectedRequest) {
+    if (
+      err?.code === ETHERS_ERROR_CODES.userRejectedRequest ||
+      err?.constructor === errors.ProviderUserRejectedRequest
+    ) {
       ErrorHandler.processWithoutFeedback(err)
     } else {
       ErrorHandler.processWithoutFeedback(err)
@@ -303,23 +314,5 @@ Bus.on(Bus.eventList.openModal, reset)
 .doc-creation-form__note-error-icon {
   height: toRem(27);
   width: toRem(27);
-}
-
-.fade-enter-active {
-  animation: fade-in 0.25s;
-}
-
-.fade-leave-active {
-  animation: fade-in 0.25s reverse;
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
 }
 </style>

@@ -4,7 +4,7 @@ export function useForm() {
   const isFormDisabled = ref(false)
   const isSubmitting = ref(false)
   const isConfirmationShown = ref(false)
-  const isFailureSnown = ref(false)
+  const isFailureShown = ref(false)
 
   const disableForm = () => {
     isFormDisabled.value = true
@@ -21,21 +21,21 @@ export function useForm() {
 
   const showFailure = () => {
     disableForm()
-    isFailureSnown.value = true
+    isFailureShown.value = true
   }
 
   const resetState = () => {
     isFormDisabled.value = false
     isSubmitting.value = false
     isConfirmationShown.value = false
-    isFailureSnown.value = false
+    isFailureShown.value = false
   }
 
   return {
     isFormDisabled,
     isSubmitting,
     isConfirmationShown,
-    isFailureSnown,
+    isFailureShown,
     disableForm,
     enableForm,
     showConfirmation,
