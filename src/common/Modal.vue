@@ -1,9 +1,9 @@
 <template>
   <teleport to="#modal">
     <transition name="modal">
-      <div v-show="isShown" class="modal__wrapper">
+      <div v-show="isShown" class="modal__wrapper" @click="onWrapperClick">
         <div class="modal__pane-wrapper">
-          <div class="modal__pane" ref="modalPane">
+          <div class="modal__pane" ref="modalPane" @click.prevent>
             <slot :close="closeModal" />
           </div>
         </div>
@@ -13,8 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { defineComponent, ref, watch } from 'vue'
 import { Bus } from '@/helpers'
 
 const EVENTS = {
@@ -36,18 +35,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const modalPane = ref<HTMLElement | undefined>()
 
-    onMounted(() => {
-      if (modalPane.value) {
-        if (props.isCloseByClickOutside) {
-          onClickOutside(modalPane, () => {
-            closeModal()
-          })
-        }
-      }
-    })
-
     const closeModal = () => {
       emit(EVENTS.updateIsShown, false)
+    }
+
+    const onWrapperClick = (event: Event) => {
+      if (!event.defaultPrevented && props.isCloseByClickOutside) {
+        emit(EVENTS.updateIsShown, false)
+        event.preventDefault()
+      }
     }
 
     watch(
@@ -63,6 +59,7 @@ export default defineComponent({
       modalPane,
 
       closeModal,
+      onWrapperClick,
     }
   },
 })
