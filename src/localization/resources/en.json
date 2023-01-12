@@ -26,14 +26,13 @@
     "close-button-text": "Ok"
   },
   "doc-creation-form": {
-    "wallet-input-label": "Wallet Address",
-    "wallet-input-placeholder": "Enter Wallet Address",
     "submit-button-text": "Create Document",
     "reset-button-text": "Create Another Document",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "Your document was successfully created",
     "document-hash-label": "Document Hash",
-    "error-default": "Something went wrong"
+    "error-default": "Something went wrong",
+    "error-hash-collision": "This document has already been uploaded and sent for signatures before"
   },
   "doc-verification-form": {
     "submit-button-text": "Verify Document",
@@ -92,7 +91,6 @@
     "default-message-default": "Just a message"
   },
   "timestamp-contract": {
-    "error-hash-collision": "This document has already been uploaded and sent for signatures before",
     "error-doc-not-found": "This document has not been uploaded yet ",
     "error-default": "Something went wrong"
   }

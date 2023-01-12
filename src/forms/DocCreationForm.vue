@@ -40,35 +40,7 @@
       </app-btn>
     </div>
     <div v-else>
-      <file-field v-model="form.file" />
-      <div
-        class="doc-creation-form__wallets"
-        v-for="wallet in form.wallets"
-        :key="wallet.id"
-      >
-        <text-field
-          class="doc-creation-form__wallet-address-input"
-          v-model="wallet.address"
-          :label="$t('doc-creation-form.wallet-input-label')"
-          :placeholder="$t('doc-creation-form.wallet-input-placeholder')"
-        />
-        <app-btn
-          v-if="wallet === form.wallets[form.wallets.length - 1]"
-          class="doc-creation-form__wallet-address-button"
-          :preset="BUTTON_PRESETS.outlinePrimary"
-          @click.prevent="addWallet"
-        >
-          <icon class="doc-creation-form__plus-icon" :name="$icons.plus" />
-        </app-btn>
-        <app-btn
-          v-else
-          class="doc-creation-form__wallet-address-button"
-          :preset="BUTTON_PRESETS.outlineAccent"
-          @click.prevent="removeWallet(wallet.id)"
-        >
-          <icon class="doc-creation-form__plus-icon" :name="$icons.minus" />
-        </app-btn>
-      </div>
+      <file-field v-model="form.file" :accept="fileMIMETypes.join(', ')" />
       <app-btn
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
@@ -104,20 +76,17 @@ import {
 } from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
-import { required, forEach, maxValue } from '@/validators'
+import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
-import { utils } from 'ethers'
 import { errors } from '@/errors'
-
-type Wallet = {
-  id: number
-  address: string
-}
 
 type Form = {
   file: File | null
-  wallets: Wallet[]
 }
+
+const emit = defineEmits<{
+  (event: 'complete'): void
+}>()
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { contractsInfo } = useWeb3()
@@ -128,10 +97,6 @@ const timestampContractInstance = computed(() => {
     ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
     : undefined
 })
-
-const emit = defineEmits<{
-  (event: 'complete'): void
-}>()
 
 const {
   isFormDisabled,
@@ -144,13 +109,12 @@ const {
   enableForm,
 } = useForm()
 
+const fileMIMETypes = ['image/jpeg', 'image/png', 'application/pdf']
 const fileHash = ref<Keccak256Hash | null>(null)
-const errorMessage = ref($t('doc-creation-form.error-default'))
+const errorMessage = ref('')
 
-let currentId = 0
 const form: Form = reactive({
   file: null,
-  wallets: [{ id: currentId, address: '' }],
 })
 
 const { isFieldsValid } = useFormValidation(form, {
@@ -161,34 +125,22 @@ const { isFieldsValid } = useFormValidation(form, {
       maxValue: maxValue(10 * 1000 * 1000),
     },
   },
-  wallets: {
-    $each: forEach({
-      address: {
-        validator: (address: string) => {
-          return utils.isAddress(address)
-        },
-      },
-    }),
-  },
 })
 
-const addWallet = () => {
-  form.wallets.push({
-    id: ++currentId,
-    address: '',
-  })
-}
-
-const removeWallet = (id: number) => {
-  form.wallets = form.wallets.filter(wallet => wallet.id !== id)
+const getErrorMessage = (error: EthProviderRpcError): string => {
+  switch (error.message) {
+    case 'execution reverted: TimeStamping: Hash collision.':
+      return $t('doc-creation-form.error-hash-collision')
+    default:
+      return $t('doc-creation-form.error-default')
+  }
 }
 
 const reset = () => {
-  errorMessage.value = $t('doc-creation-form.error-default')
+  errorMessage.value = ''
   fileHash.value = null
 
   form.file = null
-  form.wallets = [{ id: ++currentId, address: '' }]
 
   isConfirmationShown.value = false
   isFailureShown.value = false
@@ -200,7 +152,6 @@ const submit = async () => {
   isSubmitting.value = true
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
-    const addresses = form.wallets.map(wallet => wallet.address)
 
     if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
       try {
@@ -210,26 +161,23 @@ const submit = async () => {
       }
     }
 
-    await timestampContractInstance.value?.createStamp(
-      fileHash.value,
-      addresses,
-    )
+    await timestampContractInstance.value?.createStamp(fileHash.value)
 
     showConfirmation()
     emit('complete')
   } catch (err) {
-    if (timestampContractInstance.value && err?.error) {
-      errorMessage.value = timestampContractInstance.value.getErrorMessage(
-        err?.error as EthProviderRpcError,
-      )
-    }
-
     if (
       err?.code === ETHERS_ERROR_CODES.userRejectedRequest ||
       err?.constructor === errors.ProviderUserRejectedRequest
     ) {
       ErrorHandler.processWithoutFeedback(err)
     } else {
+      if (timestampContractInstance.value && err?.error) {
+        errorMessage.value = getErrorMessage(err?.error as EthProviderRpcError)
+      } else {
+        errorMessage.value = $t('doc-creation-form.error-default')
+      }
+
       ErrorHandler.processWithoutFeedback(err)
       showFailure()
     }
@@ -244,34 +192,6 @@ Bus.on(Bus.eventList.openModal, reset)
 <style lang="scss" scoped>
 .doc-creation-form {
   width: toRem(523);
-}
-
-.doc-creation-form__wallets {
-  margin-top: toRem(24);
-  display: grid;
-  grid-template-columns: 1fr toRem(42);
-  align-items: flex-end;
-  gap: toRem(16);
-}
-
-.doc-creation-form__wallet-address-input {
-  grid-column: 1;
-
-  &:not(:first-child) {
-    margin-top: toRem(12);
-  }
-}
-
-.doc-creation-form__wallet-address-button {
-  box-sizing: border-box;
-  height: toRem(42);
-  width: toRem(42);
-  flex-shrink: 0;
-}
-
-.doc-creation-form__plus-icon {
-  height: toRem(14);
-  width: toRem(14);
 }
 
 .doc-creation-form__button {

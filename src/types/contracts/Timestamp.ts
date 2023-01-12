@@ -41,22 +41,16 @@ export declare namespace ITimeStamping {
 
   export type DetailedStampInfoStruct = {
     timestamp: PromiseOrValue<BigNumberish>;
-    usersToSign: PromiseOrValue<BigNumberish>;
-    usersSigned: PromiseOrValue<BigNumberish>;
     stampHash: PromiseOrValue<BytesLike>;
     signersInfo: ITimeStamping.SignerInfoStruct[];
   };
 
   export type DetailedStampInfoStructOutput = [
     BigNumber,
-    BigNumber,
-    BigNumber,
     string,
     ITimeStamping.SignerInfoStructOutput[]
   ] & {
     timestamp: BigNumber;
-    usersToSign: BigNumber;
-    usersSigned: BigNumber;
     stampHash: string;
     signersInfo: ITimeStamping.SignerInfoStructOutput[];
   };
@@ -65,9 +59,8 @@ export declare namespace ITimeStamping {
 export interface TimestampInterface extends utils.Interface {
   functions: {
     "__TimeStamping_init()": FunctionFragment;
-    "createStamp(bytes32,address[])": FunctionFragment;
+    "createStamp(bytes32)": FunctionFragment;
     "getHashesByUserAddress(address)": FunctionFragment;
-    "getStampStatus(bytes32)": FunctionFragment;
     "getStampsInfo(bytes32[])": FunctionFragment;
     "owner()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
@@ -83,7 +76,6 @@ export interface TimestampInterface extends utils.Interface {
       | "__TimeStamping_init"
       | "createStamp"
       | "getHashesByUserAddress"
-      | "getStampStatus"
       | "getStampsInfo"
       | "owner"
       | "proxiableUUID"
@@ -100,15 +92,11 @@ export interface TimestampInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createStamp",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>[]]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getHashesByUserAddress",
     values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getStampStatus",
-    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getStampsInfo",
@@ -153,10 +141,6 @@ export interface TimestampInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getStampStatus",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getStampsInfo",
     data: BytesLike
   ): Result;
@@ -185,7 +169,7 @@ export interface TimestampInterface extends utils.Interface {
     "BeaconUpgraded(address)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "StampCreated(bytes32,uint256,address[])": EventFragment;
+    "StampCreated(bytes32,uint256)": EventFragment;
     "StampSigned(bytes32,address)": EventFragment;
     "Upgraded(address)": EventFragment;
   };
@@ -242,10 +226,9 @@ export type OwnershipTransferredEventFilter =
 export interface StampCreatedEventObject {
   stampHash: string;
   timestamp: BigNumber;
-  signers: string[];
 }
 export type StampCreatedEvent = TypedEvent<
-  [string, BigNumber, string[]],
+  [string, BigNumber],
   StampCreatedEventObject
 >;
 
@@ -302,7 +285,6 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
-      signers_: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -310,11 +292,6 @@ export interface Timestamp extends BaseContract {
       user_: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[string[]]>;
-
-    getStampStatus(
-      stampHash_: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
 
     getStampsInfo(
       stampHashes_: PromiseOrValue<BytesLike>[],
@@ -361,7 +338,6 @@ export interface Timestamp extends BaseContract {
 
   createStamp(
     stampHash_: PromiseOrValue<BytesLike>,
-    signers_: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -369,11 +345,6 @@ export interface Timestamp extends BaseContract {
     user_: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<string[]>;
-
-  getStampStatus(
-    stampHash_: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   getStampsInfo(
     stampHashes_: PromiseOrValue<BytesLike>[],
@@ -414,7 +385,6 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
-      signers_: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -422,11 +392,6 @@ export interface Timestamp extends BaseContract {
       user_: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string[]>;
-
-    getStampStatus(
-      stampHash_: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     getStampsInfo(
       stampHashes_: PromiseOrValue<BytesLike>[],
@@ -490,15 +455,13 @@ export interface Timestamp extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
-    "StampCreated(bytes32,uint256,address[])"(
+    "StampCreated(bytes32,uint256)"(
       stampHash?: PromiseOrValue<BytesLike> | null,
-      timestamp?: null,
-      signers?: null
+      timestamp?: null
     ): StampCreatedEventFilter;
     StampCreated(
       stampHash?: PromiseOrValue<BytesLike> | null,
-      timestamp?: null,
-      signers?: null
+      timestamp?: null
     ): StampCreatedEventFilter;
 
     "StampSigned(bytes32,address)"(
@@ -525,17 +488,11 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
-      signers_: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getStampStatus(
-      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -581,17 +538,11 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
-      signers_: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getStampStatus(
-      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

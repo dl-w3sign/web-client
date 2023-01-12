@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Erc20 } from "./Erc20";
-export * from "./Timestamp";
+export type { Timestamp } from "./Timestamp";
 export * as factories from "./factories";
 export { Erc20__factory } from "./factories/Erc20__factory";
 export { Timestamp__factory } from "./factories/Timestamp__factory";

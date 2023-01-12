@@ -1,11 +1,9 @@
 import { ref } from 'vue'
-import { i18n } from '@/localization'
 import {
   UseProvider,
   Timestamp,
   Timestamp__factory,
   Keccak256Hash,
-  EthProviderRpcError,
 } from '@/types'
 import { BN } from '@/utils'
 
@@ -13,8 +11,6 @@ type Signer = {
   address: string
   signatureTimestamp: number
 }
-
-const { t } = i18n.global
 
 export const useTimestamp = (provider: UseProvider, address?: string) => {
   const _instance = ref<Timestamp | undefined>()
@@ -69,21 +65,12 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
     }
   }
 
-  const createStamp = async (fileHash: Keccak256Hash, addresses: string[]) => {
-    return await _instance_rw.value?.createStamp(fileHash, addresses)
+  const createStamp = async (fileHash: Keccak256Hash) => {
+    return await _instance_rw.value?.createStamp(fileHash)
   }
 
   const sign = async (fileHash: Keccak256Hash) => {
     await _instance_rw.value?.sign(fileHash)
-  }
-
-  const getErrorMessage = (error: EthProviderRpcError): string => {
-    switch (error.message) {
-      case 'execution reverted: TimeStamping: Hash collision.':
-        return t('timestamp-contract.error-hash-collision')
-      default:
-        return t('timestamp-contract.error-default')
-    }
   }
 
   return {
@@ -94,7 +81,6 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
 
     useTimestamp,
     getStampsInfo,
-    getErrorMessage,
     createStamp,
     sign,
   }

@@ -86,12 +86,6 @@ const _abi = [
         name: "timestamp",
         type: "uint256",
       },
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "signers",
-        type: "address[]",
-      },
     ],
     name: "StampCreated",
     type: "event",
@@ -142,11 +136,6 @@ const _abi = [
         name: "stampHash_",
         type: "bytes32",
       },
-      {
-        internalType: "address[]",
-        name: "signers_",
-        type: "address[]",
-      },
     ],
     name: "createStamp",
     outputs: [],
@@ -175,25 +164,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "stampHash_",
-        type: "bytes32",
-      },
-    ],
-    name: "getStampStatus",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32[]",
         name: "stampHashes_",
         type: "bytes32[]",
@@ -206,16 +176,6 @@ const _abi = [
           {
             internalType: "uint256",
             name: "timestamp",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "usersToSign",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "usersSigned",
             type: "uint256",
           },
           {

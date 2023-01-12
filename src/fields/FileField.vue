@@ -34,7 +34,7 @@ const fileDialog = useFileDialog({
   accept: props.accept,
 })
 
-const openFileDialog = () => {
+const openFileDialog = () => { // open-file-dialog
   fileDialog.reset()
   fileDialog.open()
 }
