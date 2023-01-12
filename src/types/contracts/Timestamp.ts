@@ -59,9 +59,11 @@ export declare namespace ITimeStamping {
 export interface TimestampInterface extends utils.Interface {
   functions: {
     "__TimeStamping_init()": FunctionFragment;
-    "createStamp(bytes32)": FunctionFragment;
+    "createStamp(bytes32,bool)": FunctionFragment;
     "getHashesByUserAddress(address)": FunctionFragment;
-    "getStampsInfo(bytes32[])": FunctionFragment;
+    "getStampInfo(bytes32)": FunctionFragment;
+    "getStampInfoWithPagination(bytes32,uint256,uint256)": FunctionFragment;
+    "getStampSignersCount(bytes32)": FunctionFragment;
     "owner()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -76,7 +78,9 @@ export interface TimestampInterface extends utils.Interface {
       | "__TimeStamping_init"
       | "createStamp"
       | "getHashesByUserAddress"
-      | "getStampsInfo"
+      | "getStampInfo"
+      | "getStampInfoWithPagination"
+      | "getStampSignersCount"
       | "owner"
       | "proxiableUUID"
       | "renounceOwnership"
@@ -92,15 +96,27 @@ export interface TimestampInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createStamp",
-    values: [PromiseOrValue<BytesLike>]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
     functionFragment: "getHashesByUserAddress",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "getStampsInfo",
-    values: [PromiseOrValue<BytesLike>[]]
+    functionFragment: "getStampInfo",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getStampInfoWithPagination",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getStampSignersCount",
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -141,7 +157,15 @@ export interface TimestampInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getStampsInfo",
+    functionFragment: "getStampInfo",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getStampInfoWithPagination",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getStampSignersCount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -285,6 +309,7 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
+      isSign_: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -293,14 +318,22 @@ export interface Timestamp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]]>;
 
-    getStampsInfo(
-      stampHashes_: PromiseOrValue<BytesLike>[],
+    getStampInfo(
+      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<
-      [ITimeStamping.DetailedStampInfoStructOutput[]] & {
-        detailedStampsInfo_: ITimeStamping.DetailedStampInfoStructOutput[];
-      }
-    >;
+    ): Promise<[ITimeStamping.DetailedStampInfoStructOutput]>;
+
+    getStampInfoWithPagination(
+      stampHash_: PromiseOrValue<BytesLike>,
+      offset_: PromiseOrValue<BigNumberish>,
+      limit_: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[ITimeStamping.DetailedStampInfoStructOutput]>;
+
+    getStampSignersCount(
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -338,6 +371,7 @@ export interface Timestamp extends BaseContract {
 
   createStamp(
     stampHash_: PromiseOrValue<BytesLike>,
+    isSign_: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -346,10 +380,22 @@ export interface Timestamp extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string[]>;
 
-  getStampsInfo(
-    stampHashes_: PromiseOrValue<BytesLike>[],
+  getStampInfo(
+    stampHash_: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
-  ): Promise<ITimeStamping.DetailedStampInfoStructOutput[]>;
+  ): Promise<ITimeStamping.DetailedStampInfoStructOutput>;
+
+  getStampInfoWithPagination(
+    stampHash_: PromiseOrValue<BytesLike>,
+    offset_: PromiseOrValue<BigNumberish>,
+    limit_: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<ITimeStamping.DetailedStampInfoStructOutput>;
+
+  getStampSignersCount(
+    stampHash_: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -385,6 +431,7 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
+      isSign_: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -393,10 +440,22 @@ export interface Timestamp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string[]>;
 
-    getStampsInfo(
-      stampHashes_: PromiseOrValue<BytesLike>[],
+    getStampInfo(
+      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<ITimeStamping.DetailedStampInfoStructOutput[]>;
+    ): Promise<ITimeStamping.DetailedStampInfoStructOutput>;
+
+    getStampInfoWithPagination(
+      stampHash_: PromiseOrValue<BytesLike>,
+      offset_: PromiseOrValue<BigNumberish>,
+      limit_: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<ITimeStamping.DetailedStampInfoStructOutput>;
+
+    getStampSignersCount(
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -488,6 +547,7 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
+      isSign_: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -496,8 +556,20 @@ export interface Timestamp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getStampsInfo(
-      stampHashes_: PromiseOrValue<BytesLike>[],
+    getStampInfo(
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getStampInfoWithPagination(
+      stampHash_: PromiseOrValue<BytesLike>,
+      offset_: PromiseOrValue<BigNumberish>,
+      limit_: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getStampSignersCount(
+      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -538,6 +610,7 @@ export interface Timestamp extends BaseContract {
 
     createStamp(
       stampHash_: PromiseOrValue<BytesLike>,
+      isSign_: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -546,8 +619,20 @@ export interface Timestamp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getStampsInfo(
-      stampHashes_: PromiseOrValue<BytesLike>[],
+    getStampInfo(
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getStampInfoWithPagination(
+      stampHash_: PromiseOrValue<BytesLike>,
+      offset_: PromiseOrValue<BigNumberish>,
+      limit_: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getStampSignersCount(
+      stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

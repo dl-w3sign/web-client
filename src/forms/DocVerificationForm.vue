@@ -10,7 +10,7 @@ import {
 import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, TextField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
-import { EthProviderRpcError, Keccak256Hash, UseProvider } from '@/types'
+import { Keccak256Hash, UseProvider } from '@/types'
 import { required, maxValue } from '@/validators'
 import { DateUtil } from '@/utils'
 import { ref, reactive, inject, computed } from 'vue'
@@ -28,28 +28,6 @@ const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 
 const { contractsInfo } = useWeb3()
 const { $t } = useContext()
-
-const fileHash = ref<Keccak256Hash | null>(null)
-
-const errorMessage = ref($t('doc-verification-form.error-default'))
-const isComplete = ref(false)
-
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
-    : undefined
-})
-
-const isSignerInListWithoutSignature = computed(() =>
-  timestampContractInstance.value?.signers.value.find(
-    signer =>
-      signer.address === web3Provider?.selectedAddress.value &&
-      signer.signatureTimestamp === 0,
-  )
-    ? true
-    : false,
-)
-
 const { isFormValid } = useFormValidation(form, {
   file: {
     required,
@@ -72,13 +50,23 @@ const {
   resetState,
 } = useForm()
 
-const reset = () => {
-  errorMessage.value = $t('doc-verification-form.error-default')
-  form.file = null
-  fileHash.value = null
-  isComplete.value = false
-  resetState()
-}
+const fileMIMETypes = ['image/jpeg', 'image/png', 'application/pdf']
+const fileHash = ref<Keccak256Hash | null>(null)
+const errorMessage = ref('')
+const isComplete = ref(false)
+
+const timestampContractInstance = computed(() => {
+  return web3Provider
+    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
+    : undefined
+})
+const isSignedByCurrentSigner = computed(() =>
+  timestampContractInstance.value?.signers.value.find(
+    signer => signer.address === web3Provider?.selectedAddress.value,
+  )
+    ? true
+    : false,
+)
 
 const formatTimestamp = (timestamp: number): string => {
   return timestamp
@@ -100,22 +88,20 @@ const submitVerification = async () => {
       }
     }
 
-    await timestampContractInstance.value?.getStampsInfo([fileHash.value])
+    await timestampContractInstance.value?.getStampInfo(fileHash.value)
+    if (!timestampContractInstance?.value?.docTimestamp.value)
+      throw new Error('Document not found')
 
-    if (timestampContractInstance.value?.signers.value.length) {
-      showConfirmation()
-      if (!isSignerInListWithoutSignature.value) {
-        emit('complete')
-        isComplete.value = true
-      }
-    } else {
-      showFailure()
+    showConfirmation()
+    if (isSignedByCurrentSigner.value) {
+      emit('complete')
+      isComplete.value = true
     }
   } catch (err) {
-    if (timestampContractInstance.value && err?.error) {
-      errorMessage.value = timestampContractInstance.value.getErrorMessage(
-        err?.error as EthProviderRpcError,
-      )
+    if (!timestampContractInstance?.value?.docTimestamp.value) {
+      errorMessage.value = $t('doc-verification-form.error-doc-not-found')
+    } else {
+      errorMessage.value = $t('doc-verification-form.error-default')
     }
 
     if (err?.constructor === errors.ProviderUserRejectedRequest) {
@@ -149,6 +135,14 @@ const submitSignature = async () => {
   isSubmitting.value = false
   showConfirmation()
   enableForm()
+}
+
+const reset = () => {
+  errorMessage.value = ''
+  form.file = null
+  fileHash.value = null
+  isComplete.value = false
+  resetState()
 }
 
 Bus.on(Bus.eventList.openModal, reset)
@@ -213,7 +207,7 @@ Bus.on(Bus.eventList.openModal, reset)
         </div>
       </div>
       <app-btn
-        v-if="isSignerInListWithoutSignature && !isComplete"
+        v-if="!isSignedByCurrentSigner && !isComplete"
         :class="[
           'doc-verification-form__button',
           'doc-verification-form__button--signer',
@@ -242,7 +236,7 @@ Bus.on(Bus.eventList.openModal, reset)
       </app-btn>
     </div>
     <div v-else>
-      <file-field v-model="form.file" />
+      <file-field v-model="form.file" :accept="fileMIMETypes.join(', ')" />
       <app-btn
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"

@@ -52,11 +52,12 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
 
   const signers = ref<Signer[]>([])
 
-  const getStampsInfo = async (fileHashes: Keccak256Hash[]) => {
-    const receipt = await _instance.value?.getStampsInfo(fileHashes)
+  const getStampInfo = async (fileHashes: Keccak256Hash) => {
+    const receipt = await _instance.value?.getStampInfo(fileHashes)
+    // console.log('receipt', receipt)
     if (receipt) {
-      docTimestamp.value = new BN(receipt[0].timestamp._hex).toNumber()
-      signers.value = receipt[0].signersInfo.map(signerInfo => ({
+      docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
+      signers.value = receipt.signersInfo.map(signerInfo => ({
         address: signerInfo.signer,
         signatureTimestamp: new BN(
           signerInfo.signatureTimestamp._hex,
@@ -65,8 +66,8 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
     }
   }
 
-  const createStamp = async (fileHash: Keccak256Hash) => {
-    return await _instance_rw.value?.createStamp(fileHash)
+  const createStamp = async (fileHash: Keccak256Hash, isSign: boolean) => {
+    return await _instance_rw.value?.createStamp(fileHash, isSign)
   }
 
   const sign = async (fileHash: Keccak256Hash) => {
@@ -80,7 +81,7 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
     init,
 
     useTimestamp,
-    getStampsInfo,
+    getStampInfo,
     createStamp,
     sign,
   }

@@ -26,6 +26,7 @@
     "close-button-text": "Ok"
   },
   "doc-creation-form": {
+    "checkbox-is-sign": "Sign at once by current account",
     "submit-button-text": "Create Document",
     "reset-button-text": "Create Another Document",
     "please-wait-msg": "Please, wait a moment...",
@@ -46,7 +47,8 @@
     "message-instead-timestamp": "The document has not been signed yet",
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
-    "error-default": "Something went wrong"
+    "error-default": "Something went wrong",
+    "error-doc-not-found": "This document has not been uploaded yet"
   },
   "file-field": {
     "title": "Select a file or drag and drop here",
@@ -89,9 +91,5 @@
     "default-message-warning": "Something you are doing is not recommended",
     "default-message-info": "Something is happening. Just want you to know that",
     "default-message-default": "Just a message"
-  },
-  "timestamp-contract": {
-    "error-doc-not-found": "This document has not been uploaded yet ",
-    "error-default": "Something went wrong"
   }
 }

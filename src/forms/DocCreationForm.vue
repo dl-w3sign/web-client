@@ -41,6 +41,11 @@
     </div>
     <div v-else>
       <file-field v-model="form.file" :accept="fileMIMETypes.join(', ')" />
+      <checkbox-field
+        class="doc-creation-form__checkbox"
+        v-model="form.isSign"
+        :label="$t('doc-creation-form.checkbox-is-sign')"
+      />
       <app-btn
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
@@ -74,15 +79,11 @@ import {
   BUTTON_STATES,
   ETHERS_ERROR_CODES,
 } from '@/enums'
-import { FileField, TextField } from '@/fields'
+import { FileField, TextField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { errors } from '@/errors'
-
-type Form = {
-  file: File | null
-}
 
 const emit = defineEmits<{
   (event: 'complete'): void
@@ -113,8 +114,9 @@ const fileMIMETypes = ['image/jpeg', 'image/png', 'application/pdf']
 const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
-const form: Form = reactive({
-  file: null,
+const form = reactive({
+  file: null as File | null,
+  isSign: false,
 })
 
 const { isFieldsValid } = useFormValidation(form, {
@@ -141,6 +143,7 @@ const reset = () => {
   fileHash.value = null
 
   form.file = null
+  form.isSign = false
 
   isConfirmationShown.value = false
   isFailureShown.value = false
@@ -161,7 +164,10 @@ const submit = async () => {
       }
     }
 
-    await timestampContractInstance.value?.createStamp(fileHash.value)
+    await timestampContractInstance.value?.createStamp(
+      fileHash.value,
+      form.isSign,
+    )
 
     showConfirmation()
     emit('complete')
@@ -192,6 +198,10 @@ Bus.on(Bus.eventList.openModal, reset)
 <style lang="scss" scoped>
 .doc-creation-form {
   width: toRem(523);
+}
+
+.doc-creation-form__checkbox {
+  margin-top: toRem(20);
 }
 
 .doc-creation-form__button {

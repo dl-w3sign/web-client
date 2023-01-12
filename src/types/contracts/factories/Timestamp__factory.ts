@@ -136,6 +136,11 @@ const _abi = [
         name: "stampHash_",
         type: "bytes32",
       },
+      {
+        internalType: "bool",
+        name: "isSign_",
+        type: "bool",
+      },
     ],
     name: "createStamp",
     outputs: [],
@@ -164,12 +169,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32[]",
-        name: "stampHashes_",
-        type: "bytes32[]",
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
       },
     ],
-    name: "getStampsInfo",
+    name: "getStampInfo",
     outputs: [
       {
         components: [
@@ -201,9 +206,86 @@ const _abi = [
             type: "tuple[]",
           },
         ],
-        internalType: "struct ITimeStamping.DetailedStampInfo[]",
-        name: "detailedStampsInfo_",
-        type: "tuple[]",
+        internalType: "struct ITimeStamping.DetailedStampInfo",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "offset_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "limit_",
+        type: "uint256",
+      },
+    ],
+    name: "getStampInfoWithPagination",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "timestamp",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32",
+            name: "stampHash",
+            type: "bytes32",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "signer",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "signatureTimestamp",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ITimeStamping.SignerInfo[]",
+            name: "signersInfo",
+            type: "tuple[]",
+          },
+        ],
+        internalType: "struct ITimeStamping.DetailedStampInfo",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+    ],
+    name: "getStampSignersCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
