@@ -1,3 +1,17 @@
+<template>
+  <button
+    class="app-button"
+    :class="[
+      size ? `app-button--${size}` : '',
+      state ? `app-button--${state}` : '',
+      preset ? `app-button--${preset}` : '',
+    ]"
+    :disabled="state === 'not-allowed' || state === 'waiting'"
+  >
+    <slot>{{ text }}</slot>
+  </button>
+</template>
+
 <script lang="ts" setup>
 import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
 
@@ -16,20 +30,6 @@ withDefaults(
   },
 )
 </script>
-
-<template>
-  <button
-    class="app-button"
-    :class="[
-      size ? `app-button--${size}` : '',
-      state ? `app-button--${state}` : '',
-      preset ? `app-button--${preset}` : '',
-    ]"
-    :disabled="state === 'not-allowed' || state === 'waiting'"
-  >
-    <slot>{{ text }}</slot>
-  </button>
-</template>
 
 <style lang="scss" scoped>
 .app-button {

@@ -1,3 +1,49 @@
+<template>
+  <div class="file-field">
+    <div v-if="modelValue" class="file-field__file-info">
+      <icon class="file-field__file-icon" :name="getFileIconName(modelValue)" />
+      <h5 class="file-field__file-name">
+        {{ modelValue.name }}
+      </h5>
+      <button
+        v-if="!isReadonly"
+        class="file-field__cancel-button"
+        @click.prevent="cancelFile"
+      >
+        <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
+      </button>
+    </div>
+    <div
+      v-else-if="!isReadonly"
+      :class="[
+        'file-field__drop-zone',
+        isOverDropZone ? 'file-field__drop-zone--active' : '',
+      ]"
+    >
+      <label
+        ref="dropZone"
+        class="file-field__drop-zone-label"
+        @click="openFileDialog"
+      />
+      <div v-show="!isOverDropZone" class="file-field__not-drag-block">
+        <icon class="file-field__icon" :name="$icons.cloudUpload" />
+        <h6 class="file-field__title">
+          {{ $t('file-field.title') }}
+        </h6>
+        <p class="file-field__require">
+          {{ $t('file-field.require') }}
+        </p>
+        <button class="file-field__open-button" @click.prevent="openFileDialog">
+          {{ $t('file-field.label') }}
+        </button>
+      </div>
+      <div v-show="isOverDropZone" class="file-field__drag-block">
+        <icon class="file-field__drag-icon" :name="$icons.cloudUploadActive" />
+      </div>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { Icon } from '@/common'
 import { useContext } from '@/composables'
@@ -78,52 +124,6 @@ watch(
   { deep: true },
 )
 </script>
-
-<template>
-  <div class="file-field">
-    <div v-if="modelValue" class="file-field__file-info">
-      <icon class="file-field__file-icon" :name="getFileIconName(modelValue)" />
-      <h5 class="file-field__file-name">
-        {{ modelValue.name }}
-      </h5>
-      <button
-        v-if="!isReadonly"
-        class="file-field__cancel-button"
-        @click.prevent="cancelFile"
-      >
-        <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
-      </button>
-    </div>
-    <div
-      v-else-if="!isReadonly"
-      :class="[
-        'file-field__drop-zone',
-        isOverDropZone ? 'file-field__drop-zone--active' : '',
-      ]"
-    >
-      <label
-        ref="dropZone"
-        class="file-field__drop-zone-label"
-        @click="openFileDialog"
-      />
-      <div v-show="!isOverDropZone" class="file-field__not-drag-block">
-        <icon class="file-field__icon" :name="$icons.cloudUpload" />
-        <h6 class="file-field__title">
-          {{ $t('file-field.title') }}
-        </h6>
-        <p class="file-field__require">
-          {{ $t('file-field.require') }}
-        </p>
-        <button class="file-field__open-button" @click.prevent="openFileDialog">
-          {{ $t('file-field.label') }}
-        </button>
-      </div>
-      <div v-show="isOverDropZone" class="file-field__drag-block">
-        <icon class="file-field__drag-icon" :name="$icons.cloudUploadActive" />
-      </div>
-    </div>
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .file-field__file-info {

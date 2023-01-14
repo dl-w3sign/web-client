@@ -1,28 +1,3 @@
-<script lang="ts" setup>
-import { AppButton, Icon } from '@/common'
-import { UseProvider, useContext } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
-import { computed, inject } from 'vue'
-
-const { $config } = useContext()
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-const startButtonState = computed<BUTTON_STATES | undefined>(() => {
-  if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
-  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
-  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
-  else return undefined
-})
-
-const connectOrReferToInstallMetamask = async () => {
-  if (web3Provider?.selectedProvider.value) {
-    await web3Provider.connect()
-    await web3Provider.switchChain($config.CHAIN_ID)
-  } else {
-    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
-  }
-}
-</script>
-
 <template>
   <div class="main-page">
     <div class="main-page__welcome">
@@ -53,6 +28,31 @@ const connectOrReferToInstallMetamask = async () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { AppButton, Icon } from '@/common'
+import { UseProvider, useContext } from '@/composables'
+import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
+import { computed, inject } from 'vue'
+
+const { $config } = useContext()
+const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+const startButtonState = computed<BUTTON_STATES | undefined>(() => {
+  if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
+  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
+  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
+  else return undefined
+})
+
+const connectOrReferToInstallMetamask = async () => {
+  if (web3Provider?.selectedProvider.value) {
+    await web3Provider.connect()
+    await web3Provider.switchChain($config.CHAIN_ID)
+  } else {
+    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .main-page {

@@ -1,3 +1,34 @@
+<template>
+  <div class="input-field">
+    <label v-if="label" class="input-field__label" :for="`input-field--${uid}`">
+      {{ label }}
+    </label>
+    <div class="input-field__input-wrapper">
+      <input
+        class="input-field__input"
+        :class="[
+          isReadonly ? 'input-field__input--readonly' : '',
+          isCopied ? 'input-field__input--copied' : '',
+          rightIcon ? 'input-field__input--with-right-icon' : '',
+        ]"
+        :id="`input-field--${uid}`"
+        :readonly="isReadonly || isCopied"
+        :placeholder="placeholder"
+        :value="modelValue"
+        @input="updateModelValue"
+      />
+      <app-button
+        v-if="isCopied"
+        class="input-field__copy-button"
+        @click.prevent="copyContent"
+      >
+        <icon class="input-field__icon" :name="$icons.clipboardCopy" />
+      </app-button>
+      <icon v-else-if="rightIcon" :name="rightIcon" class="input-field__icon" />
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { Icon, AppButton } from '@/common'
 import { getCurrentInstance } from 'vue'
@@ -37,37 +68,6 @@ const copyContent = () => {
   copy(props.modelValue)
 }
 </script>
-
-<template>
-  <div class="input-field">
-    <label v-if="label" class="input-field__label" :for="`input-field--${uid}`">
-      {{ label }}
-    </label>
-    <div class="input-field__input-wrapper">
-      <input
-        class="input-field__input"
-        :class="[
-          isReadonly ? 'input-field__input--readonly' : '',
-          isCopied ? 'input-field__input--copied' : '',
-          rightIcon ? 'input-field__input--with-right-icon' : '',
-        ]"
-        :id="`input-field--${uid}`"
-        :readonly="isReadonly || isCopied"
-        :placeholder="placeholder"
-        :value="modelValue"
-        @input="updateModelValue"
-      />
-      <app-button
-        v-if="isCopied"
-        class="input-field__copy-button"
-        @click.prevent="copyContent"
-      >
-        <icon class="input-field__icon" :name="$icons.clipboardCopy" />
-      </app-button>
-      <icon v-else-if="rightIcon" :name="rightIcon" class="input-field__icon" />
-    </div>
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .input-field__label {

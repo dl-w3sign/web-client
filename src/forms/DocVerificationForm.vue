@@ -1,3 +1,110 @@
+<template>
+  <form class="doc-verification-form">
+    <div v-if="isSubmitting" class="doc-verification-form__loader">
+      <spinner />
+      <p class="doc-verification-form__please-wait-msg">
+        {{ $t('doc-verification-form.please-wait-msg') }}
+      </p>
+    </div>
+    <div v-else-if="isConfirmationShown">
+      <icon
+        class="doc-verification-form__confirmation-icon"
+        :name="$icons.confirmation"
+      />
+      <p class="doc-verification-form__success-msg">
+        {{ $t('doc-verification-form.success-msg') }}
+      </p>
+      <input-field
+        :model-value="fileHash || ''"
+        :is-copied="true"
+        :label="$t('doc-verification-form.document-hash-label')"
+      />
+      <div class="doc-verification-form__timestamp-info">
+        <p class="doc-verification-form__timestamp-title">
+          {{ $t('doc-verification-form.doc-timestamp-title') }}
+        </p>
+        <p class="doc-verification-form__timestamp">
+          {{
+            formatTimestamp(timestampContractInstance?.docTimestamp.value || 0)
+          }}
+        </p>
+      </div>
+      <div v-if="timestampContractInstance?.signers.value.length">
+        <h5 class="doc-verification-form__list-title">
+          {{ $t('doc-verification-form.list-title') }}
+        </h5>
+        <div
+          class="doc-verification-form__signer"
+          v-for="signer in timestampContractInstance?.signers.value"
+          :key="signer.address"
+        >
+          <input-field
+            :model-value="signer.address"
+            :is-readonly="true"
+            :right-icon="
+              signer.signatureTimestamp ? $icons.checkCircle : undefined
+            "
+          />
+          <div class="doc-verification-form__timestamp-info">
+            <p
+              class="doc-verification-form__timestamp-title"
+              v-if="signer.signatureTimestamp"
+            >
+              {{ $t('doc-verification-form.signature-timestamp-title') }}
+            </p>
+            <p class="doc-verification-form__timestamp">
+              {{ formatTimestamp(signer.signatureTimestamp || 0) }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <app-button
+        v-if="!isSignedByCurrentSigner && !isComplete"
+        :class="[
+          'doc-verification-form__button',
+          'doc-verification-form__button--signer',
+        ]"
+        :preset="BUTTON_PRESETS.primary"
+        @click.prevent="submitSignature"
+      >
+        {{ $t('doc-verification-form.sign-button-text') }}
+      </app-button>
+    </div>
+    <div v-else-if="isFailureShown">
+      <file-field :model-value="form.file" :is-readonly="true" />
+      <div class="doc-verification-form__note-error">
+        <icon
+          class="doc-verification-form__note-error-icon"
+          :name="$icons.exclamationCircle"
+        />
+        {{ errorMessage }}
+      </div>
+      <app-button
+        class="doc-verification-form__button"
+        :preset="BUTTON_PRESETS.primary"
+        @click.prevent="reset"
+      >
+        {{ $t('doc-verification-form.reset-button-text') }}
+      </app-button>
+    </div>
+    <div v-else>
+      <file-field v-model="form.file" />
+      <app-button
+        class="doc-verification-form__button"
+        :preset="BUTTON_PRESETS.primary"
+        :state="
+          isFormDisabled || !isFormValid()
+            ? BUTTON_STATES.noneEvents
+            : undefined
+        "
+        @click.prevent="submitVerification"
+      >
+        {{ $t('doc-verification-form.submit-button-text') }}
+      </app-button>
+    </div>
+  </form>
+</template>
+
 <script lang="ts" setup>
 import { AppButton, Spinner, Icon } from '@/common'
 import {
@@ -138,113 +245,6 @@ const reset = () => {
 
 Bus.on(Bus.eventList.openModal, reset)
 </script>
-
-<template>
-  <form class="doc-verification-form">
-    <div v-if="isSubmitting" class="doc-verification-form__loader">
-      <spinner />
-      <p class="doc-verification-form__please-wait-msg">
-        {{ $t('doc-verification-form.please-wait-msg') }}
-      </p>
-    </div>
-    <div v-else-if="isConfirmationShown">
-      <icon
-        class="doc-verification-form__confirmation-icon"
-        :name="$icons.confirmation"
-      />
-      <p class="doc-verification-form__success-msg">
-        {{ $t('doc-verification-form.success-msg') }}
-      </p>
-      <input-field
-        :model-value="fileHash || ''"
-        :is-copied="true"
-        :label="$t('doc-verification-form.document-hash-label')"
-      />
-      <div class="doc-verification-form__timestamp-info">
-        <p class="doc-verification-form__timestamp-title">
-          {{ $t('doc-verification-form.doc-timestamp-title') }}
-        </p>
-        <p class="doc-verification-form__timestamp">
-          {{
-            formatTimestamp(timestampContractInstance?.docTimestamp.value || 0)
-          }}
-        </p>
-      </div>
-      <div v-if="timestampContractInstance?.signers.value.length">
-        <h5 class="doc-verification-form__list-title">
-          {{ $t('doc-verification-form.list-title') }}
-        </h5>
-        <div
-          class="doc-verification-form__signer"
-          v-for="signer in timestampContractInstance?.signers.value"
-          :key="signer.address"
-        >
-          <input-field
-            :model-value="signer.address"
-            :is-readonly="true"
-            :right-icon="
-              signer.signatureTimestamp ? $icons.checkCircle : undefined
-            "
-          />
-          <div class="doc-verification-form__timestamp-info">
-            <p
-              class="doc-verification-form__timestamp-title"
-              v-if="signer.signatureTimestamp"
-            >
-              {{ $t('doc-verification-form.signature-timestamp-title') }}
-            </p>
-            <p class="doc-verification-form__timestamp">
-              {{ formatTimestamp(signer.signatureTimestamp || 0) }}
-            </p>
-          </div>
-        </div>
-      </div>
-      <app-button
-        v-if="!isSignedByCurrentSigner && !isComplete"
-        :class="[
-          'doc-verification-form__button',
-          'doc-verification-form__button--signer',
-        ]"
-        :preset="BUTTON_PRESETS.primary"
-        @click.prevent="submitSignature"
-      >
-        {{ $t('doc-verification-form.sign-button-text') }}
-      </app-button>
-    </div>
-    <div v-else-if="isFailureShown">
-      <file-field :model-value="form.file" :is-readonly="true" />
-      <div class="doc-verification-form__note-error">
-        <icon
-          class="doc-verification-form__note-error-icon"
-          :name="$icons.exclamationCircle"
-        />
-        {{ errorMessage }}
-      </div>
-      <app-button
-        class="doc-verification-form__button"
-        :preset="BUTTON_PRESETS.primary"
-        @click.prevent="reset"
-      >
-        {{ $t('doc-verification-form.reset-button-text') }}
-      </app-button>
-    </div>
-    <div v-else>
-      <file-field v-model="form.file" />
-      <app-button
-        class="doc-verification-form__button"
-        :preset="BUTTON_PRESETS.primary"
-        :state="
-          isFormDisabled || !isFormValid()
-            ? BUTTON_STATES.noneEvents
-            : undefined
-        "
-        @click.prevent="submitVerification"
-      >
-        {{ $t('doc-verification-form.submit-button-text') }}
-      </app-button>
-    </div>
-  </form>
-</template>
 
 <style lang="scss" scoped>
 .doc-verification-form {

@@ -1,6 +1,6 @@
 {
-  "name": "vue-vite-template",
-  "short_name": "vue-vite-template",
+  "name": "time-stamp-service",
+  "short_name": "time-stamp-service",
   "icons": [
     {
       "src": "/branding/android-chrome-192x192.png",

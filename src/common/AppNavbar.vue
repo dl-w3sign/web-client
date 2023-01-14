@@ -1,29 +1,3 @@
-<script lang="ts" setup>
-import { ConnectEthereum } from '@/common'
-import { UseProvider } from '@/composables'
-import { APP_KEYS } from '@/enums'
-import { DocCreationModal, DocVerificationModal } from '@/modals'
-import { ref, inject } from 'vue'
-
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-
-const isDocCreationModalShown = ref(false)
-const updateDocCreationModalShow = (isShown: boolean) => {
-  isDocCreationModalShown.value = isShown
-}
-const showDocCreationModal = () => {
-  isDocCreationModalShown.value = true
-}
-
-const isDocVerificationModalShown = ref(false)
-const updateDocVerificationModalShow = (isShown: boolean) => {
-  isDocVerificationModalShown.value = isShown
-}
-const showDocVerificationModal = () => {
-  isDocVerificationModalShown.value = true
-}
-</script>
-
 <template>
   <header class="app-navbar">
     <router-link to="/" class="app-navbar__logo">
@@ -71,6 +45,32 @@ const showDocVerificationModal = () => {
     />
   </header>
 </template>
+
+<script lang="ts" setup>
+import { ConnectEthereum } from '@/common'
+import { UseProvider } from '@/composables'
+import { APP_KEYS } from '@/enums'
+import { DocCreationModal, DocVerificationModal } from '@/modals'
+import { ref, inject } from 'vue'
+
+const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+
+const isDocCreationModalShown = ref(false)
+const updateDocCreationModalShow = (isShown: boolean) => {
+  isDocCreationModalShown.value = isShown
+}
+const showDocCreationModal = () => {
+  isDocCreationModalShown.value = true
+}
+
+const isDocVerificationModalShown = ref(false)
+const updateDocVerificationModalShow = (isShown: boolean) => {
+  isDocVerificationModalShown.value = isShown
+}
+const showDocVerificationModal = () => {
+  isDocVerificationModalShown.value = true
+}
+</script>
 
 <style lang="scss" scoped>
 .app-navbar {

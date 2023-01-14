@@ -1,3 +1,16 @@
+<template>
+  <app-button
+    class="connect-ethereum__connect-button"
+    :size="BUTTON_SIZES.large"
+    :state="buttonState"
+    :preset="BUTTON_PRESETS.genius"
+    @click.prevent="connectOrReferToInstallMetamask"
+  >
+    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
+    {{ buttonText }}
+  </app-button>
+</template>
+
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
 import { AppButton, Icon } from '@/common'
@@ -40,19 +53,6 @@ const connectOrReferToInstallMetamask = async () => {
   }
 }
 </script>
-
-<template>
-  <app-button
-    class="connect-ethereum__connect-button"
-    :size="BUTTON_SIZES.large"
-    :state="buttonState"
-    :preset="BUTTON_PRESETS.genius"
-    @click.prevent="connectOrReferToInstallMetamask"
-  >
-    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
-    {{ buttonText }}
-  </app-button>
-</template>
 
 <style lang="scss" scoped>
 .connect-ethereum__connect-button {

@@ -1,3 +1,25 @@
+<template>
+  <modal v-slot="{ close }">
+    <div class="doc-creation-modal">
+      <h3 class="doc-creation-modal__title">
+        {{ $t('doc-creation-modal.title') }}
+      </h3>
+      <doc-creation-form
+        class="doc-creation-modal__form"
+        @complete="showCloseButton"
+      />
+      <app-button
+        v-show="isCloseButtonShown"
+        :preset="BUTTON_PRESETS.primary"
+        class="doc-creation-modal__close-button"
+        @click.prevent="close"
+      >
+        {{ $t('doc-creation-modal.close-button-text') }}
+      </app-button>
+    </div>
+  </modal>
+</template>
+
 <script lang="ts" setup>
 import { Modal, AppButton } from '@/common'
 import { IMAGE_SOURCES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
@@ -39,28 +61,6 @@ const reset = () => {
 
 Bus.on(Bus.eventList.openModal, reset)
 </script>
-
-<template>
-  <modal v-slot="{ close }">
-    <div class="doc-creation-modal">
-      <h3 class="doc-creation-modal__title">
-        {{ $t('doc-creation-modal.title') }}
-      </h3>
-      <doc-creation-form
-        class="doc-creation-modal__form"
-        @complete="showCloseButton"
-      />
-      <app-button
-        v-show="isCloseButtonShown"
-        :preset="BUTTON_PRESETS.primary"
-        class="doc-creation-modal__close-button"
-        @click.prevent="close"
-      >
-        {{ $t('doc-creation-modal.close-button-text') }}
-      </app-button>
-    </div>
-  </modal>
-</template>
 
 <style lang="scss">
 .doc-creation-modal__form {

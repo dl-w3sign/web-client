@@ -1,3 +1,16 @@
+<template>
+  <div v-if="isAppInitialized" class="app__wrapper" ref="appWrapper">
+    <div class="app__scroll">
+      <app-navbar class="app__navbar" />
+      <router-view v-slot="{ Component, route }" v-show="isContentShown">
+        <transition :name="route.meta.transition || 'fade'" mode="out-in">
+          <component class="app__main" :is="Component" />
+        </transition>
+      </router-view>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { AppNavbar } from '@/common'
 import { useNotifications, useProvider, useContext } from '@/composables'
@@ -53,19 +66,6 @@ Bus.on(Bus.eventList.closeModal, showContent)
 
 init()
 </script>
-
-<template>
-  <div v-if="isAppInitialized" class="app__wrapper" ref="appWrapper">
-    <div class="app__scroll">
-      <app-navbar class="app__navbar" />
-      <router-view v-slot="{ Component, route }" v-show="isContentShown">
-        <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component class="app__main" :is="Component" />
-        </transition>
-      </router-view>
-    </div>
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .app__wrapper {
