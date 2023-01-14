@@ -14,7 +14,7 @@
       <p class="doc-creation-form__success-msg">
         {{ $t('doc-creation-form.success-msg') }}
       </p>
-      <text-field
+      <input-field
         :model-value="fileHash || ''"
         :is-copied="true"
         :label="$t('doc-creation-form.document-hash-label')"
@@ -31,22 +31,22 @@
           {{ errorMessage }}
         </p>
       </div>
-      <app-btn
+      <app-button
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
         @click.prevent="reset"
       >
         {{ $t('doc-creation-form.reset-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
     <div v-else>
-      <file-field v-model="form.file" :accept="fileMIMETypes.join(', ')" />
+      <file-field v-model="form.file" />
       <checkbox-field
         class="doc-creation-form__checkbox"
         v-model="form.isSign"
         :label="$t('doc-creation-form.checkbox-is-sign')"
       />
-      <app-btn
+      <app-button
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
         :state="
@@ -57,29 +57,28 @@
         @click.prevent="submit"
       >
         {{ $t('doc-creation-form.submit-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
   </form>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, computed, inject } from 'vue'
-import { Icon, AppBtn, Spinner } from '@/common'
+import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
   useForm,
   useFormValidation,
   UseProvider,
-  useTimestamp,
-  useWeb3,
+  useTimestampContract,
 } from '@/composables'
 import {
   APP_KEYS,
   BUTTON_PRESETS,
   BUTTON_STATES,
-  ETHERS_ERROR_CODES,
+  RPC_ERROR_MESSAGES,
 } from '@/enums'
-import { FileField, TextField, CheckboxField } from '@/fields'
+import { FileField, InputField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
@@ -90,12 +89,11 @@ const emit = defineEmits<{
 }>()
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-const { contractsInfo } = useWeb3()
-const { $t } = useContext()
+const { $t, $config } = useContext()
 
 const timestampContractInstance = computed(() => {
   return web3Provider
-    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
+    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
     : undefined
 })
 
@@ -110,13 +108,12 @@ const {
   enableForm,
 } = useForm()
 
-const fileMIMETypes = ['image/jpeg', 'image/png', 'application/pdf']
 const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const form = reactive({
   file: null as File | null,
-  isSign: false,
+  isSign: true,
 })
 
 const { isFieldsValid } = useFormValidation(form, {
@@ -131,23 +128,11 @@ const { isFieldsValid } = useFormValidation(form, {
 
 const getErrorMessage = (error: EthProviderRpcError): string => {
   switch (error.message) {
-    case 'execution reverted: TimeStamping: Hash collision.':
+    case RPC_ERROR_MESSAGES.hashCollision:
       return $t('doc-creation-form.error-hash-collision')
     default:
       return $t('doc-creation-form.error-default')
   }
-}
-
-const reset = () => {
-  errorMessage.value = ''
-  fileHash.value = null
-
-  form.file = null
-  form.isSign = false
-
-  isConfirmationShown.value = false
-  isFailureShown.value = false
-  isFormDisabled.value = false
 }
 
 const submit = async () => {
@@ -156,13 +141,8 @@ const submit = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      try {
-        await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
-      } catch (err) {
-        if (!err?.error) throw new errors.ProviderUserRejectedRequest()
-      }
-    }
+    if (web3Provider?.chainId.value !== $config.CHAIN_ID)
+      await web3Provider?.switchChain($config.CHAIN_ID)
 
     await timestampContractInstance.value?.createStamp(
       fileHash.value,
@@ -172,13 +152,10 @@ const submit = async () => {
     showConfirmation()
     emit('complete')
   } catch (err) {
-    if (
-      err?.code === ETHERS_ERROR_CODES.userRejectedRequest ||
-      err?.constructor === errors.ProviderUserRejectedRequest
-    ) {
+    if (err?.constructor === errors.ProviderUserRejectedRequest) {
       ErrorHandler.processWithoutFeedback(err)
     } else {
-      if (timestampContractInstance.value && err?.error) {
+      if (err?.error) {
         errorMessage.value = getErrorMessage(err?.error as EthProviderRpcError)
       } else {
         errorMessage.value = $t('doc-creation-form.error-default')
@@ -190,6 +167,18 @@ const submit = async () => {
   }
   isSubmitting.value = false
   enableForm()
+}
+
+const reset = () => {
+  errorMessage.value = ''
+  fileHash.value = null
+
+  form.file = null
+  form.isSign = true
+
+  isConfirmationShown.value = false
+  isFailureShown.value = false
+  isFormDisabled.value = false
 }
 
 Bus.on(Bus.eventList.openModal, reset)

@@ -17,7 +17,6 @@ body, #app {
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: var(--col-intense);
   color: var(--col-wet);
   min-width: toRem(1080);
 }
@@ -117,7 +116,7 @@ a {
 }
 
 ::-webkit-scrollbar {
-  width: toRem(16); // 2px to accept
+  width: toRem(8);
 }
 
 ::-webkit-scrollbar-track {

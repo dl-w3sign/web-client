@@ -20,6 +20,7 @@ interface ImportMetaEnv {
   VITE_APP_NAME: string
   VITE_APP_CHAIN_ID: string
   VITE_APP_CTR_ADDRESS_TIMESTAMP: string
+  VITE_APP_WEB3_PROVIDER_INSTALL_LINK: string
 }
 
 declare global {
@@ -29,9 +30,5 @@ declare global {
 
   interface Window {
     ethereum?: EthereumProvider
-    solflare?: {
-      isSolflare: boolean
-    }
-    solana?: unknown
   }
 }

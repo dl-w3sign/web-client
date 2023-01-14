@@ -1,5 +1,5 @@
 export { default as Icon } from './Icon.vue'
-export { default as AppBtn } from './AppBtn.vue'
+export { default as AppButton } from './AppButton.vue'
 export { default as AppNavbar } from './AppNavbar.vue'
 export { default as Notification } from './Notification.vue'
 export { default as Modal } from './Modal.vue'

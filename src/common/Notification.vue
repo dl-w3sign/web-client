@@ -46,19 +46,19 @@ export default defineComponent({
 
 .Vue-Toastification__toast {
   &--success {
-    background: var(--success-dark);
+    background: var(--col-fortunate);
   }
 
   &--error {
-    background: var(--error-dark);
+    background: var(--col-accent);
   }
 
   &--warning {
-    background: var(--warning-dark);
+    background: var(--col-primary);
   }
 
   &--info {
-    background: var(--primary-main);
+    background: var(--col-glossy);
   }
 }
 
@@ -72,6 +72,7 @@ export default defineComponent({
 .notification .notification__icon {
   max-width: toRem(48);
   max-height: toRem(48);
+  fill: var(--col-intense);
 }
 
 .notification__details {
@@ -81,10 +82,10 @@ export default defineComponent({
 }
 
 .notification__title {
-  color: var(--text-primary-invert-main);
+  color: var(--col-intense);
 }
 
 .notification__message {
-  color: var(--text-primary-invert-main);
+  color: var(--col-intense);
 }
 </style>

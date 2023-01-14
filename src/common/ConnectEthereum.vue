@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
-import { AppBtn, Icon } from '@/common'
+import { AppButton, Icon } from '@/common'
 import { useContext, UseProvider } from '@/composables'
 import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
 import { abbrCenter } from '@/helpers'
-import { config } from '@/config'
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-const { $t } = useContext()
+const { $t, $config } = useContext()
 
 const buttonState = computed<BUTTON_STATES | undefined>(() => {
   if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
@@ -33,15 +32,17 @@ const buttonText = computed<string>(() => {
 const connectOrReferToInstallMetamask = async () => {
   if (web3Provider?.selectedProvider.value) {
     await web3Provider.connect()
-    await web3Provider.switchChain(config.CHAIN_ID)
+
+    if (web3Provider.chainId.value !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
   } else {
-    window.open('https://metamask.io/download/')
+    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
   }
 }
 </script>
 
 <template>
-  <app-btn
+  <app-button
     class="connect-ethereum__connect-button"
     :size="BUTTON_SIZES.large"
     :state="buttonState"
@@ -50,7 +51,7 @@ const connectOrReferToInstallMetamask = async () => {
   >
     <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
     {{ buttonText }}
-  </app-btn>
+  </app-button>
 </template>
 
 <style lang="scss" scoped>

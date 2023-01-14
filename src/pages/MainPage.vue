@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { AppBtn, Icon } from '@/common'
-import { UseProvider } from '@/composables'
-import { config } from '@/config'
+import { AppButton, Icon } from '@/common'
+import { UseProvider, useContext } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
 import { computed, inject } from 'vue'
 
+const { $config } = useContext()
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const startButtonState = computed<BUTTON_STATES | undefined>(() => {
   if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
@@ -16,9 +16,9 @@ const startButtonState = computed<BUTTON_STATES | undefined>(() => {
 const connectOrReferToInstallMetamask = async () => {
   if (web3Provider?.selectedProvider.value) {
     await web3Provider.connect()
-    await web3Provider.switchChain(config.CHAIN_ID)
+    await web3Provider.switchChain($config.CHAIN_ID)
   } else {
-    window.open('https://metamask.io/download/')
+    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
   }
 }
 </script>
@@ -38,7 +38,7 @@ const connectOrReferToInstallMetamask = async () => {
         <p>{{ $t('main-page.description') }}</p>
       </div>
       <transition name="fade">
-        <app-btn
+        <app-button
           v-show="!web3Provider?.isConnected.value"
           class="main-page__start-button"
           :preset="BUTTON_PRESETS.primary"
@@ -48,7 +48,7 @@ const connectOrReferToInstallMetamask = async () => {
         >
           {{ $t('main-page.start-button-text') }}
           <icon class="main-page__button-icon" :name="$icons.arrowRight" />
-        </app-btn>
+        </app-button>
       </transition>
     </div>
   </div>

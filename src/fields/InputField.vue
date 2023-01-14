@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Icon, AppBtn } from '@/common'
+import { Icon, AppButton } from '@/common'
 import { getCurrentInstance } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
@@ -57,13 +57,13 @@ const copyContent = () => {
         :value="modelValue"
         @input="updateModelValue"
       />
-      <app-btn
+      <app-button
         v-if="isCopied"
         class="input-field__copy-button"
         @click.prevent="copyContent"
       >
         <icon class="input-field__icon" :name="$icons.clipboardCopy" />
-      </app-btn>
+      </app-button>
       <icon v-else-if="rightIcon" :name="rightIcon" class="input-field__icon" />
     </div>
   </div>

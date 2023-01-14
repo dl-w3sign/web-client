@@ -2,7 +2,6 @@ import { computed, ref } from 'vue'
 import { sleep } from '@/helpers'
 import { PROVIDERS, PROVIDERS_CHECKS } from '@/enums'
 import { DesignatedProvider, ProviderInstance } from '@/types'
-import { config } from '@/config'
 
 export const useWeb3 = () => {
   const providers = ref<DesignatedProvider[]>([])
@@ -71,20 +70,11 @@ export const useWeb3 = () => {
     )
   }
 
-  const contractsInfo = {
-    timestamp: {
-      chainId: config.CHAIN_ID,
-      address: config.CTR_ADDRESS_TIMESTAMP,
-    },
-  }
-
   return {
     providers,
 
     isEnabled,
 
     init,
-
-    contractsInfo,
   }
 }

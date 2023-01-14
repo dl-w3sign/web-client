@@ -1,11 +1,14 @@
 <template>
   <teleport to="#modal">
     <transition name="modal">
-      <div v-show="isShown" class="modal__wrapper" @click="onWrapperClick">
-        <div class="modal__pane-wrapper">
-          <div class="modal__pane" ref="modalPane" @click.prevent>
-            <slot :close="closeModal" />
-          </div>
+      <div
+        v-show="isShown"
+        class="modal__wrapper"
+        ref="modalWrapper"
+        @click="onWrapperClick"
+      >
+        <div class="modal__pane">
+          <slot :close="closeModal" />
         </div>
       </div>
     </transition>
@@ -33,15 +36,15 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const modalPane = ref<HTMLElement | undefined>()
+    const modalWrapper = ref<HTMLDivElement | undefined>()
 
     const closeModal = () => {
       emit(EVENTS.updateIsShown, false)
     }
 
-    const onWrapperClick = (event: Event) => {
-      if (!event.defaultPrevented && props.isCloseByClickOutside) {
-        emit(EVENTS.updateIsShown, false)
+    const onWrapperClick = (event: PointerEvent) => {
+      if (event.target === modalWrapper.value) {
+        closeModal()
         event.preventDefault()
       }
     }
@@ -56,7 +59,7 @@ export default defineComponent({
     )
 
     return {
-      modalPane,
+      modalWrapper,
 
       closeModal,
       onWrapperClick,
@@ -78,18 +81,15 @@ export default defineComponent({
   height: vh(100);
   background: var(--col-pesky);
   overflow-y: scroll;
-}
-
-.modal__pane-wrapper {
-  margin: auto;
+  padding: 4%;
 }
 
 .modal__pane {
-  margin: 8% 0;
   position: relative;
   background: var(--col-intense);
   padding: toRem(40) toRem(24) toRem(30);
   border-radius: var(--border-radius-large);
+  margin: auto;
 }
 
 .modal-enter-active,

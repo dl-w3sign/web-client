@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import {
   UseProvider,
-  Timestamp,
-  Timestamp__factory,
+  TimestampContract,
+  TimestampContract__factory,
   Keccak256Hash,
 } from '@/types'
 import { BN } from '@/utils'
@@ -12,49 +12,55 @@ type Signer = {
   signatureTimestamp: number
 }
 
-export const useTimestamp = (provider: UseProvider, address?: string) => {
-  const _instance = ref<Timestamp | undefined>()
-  const _instance_rw = ref<Timestamp | undefined>()
+export const useTimestampContract = (
+  provider: UseProvider,
+  address: string,
+) => {
+  const _instance = ref<TimestampContract | undefined>()
+  const _instance_rw = ref<TimestampContract | undefined>()
 
   if (
     address &&
     provider.currentProvider.value &&
     provider.currentSigner.value
   ) {
-    _instance.value = Timestamp__factory.connect(
+    _instance.value = TimestampContract__factory.connect(
       address,
       provider.currentProvider.value,
     )
-    _instance_rw.value = Timestamp__factory.connect(
+    _instance_rw.value = TimestampContract__factory.connect(
       address,
       provider.currentSigner.value,
     )
-  }
-
-  const init = (address: string) => {
-    if (
-      address &&
-      provider.currentProvider.value &&
-      provider.currentSigner.value
-    ) {
-      _instance.value = Timestamp__factory.connect(
-        address,
-        provider.currentProvider.value,
-      )
-      _instance_rw.value = Timestamp__factory.connect(
-        address,
-        provider.currentSigner.value,
-      )
-    }
   }
 
   const docTimestamp = ref<number>()
 
   const signers = ref<Signer[]>([])
 
-  const getStampInfo = async (fileHashes: Keccak256Hash) => {
-    const receipt = await _instance.value?.getStampInfo(fileHashes)
-    // console.log('receipt', receipt)
+  const getStampInfo = async (fileHash: Keccak256Hash) => {
+    const receipt = await _instance.value?.getStampInfo(fileHash)
+    if (receipt) {
+      docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
+      signers.value = receipt.signersInfo.map(signerInfo => ({
+        address: signerInfo.signer,
+        signatureTimestamp: new BN(
+          signerInfo.signatureTimestamp._hex,
+        ).toNumber(),
+      }))
+    }
+  }
+
+  const getStampInfoWithPagination = async (
+    fileHash: Keccak256Hash,
+    offset: number,
+    limit: number,
+  ) => {
+    const receipt = await _instance.value?.getStampInfoWithPagination(
+      fileHash,
+      offset,
+      limit,
+    )
     if (receipt) {
       docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
       signers.value = receipt.signersInfo.map(signerInfo => ({
@@ -78,10 +84,9 @@ export const useTimestamp = (provider: UseProvider, address?: string) => {
     docTimestamp,
     signers,
 
-    init,
-
-    useTimestamp,
+    useTimestampContract,
     getStampInfo,
+    getStampInfoWithPagination,
     createStamp,
     sign,
   }

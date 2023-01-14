@@ -122,26 +122,6 @@ const showDocVerificationModal = () => {
 
 .app-navbar__nav-item {
   display: inline-block;
-
-  // &:nth-of-type(1) {
-  //   &:active,
-  //   &:hover {
-  //     & ~ .app-navbar__nav-line {
-  //       left: toRem(34);
-  //       width: toRem(175.15);
-  //     }
-  //   }
-  // }
-
-  // &:nth-of-type(2) {
-  //   &:active,
-  //   &:hover {
-  //     & ~ .app-navbar__nav-line {
-  //       left: toRem(277.15);
-  //       width: toRem(167.69);
-  //     }
-  //   }
-  // }
 }
 
 .app-navbar__nav-button {

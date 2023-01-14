@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Modal, AppBtn } from '@/common'
+import { Modal, AppButton } from '@/common'
 import { IMAGE_SOURCES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
 import { DocCreationForm } from '@/forms'
 import { Bus } from '@/helpers'
@@ -50,14 +50,14 @@ Bus.on(Bus.eventList.openModal, reset)
         class="doc-creation-modal__form"
         @complete="showCloseButton"
       />
-      <app-btn
+      <app-button
         v-show="isCloseButtonShown"
         :preset="BUTTON_PRESETS.primary"
         class="doc-creation-modal__close-button"
         @click.prevent="close"
       >
         {{ $t('doc-creation-modal.close-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
   </modal>
 </template>

@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import { Icon } from '@/common'
-import { getFileIconName } from '@/helpers'
+import { useContext } from '@/composables'
+import { ErrorHandler, getFileIconName } from '@/helpers'
 import { ref, watch } from 'vue'
 import { useDropZone, useFileDialog } from '@vueuse/core'
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: File | null): void
+}>()
 
 const props = withDefaults(
   defineProps<{
     modelValue: File | null
     isReadonly?: boolean
-    accept?: string
   }>(),
   {
     accept: '',
@@ -16,14 +20,25 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: File | null): void
-  (e: 'blur'): void
-}>()
+const checkType = (files: FileList | File[]) => {
+  const fileMIMEType = files[0].type
+  if (!$config.FILE_MIME_TYPES.find(type => type === fileMIMEType)) {
+    throw new Error('Uncorrect format')
+  }
+}
+
+const { $config } = useContext()
 
 const dropZone = ref<HTMLLabelElement>()
 const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
-  emit('blur')
+  if (files) {
+    try {
+      checkType(files)
+    } catch (error) {
+      ErrorHandler.process(error, 'Uncorrect file type')
+      return
+    }
+  }
   props.modelValue
     ? emit('update:modelValue', files?.length ? files[0] : props.modelValue)
     : emit('update:modelValue', files?.length ? files[0] : null)
@@ -31,7 +46,7 @@ const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
 
 const fileDialog = useFileDialog({
   multiple: false,
-  accept: props.accept,
+  accept: $config.FILE_MIME_TYPES.join(', '),
 })
 
 const openFileDialog = () => {
@@ -41,17 +56,23 @@ const openFileDialog = () => {
 
 const cancelFile = () => {
   emit('update:modelValue', null)
-  emit('blur')
 }
 
 const emitFileFromFileDialog = (fileList: FileList | null) => {
-  emit('blur')
   emit('update:modelValue', fileList?.length ? fileList[0] : null)
 }
 
 watch(
   () => fileDialog.files,
   newValue => {
+    if (newValue.value) {
+      try {
+        checkType(newValue.value)
+      } catch (err) {
+        ErrorHandler.process(err, 'Uncorrect file type')
+        return
+      }
+    }
     emitFileFromFileDialog(newValue.value)
   },
   { deep: true },
@@ -80,7 +101,11 @@ watch(
         isOverDropZone ? 'file-field__drop-zone--active' : '',
       ]"
     >
-      <label ref="dropZone" class="file-field__drop-zone-label" />
+      <label
+        ref="dropZone"
+        class="file-field__drop-zone-label"
+        @click="openFileDialog"
+      />
       <div v-show="!isOverDropZone" class="file-field__not-drag-block">
         <icon class="file-field__icon" :name="$icons.cloudUpload" />
         <h6 class="file-field__title">
@@ -146,6 +171,7 @@ watch(
   width: toRem(523);
   border-radius: var(--border-radius);
 
+  &:hover,
   &--active {
     background: url('/branding/background-file-field-drop-zone-active.png');
   }
@@ -219,5 +245,6 @@ watch(
   right: 0;
   bottom: 0;
   left: 0;
+  cursor: pointer;
 }
 </style>

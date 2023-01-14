@@ -56,8 +56,7 @@
     "label": "Select file"
   },
   "validations": {
-    "field-error_required": "Please fill out this field",
-    "field-error_email": "Field must be a valid email"
+    "field-error_required": "Please fill out this field"
   },
   "errors": {
     "default": "Something went wrong",

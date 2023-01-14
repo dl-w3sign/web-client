@@ -44,10 +44,10 @@ $media-breakpoints: (
 }
 
 @mixin field-label {
-  font-size: var(--field-label-font-size);
-  line-height: var(--field-label-line-height);
-  color: var(--field-label);
-  transition: color var(--field-transition-duration) ease;
+  font-size: toRem(14);
+  line-height: 1.18;
+  color: var(--col-wet);
+  transition: color var(--transition-duration) ease;
   margin-bottom: toRem(8);
 }
 
@@ -71,16 +71,6 @@ $media-breakpoints: (
   transition: color var(--transition-duration) ease;
   transition-property: opacity, color;
   padding: 0;
-}
-
-@mixin field-error {
-  overflow: hidden;
-  color: var(--field-error);
-  font-size: toRem(10);
-  line-height: 1.4;
-  transition: var(--field-transition-duration) ease;
-  transition-property: opacity, color, font-size, transform;
-  margin-top: toRem(4);
 }
 
 @mixin field-readonly {

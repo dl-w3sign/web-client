@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { AppNavbar } from '@/common'
-import { useNotifications, useProvider } from '@/composables'
+import { useNotifications, useProvider, useContext } from '@/composables'
 import { IMAGE_SOURCES, APP_KEYS } from '@/enums'
 import { ErrorHandler, Bus } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, provide } from 'vue'
-import { config } from '@config'
 import { DesignatedProvider } from '@/types'
+import { ref, provide } from 'vue'
 
 const web3Store = useWeb3ProvidersStore()
 const web3Provider = useProvider()
+const { $config } = useContext()
 
 const isAppInitialized = ref(false)
 const init = async () => {
@@ -21,7 +21,7 @@ const init = async () => {
     if (web3Store.metamask)
       web3Provider.init(web3Store.metamask as DesignatedProvider)
 
-    document.title = config.APP_NAME
+    document.title = $config.APP_NAME
   } catch (error) {
     ErrorHandler.process(error)
   }

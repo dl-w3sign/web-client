@@ -56,7 +56,7 @@ export declare namespace ITimeStamping {
   };
 }
 
-export interface TimestampInterface extends utils.Interface {
+export interface TimestampContractInterface extends utils.Interface {
   functions: {
     "__TimeStamping_init()": FunctionFragment;
     "createStamp(bytes32,bool)": FunctionFragment;
@@ -276,12 +276,12 @@ export type UpgradedEvent = TypedEvent<[string], UpgradedEventObject>;
 
 export type UpgradedEventFilter = TypedEventFilter<UpgradedEvent>;
 
-export interface Timestamp extends BaseContract {
+export interface TimestampContract extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TimestampInterface;
+  interface: TimestampContractInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,

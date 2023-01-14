@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { AppBtn, Spinner, Icon } from '@/common'
+import { AppButton, Spinner, Icon } from '@/common'
 import {
   useForm,
   useFormValidation,
-  useWeb3,
-  useTimestamp,
+  useTimestampContract,
   useContext,
 } from '@/composables'
 import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
-import { FileField, TextField } from '@/fields'
+import { FileField, InputField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
 import { Keccak256Hash, UseProvider } from '@/types'
 import { required, maxValue } from '@/validators'
@@ -26,8 +25,7 @@ const form = reactive({
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 
-const { contractsInfo } = useWeb3()
-const { $t } = useContext()
+const { $t, $config } = useContext()
 const { isFormValid } = useFormValidation(form, {
   file: {
     required,
@@ -50,14 +48,13 @@ const {
   resetState,
 } = useForm()
 
-const fileMIMETypes = ['image/jpeg', 'image/png', 'application/pdf']
 const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 const isComplete = ref(false)
 
 const timestampContractInstance = computed(() => {
   return web3Provider
-    ? useTimestamp(web3Provider, contractsInfo.timestamp.address)
+    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
     : undefined
 })
 const isSignedByCurrentSigner = computed(() =>
@@ -80,16 +77,11 @@ const submitVerification = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      try {
-        await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
-      } catch (err) {
-        if (!err?.error) throw new errors.ProviderUserRejectedRequest()
-      }
-    }
+    if (web3Provider?.chainId !== $config.CHAIN_ID)
+      await web3Provider?.switchChain($config.CHAIN_ID)
 
     await timestampContractInstance.value?.getStampInfo(fileHash.value)
-    if (!timestampContractInstance?.value?.docTimestamp.value)
+    if (timestampContractInstance?.value?.docTimestamp.value === 0)
       throw new Error('Document not found')
 
     showConfirmation()
@@ -98,7 +90,7 @@ const submitVerification = async () => {
       isComplete.value = true
     }
   } catch (err) {
-    if (!timestampContractInstance?.value?.docTimestamp.value) {
+    if (timestampContractInstance?.value?.docTimestamp.value === 0) {
       errorMessage.value = $t('doc-verification-form.error-doc-not-found')
     } else {
       errorMessage.value = $t('doc-verification-form.error-default')
@@ -120,9 +112,8 @@ const submitSignature = async () => {
   isSubmitting.value = true
   isConfirmationShown.value = false
   try {
-    if (web3Provider?.chainId.value !== contractsInfo.timestamp.chainId) {
-      await web3Provider?.switchChain(contractsInfo.timestamp.chainId)
-    }
+    if (web3Provider?.chainId !== $config.CHAIN_ID)
+      await web3Provider?.switchChain($config.CHAIN_ID)
 
     await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
 
@@ -164,7 +155,7 @@ Bus.on(Bus.eventList.openModal, reset)
       <p class="doc-verification-form__success-msg">
         {{ $t('doc-verification-form.success-msg') }}
       </p>
-      <text-field
+      <input-field
         :model-value="fileHash || ''"
         :is-copied="true"
         :label="$t('doc-verification-form.document-hash-label')"
@@ -179,34 +170,36 @@ Bus.on(Bus.eventList.openModal, reset)
           }}
         </p>
       </div>
-      <h5 class="doc-verification-form__list-title">
-        {{ $t('doc-verification-form.list-title') }}
-      </h5>
-      <div
-        class="doc-verification-form__signer"
-        v-for="signer in timestampContractInstance?.signers.value"
-        :key="signer.address"
-      >
-        <text-field
-          :model-value="signer.address"
-          :is-readonly="true"
-          :right-icon="
-            signer.signatureTimestamp ? $icons.checkCircle : undefined
-          "
-        />
-        <div class="doc-verification-form__timestamp-info">
-          <p
-            class="doc-verification-form__timestamp-title"
-            v-if="signer.signatureTimestamp"
-          >
-            {{ $t('doc-verification-form.signature-timestamp-title') }}
-          </p>
-          <p class="doc-verification-form__timestamp">
-            {{ formatTimestamp(signer.signatureTimestamp || 0) }}
-          </p>
+      <div v-if="timestampContractInstance?.signers.value.length">
+        <h5 class="doc-verification-form__list-title">
+          {{ $t('doc-verification-form.list-title') }}
+        </h5>
+        <div
+          class="doc-verification-form__signer"
+          v-for="signer in timestampContractInstance?.signers.value"
+          :key="signer.address"
+        >
+          <input-field
+            :model-value="signer.address"
+            :is-readonly="true"
+            :right-icon="
+              signer.signatureTimestamp ? $icons.checkCircle : undefined
+            "
+          />
+          <div class="doc-verification-form__timestamp-info">
+            <p
+              class="doc-verification-form__timestamp-title"
+              v-if="signer.signatureTimestamp"
+            >
+              {{ $t('doc-verification-form.signature-timestamp-title') }}
+            </p>
+            <p class="doc-verification-form__timestamp">
+              {{ formatTimestamp(signer.signatureTimestamp || 0) }}
+            </p>
+          </div>
         </div>
       </div>
-      <app-btn
+      <app-button
         v-if="!isSignedByCurrentSigner && !isComplete"
         :class="[
           'doc-verification-form__button',
@@ -216,7 +209,7 @@ Bus.on(Bus.eventList.openModal, reset)
         @click.prevent="submitSignature"
       >
         {{ $t('doc-verification-form.sign-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
     <div v-else-if="isFailureShown">
       <file-field :model-value="form.file" :is-readonly="true" />
@@ -227,17 +220,17 @@ Bus.on(Bus.eventList.openModal, reset)
         />
         {{ errorMessage }}
       </div>
-      <app-btn
+      <app-button
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"
         @click.prevent="reset"
       >
         {{ $t('doc-verification-form.reset-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
     <div v-else>
-      <file-field v-model="form.file" :accept="fileMIMETypes.join(', ')" />
-      <app-btn
+      <file-field v-model="form.file" />
+      <app-button
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"
         :state="
@@ -248,7 +241,7 @@ Bus.on(Bus.eventList.openModal, reset)
         @click.prevent="submitVerification"
       >
         {{ $t('doc-verification-form.submit-button-text') }}
-      </app-btn>
+      </app-button>
     </div>
   </form>
 </template>

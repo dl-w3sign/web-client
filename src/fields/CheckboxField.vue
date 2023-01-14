@@ -6,7 +6,6 @@
         type="checkbox"
         :id="`checkbox-field--${uid}`"
         :checked="modelValue"
-        :disabled="isDisabled"
         @change="updateModelValue"
       />
       <div class="checkbox-field__inner">
@@ -34,11 +33,9 @@ withDefaults(
   defineProps<{
     modelValue: boolean
     label?: string
-    isDisabled: boolean
   }>(),
   {
     label: '',
-    isDisabled: false,
   },
 )
 
