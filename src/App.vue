@@ -7,16 +7,23 @@
       </transition>
     </router-view>
   </div>
+  <animation
+    v-else
+    class="app__init"
+    :animation-data="LoaderJSON"
+    :is-infinite="true"
+  />
 </template>
 
 <script lang="ts" setup>
-import { AppNavbar } from '@/common'
+import { AppNavbar, Animation } from '@/common'
 import { useNotifications, useProvider, useContext } from '@/composables'
 import { APP_KEYS } from '@/enums'
 import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
+import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
 const web3Provider = useProvider()

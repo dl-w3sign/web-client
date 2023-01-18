@@ -34,6 +34,7 @@
     "jsona": "^1.9.6",
     "lodash-es": "^4.17.21",
     "loglevel": "^1.8.0",
+    "lottie-web-vue": "^2.0.6",
     "mitt": "^3.0.0",
     "pinia": "^2.0.21",
     "postcss": "^8.4.16",
