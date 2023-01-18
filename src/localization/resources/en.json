@@ -1,8 +1,6 @@
 {
   "navbar": {
-    "logo": "TSS",
-    "create-document-button": "Create Document",
-    "verify-document-button": "Verify Document"
+    "logo": "TSS"
   },
   "connect-ethereum": {
     "connect-button-text": "Connect to MetaMask",
@@ -13,47 +11,51 @@
   },
   "main-page": {
     "welcome-beginning": "Welcome to",
-    "welcome-continuing": "Time Stamping Service",
-    "description": "You can sign a document with other counterparties and time stamp it on the blockchain and further confirm the authenticity of the document and signatures",
-    "start-button-text": "Let’s Start"
+    "welcome-continuing": "Documents Timestamping Service",
+    "description": "Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.",
+    "connect-ethereum-message": "Connect to MetaMask to start work",
+    "connected-ethereum-message": "You connected with a MetaMask!",
+    "doc-creation-card-title": "CREATE DOCUMENT",
+    "doc-creation-card-button-text": "Create document",
+    "doc-verification-card-title": "VERIFY DOCUMENT",
+    "doc-verification-card-button-text": "Verify document"
   },
   "doc-creation-modal": {
-    "title": "Document Creation",
-    "close-button-text": "Ok"
+    "title": "Document Creation"
   },
   "doc-verification-modal": {
-    "title": "Document Verification",
-    "close-button-text": "Ok"
+    "title": "Document Verification"
   },
   "doc-creation-form": {
-    "checkbox-is-sign": "Sign at once by current account",
+    "checkbox-is-sign": "Sign a document",
+    "cancel-button-text": "Cancel",
     "submit-button-text": "Create Document",
     "reset-button-text": "Create Another Document",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "Your document was successfully created",
-    "document-hash-label": "Document Hash",
     "error-default": "Something went wrong",
     "error-hash-collision": "This document has already been uploaded and sent for signatures before"
   },
   "doc-verification-form": {
+    "cancel-button-text": "Cancel",
     "submit-button-text": "Verify Document",
     "reset-button-text": "Upload Another Document",
     "sign-button-text": "Sign",
+    "exit-button-text": "Ok",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "The document was found",
     "document-hash-label": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
-    "message-instead-timestamp": "The document has not been signed yet",
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
     "error-default": "Something went wrong",
     "error-doc-not-found": "This document has not been uploaded yet"
   },
   "file-field": {
-    "title": "Select a file or drag and drop here",
-    "require": "JPG, PNG or PDF, file size no more than 10MB",
-    "label": "Select file"
+    "title": "Drag and drop files or",
+    "open-dialog-button-text": "Browse",
+    "require": "JPG, PNG, file size no more than 2 MB"
   },
   "validations": {
     "field-error_required": "Please fill out this field"

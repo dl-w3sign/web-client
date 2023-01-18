@@ -1,36 +1,23 @@
 <template>
   <form class="doc-creation-form">
-    <div v-if="isSubmitting" class="doc-creation-form__loader">
-      <spinner />
+    <div v-if="isSubmitting">
+      <spinner class="doc-creation-form__loader" />
       <p class="doc-creation-form__please-wait-msg">
         {{ $t('doc-creation-form.please-wait-msg') }}
       </p>
     </div>
     <div v-else-if="isConfirmationShown">
-      <icon
-        class="doc-creation-form__confirmation-icon"
-        :name="$icons.confirmation"
-      />
-      <p class="doc-creation-form__success-msg">
-        {{ $t('doc-creation-form.success-msg') }}
-      </p>
-      <input-field
-        :model-value="fileHash || ''"
-        :is-copied="true"
-        :label="$t('doc-creation-form.document-hash-label')"
-      />
-    </div>
-    <div v-else-if="isFailureShown">
-      <file-field v-model="form.file" :is-readonly="true" />
-      <div class="doc-creation-form__note-error">
-        <icon
-          class="doc-creation-form__note-error-icon"
-          :name="$icons.exclamationCircle"
-        />
-        <p v-if="errorMessage">
-          {{ errorMessage }}
+      <div class="doc-creation-form__note doc-creation-form__note--success">
+        <icon class="doc-creation-form__note-icon" :name="$icons.checkCircle" />
+        <p>
+          {{ $t('doc-creation-form.success-msg') }}
         </p>
       </div>
+      <input-field
+        class="doc-creation-form__doc-hash"
+        :model-value="fileHash || ''"
+        :is-copied="true"
+      />
       <app-button
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
@@ -39,25 +26,48 @@
         {{ $t('doc-creation-form.reset-button-text') }}
       </app-button>
     </div>
+    <div v-else-if="isFailureShown">
+      <file-field v-model="form.file" :is-readonly="true" />
+      <div class="doc-creation-form__note doc-creation-form__note--error">
+        <icon
+          class="doc-creation-form__note-icon"
+          :name="$icons.exclamationCircle"
+        />
+        <p v-if="errorMessage">
+          {{ errorMessage }}
+        </p>
+      </div>
+      <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
+        {{ $t('doc-creation-form.reset-button-text') }}
+      </app-button>
+    </div>
     <div v-else>
       <file-field v-model="form.file" />
       <checkbox-field
+        v-show="form.file"
         class="doc-creation-form__checkbox"
         v-model="form.isSign"
         :label="$t('doc-creation-form.checkbox-is-sign')"
       />
-      <app-button
-        class="doc-creation-form__button"
-        :preset="BUTTON_PRESETS.primary"
-        :state="
-          isFormDisabled || !isFieldsValid
-            ? BUTTON_STATES.noneEvents
-            : undefined
-        "
-        @click.prevent="submit"
-      >
-        {{ $t('doc-creation-form.submit-button-text') }}
-      </app-button>
+      <div class="doc-creation-form__buttons">
+        <app-button
+          :preset="BUTTON_PRESETS.outlineBrittle"
+          @click.prevent="cancel"
+        >
+          {{ $t('doc-creation-form.cancel-button-text') }}
+        </app-button>
+        <app-button
+          :preset="BUTTON_PRESETS.primary"
+          :state="
+            isFormDisabled || !isFieldsValid
+              ? BUTTON_STATES.noneEvents
+              : undefined
+          "
+          @click.prevent="submit"
+        >
+          {{ $t('doc-creation-form.submit-button-text') }}
+        </app-button>
+      </div>
     </div>
   </form>
 </template>
@@ -84,9 +94,14 @@ import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { errors } from '@/errors'
 
-const emit = defineEmits<{
-  (event: 'complete'): void
-}>()
+withDefaults(
+  defineProps<{
+    cancel?: () => void
+  }>(),
+  {
+    cancel: undefined,
+  },
+)
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
@@ -150,9 +165,11 @@ const submit = async () => {
     )
 
     showConfirmation()
-    emit('complete')
   } catch (err) {
-    if (err?.constructor === errors.ProviderUserRejectedRequest) {
+    if (
+      err?.constructor === errors.ProviderUserRejectedRequest ||
+      err?.code === errors.ACTION_REJECTED
+    ) {
       ErrorHandler.processWithoutFeedback(err)
     } else {
       if (err?.error) {
@@ -185,53 +202,45 @@ Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>
-.doc-creation-form {
-  width: toRem(523);
-}
-
 .doc-creation-form__checkbox {
-  margin-top: toRem(20);
+  margin-top: toRem(24);
 }
 
-.doc-creation-form__button {
-  width: 100%;
-  height: toRem(48);
-  margin-top: toRem(50);
+.doc-creation-form__buttons {
+  display: flex;
+  gap: toRem(16);
+  margin-top: toRem(24);
 }
 
 .doc-creation-form__loader {
-  margin-top: toRem(46);
+  margin: toRem(24) 0;
 }
 
 .doc-creation-form__please-wait-msg {
   text-align: center;
-  font-size: toRem(20);
-  line-height: 1.17;
-  margin: toRem(46) 0 toRem(30);
-}
-
-.doc-creation-form__confirmation-icon {
-  height: toRem(130);
-  width: toRem(130);
-  margin: 0 auto toRem(25);
-}
-
-.doc-creation-form__success-msg {
-  text-align: center;
   font-size: toRem(18);
-  line-height: toRem(22);
-  color: var(--col-alt);
-  margin-bottom: toRem(30);
+  line-height: toRem(24);
 }
 
-.doc-creation-form__note-error {
-  margin-top: toRem(20);
+.doc-creation-form__note {
+  &--success {
+    @include note-success;
+  }
 
-  @include note-error;
+  &--error {
+    margin: toRem(24) 0;
+
+    @include note-error;
+  }
 }
 
-.doc-creation-form__note-error-icon {
-  height: toRem(27);
-  width: toRem(27);
+.doc-creation-form__note-icon {
+  height: toRem(24);
+  width: toRem(24);
+  flex-shrink: 0;
+}
+
+.doc-creation-form__doc-hash {
+  margin: toRem(24) 0;
 }
 </style>

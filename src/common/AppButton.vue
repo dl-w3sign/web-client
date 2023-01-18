@@ -2,7 +2,6 @@
   <button
     class="app-button"
     :class="[
-      size ? `app-button--${size}` : '',
       state ? `app-button--${state}` : '',
       preset ? `app-button--${preset}` : '',
     ]"
@@ -13,18 +12,16 @@
 </template>
 
 <script lang="ts" setup>
-import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
+import { BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
 
 withDefaults(
   defineProps<{
     text?: string
-    size?: BUTTON_SIZES
     state?: BUTTON_STATES
     preset?: BUTTON_PRESETS
   }>(),
   {
     text: '',
-    size: undefined,
     state: undefined,
     preset: undefined,
   },
@@ -37,15 +34,11 @@ withDefaults(
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: toRem(52);
   border-radius: var(--border-radius);
   transition: var(--transition-duration);
-
-  &--large {
-    font-weight: 700;
-    font-size: toRem(20.0036);
-    line-height: toRem(23);
-    height: toRem(64);
-  }
+  font-size: toRem(16);
+  font-weight: 500;
 
   &--waiting {
     cursor: wait;
@@ -59,6 +52,21 @@ withDefaults(
     pointer-events: none;
   }
 
+  &--outline-brittle {
+    border: toRem(1) solid var(--col-brittle);
+    color: var(--col-trendy);
+    fill: var(--col-trendy);
+
+    &:not([disabled]):hover {
+      border-color: var(--col-flexible);
+    }
+
+    &:not([disabled]):active,
+    &.app-button--waiting {
+      border-color: var(--col-primary);
+    }
+  }
+
   &--primary {
     background: var(--col-primary);
     color: var(--col-intense);
@@ -68,9 +76,12 @@ withDefaults(
       background: var(--col-basic);
     }
 
-    &:not([disabled]):active,
-    &.app-button--waiting {
+    &:not([disabled]):active {
       background: var(--col-initial);
+    }
+
+    &.app-button--waiting {
+      background: var(--col-original);
     }
 
     &.app-button--none-events {

@@ -2,6 +2,7 @@
 /* stylelint-disable unit-disallowed-list */
 html {
   font-family: var(--app-font-family);
+  font-weight: var(--app-font-weight);
   overflow: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   -moz-osx-font-smoothing: grayscale;
@@ -17,21 +18,43 @@ body, #app {
   display: flex;
   flex-direction: column;
   flex: 1;
-  color: var(--col-wet);
-  min-width: toRem(1080);
+  color: var(--col-trendy);
+  min-height: vh(100);
+  background: var(--col-rich);
 }
 
 input,
 select,
 textarea {
-  background: var(--background-primary-main);
-  color: var(--text-primary-main);
-  font-family: var(--app-font-family);
+  background: var(--col-intense);
+  color: var(--col-fancy);
+  font-family: 'Inter', 'Arial', sans-serif;
   font-size: toRem(16);
+  line-height: 1.5;
   font-weight: 400;
+  padding: toRem(13) toRem(15);
+  border: none;
+  border-radius: var(--border-radius);
+
+  &:not(:read-only) {
+    border: toRem(1) solid var(--col-brittle);
+  }
+
+  &:not(:read-only):hover {
+    border-color: var(--col-flexible);
+  }
+
+  &:not(:read-only):active {
+    border-color: var(--col-primary);
+  }
 
   &:focus {
     outline: none;
+  }
+
+  &:read-only {
+    background: var(--col-great);
+    padding: toRem(16) toRem(24);
   }
 }
 
@@ -51,7 +74,6 @@ button {
   font-size: toRem(16);
   color: var(--text-primary-main);
   line-height: 1.5;
-  font-weight: 600;
   outline: 0;
   margin: 0;
   padding: 0;
@@ -81,9 +103,12 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  font-family: 'Times New Roman', 'Arial', sans-serif;
+  font-weight: 500;
+  line-height: toRem(64);
+}
+
+h1 {
+  font-size: toRem(56);
 }
 
 h2 {
@@ -91,16 +116,19 @@ h2 {
 }
 
 h3 {
-  line-height: toRem(46);
+  line-height: 1.25;
   font-size: toRem(32);
+  font-weight: 500;
 }
 
 h4 {
-  font-size: toRem(16);
+  font-size: toRem(20);
+  line-height: 1.4;
 }
 
 h5 {
-  font-size: toRem(14);
+  font-size: toRem(18);
+  line-height: toRem(24);
 }
 
 a {
@@ -124,11 +152,11 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--col-clear);
-  border-radius: toRem(10);
+  background: var(--col-brittle);
+  border-radius: var(--border-radius);
 
   &:hover {
-    background: var(--col-net);
+    background: var(--col-flexible);
   }
 }
 

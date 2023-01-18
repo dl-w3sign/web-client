@@ -1,21 +1,19 @@
 <template>
-  <div v-if="isAppInitialized" class="app__wrapper" ref="appWrapper">
-    <div class="app__scroll">
-      <app-navbar class="app__navbar" />
-      <router-view v-slot="{ Component, route }" v-show="isContentShown">
-        <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component class="app__main" :is="Component" />
-        </transition>
-      </router-view>
-    </div>
+  <div v-if="isAppInitialized">
+    <app-navbar class="app__navbar" />
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition || 'fade'" mode="out-in">
+        <component class="app__scroll" :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { AppNavbar } from '@/common'
 import { useNotifications, useProvider, useContext } from '@/composables'
-import { IMAGE_SOURCES, APP_KEYS } from '@/enums'
-import { ErrorHandler, Bus } from '@/helpers'
+import { APP_KEYS } from '@/enums'
+import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
@@ -41,60 +39,28 @@ const init = async () => {
   isAppInitialized.value = true
 }
 
-const appWrapper = ref<HTMLDivElement>()
-const setAppWrapperBackground = (url?: IMAGE_SOURCES): void => {
-  if (appWrapper.value) {
-    url
-      ? (appWrapper.value.style.backgroundImage = `url(${url})`)
-      : (appWrapper.value.style.backgroundImage = '')
-  }
-}
-
-const isContentShown = ref(true)
-const hideContent = () => {
-  isContentShown.value = false
-}
-const showContent = () => {
-  isContentShown.value = true
-}
-
 provide(APP_KEYS.web3Provider, web3Provider)
-provide(APP_KEYS.setAppWrapperBackground, setAppWrapperBackground)
-
-Bus.on(Bus.eventList.openModal, hideContent)
-Bus.on(Bus.eventList.closeModal, showContent)
 
 init()
 </script>
 
 <style lang="scss" scoped>
-.app__wrapper {
-  min-height: vh(100);
-  background-image: url('/branding/background-main.jpg');
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-  transition: background-image var(--transation-duration-slow) ease-in-out;
-  -webkit-transition: background-image var(--transation-duration-slow)
-    ease-in-out;
-}
-
-.app__scroll {
-  overflow-y: scroll;
-  height: 100vh;
-  width: 100vw;
-}
-
 .app__navbar {
   position: fixed;
   z-index: 1000;
-  margin: toRem(60) 2.365% 0;
-  width: calc(100% - 2.365% * 2);
+  width: 100%;
 }
 
-.app__main {
-  position: relative;
-  top: toRem(180);
+.app__scroll {
+  position: absolute;
+  top: toRem(84);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: scroll;
+  height: calc(100vh - toRem(84));
+  width: 100vw;
+  min-width: toRem(1020);
 }
 
 .fade-enter-active {

@@ -3,119 +3,221 @@
     <div class="main-page__welcome">
       <h1 class="main-page__welcome-top">
         {{ $t('main-page.welcome-beginning') }}
+        <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
       </h1>
       <h1 class="main-page__welcome-bottom">
         {{ $t('main-page.welcome-continuing') }}
       </h1>
+      <svg class="main-page__welcome-snake">
+        <use xlink:href="branding/snake.svg#snake" />
+      </svg>
+    </div>
+    <p class="main-page__description">
+      {{ $t('main-page.description') }}
+    </p>
+    <div
+      v-if="web3Provider?.isConnected.value"
+      class="main-page__connect-ethereum main-page__connect-ethereum--connected"
+    >
+      <p class="main-page__connect-ethereum-message">
+        {{ $t('main-page.connected-ethereum-message') }}
+      </p>
+    </div>
+    <div v-else class="main-page__connect-ethereum">
+      <p
+        :class="[
+          'main-page__connect-ethereum-message',
+          'main-page__connect-ethereum-message--bounded',
+        ]"
+      >
+        {{ $t('main-page.connect-ethereum-message') }}
+      </p>
+      <connect-ethereum
+        class="main-page__connect-ethereum-button"
+        :button-preset="BUTTON_PRESETS.primary"
+      />
     </div>
     <div class="main-page__container">
-      <div class="main-page__description">
-        <p>{{ $t('main-page.description') }}</p>
-      </div>
-      <transition name="fade">
+      <div class="main-page__card">
+        <h5>
+          {{ $t('main-page.doc-creation-card-title') }}
+        </h5>
+        <img src="branding/doc-creation-model.png" />
         <app-button
-          v-show="!web3Provider?.isConnected.value"
-          class="main-page__start-button"
+          :text="$t('main-page.doc-creation-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
-          :size="BUTTON_SIZES.large"
-          :state="startButtonState"
-          @click.prevent="connectOrReferToInstallMetamask"
-        >
-          {{ $t('main-page.start-button-text') }}
-          <icon class="main-page__button-icon" :name="$icons.arrowRight" />
-        </app-button>
-      </transition>
+          :state="
+            web3Provider?.isConnected.value
+              ? undefined
+              : BUTTON_STATES.noneEvents
+          "
+          @click="showDocCreationModal"
+        />
+        <doc-creation-modal
+          :is-shown="isDocCreationModalShown"
+          @update:is-shown="hideDocCreationModal"
+        />
+      </div>
+      <div class="main-page__card">
+        <h5>
+          {{ $t('main-page.doc-verification-card-title') }}
+        </h5>
+        <img src="branding/doc-verification-model.png" />
+        <app-button
+          :text="$t('main-page.doc-verification-card-button-text')"
+          :preset="BUTTON_PRESETS.primary"
+          :state="
+            web3Provider?.isConnected.value
+              ? undefined
+              : BUTTON_STATES.noneEvents
+          "
+          @click="showDocVerificationModal"
+        />
+        <doc-verification-modal
+          :is-shown="isDocVerificationModalShown"
+          @update:is-shown="hideDocVerificationModal"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { AppButton, Icon } from '@/common'
-import { UseProvider, useContext } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
-import { computed, inject } from 'vue'
+import { AppButton, Icon, ConnectEthereum } from '@/common'
+import { UseProvider } from '@/composables'
+import { BUTTON_PRESETS, BUTTON_STATES, APP_KEYS } from '@/enums'
+import { DocCreationModal, DocVerificationModal } from '@/modals'
+import { inject, ref } from 'vue'
 
-const { $config } = useContext()
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-const startButtonState = computed<BUTTON_STATES | undefined>(() => {
-  if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
-  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
-  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
-  else return undefined
-})
 
-const connectOrReferToInstallMetamask = async () => {
-  if (web3Provider?.selectedProvider.value) {
-    await web3Provider.connect()
-    await web3Provider.switchChain($config.CHAIN_ID)
-  } else {
-    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
-  }
+const isDocCreationModalShown = ref(false)
+const showDocCreationModal = () => {
+  isDocCreationModalShown.value = true
+}
+const hideDocCreationModal = () => {
+  isDocCreationModalShown.value = false
+}
+
+const isDocVerificationModalShown = ref(false)
+const showDocVerificationModal = () => {
+  isDocVerificationModalShown.value = true
+}
+const hideDocVerificationModal = () => {
+  isDocVerificationModalShown.value = false
 }
 </script>
 
 <style lang="scss" scoped>
-.main-page {
-  padding: toRem(116) 7.362% toRem(145);
+.main-page__welcome {
+  position: relative;
+  z-index: 20;
+  width: toRem(986);
+  margin: toRem(40) auto 0;
+  height: toRem(166);
 }
 
 .main-page__welcome-top {
-  font-size: 8.1vw;
-  color: var(--col-intense);
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: toRem(16);
+  width: max-content;
+  margin-left: toRem(284);
+}
+
+.main-page__welcome-top-icon {
+  height: toRem(72);
+  width: toRem(72);
 }
 
 .main-page__welcome-bottom {
-  font-size: 6.5vw;
-  color: var(--col-primary);
-  line-height: 1.154;
-  margin-top: toRem(4);
+  width: max-content;
+  margin-top: toRem(7);
+  margin-left: toRem(28);
+}
+
+.main-page__welcome-snake {
+  position: relative;
+  bottom: toRem(28);
+  z-index: -10;
+  width: toRem(977);
+}
+
+.main-page__description {
+  position: relative;
+  z-index: 30;
+  font-size: toRem(20);
+  line-height: 1.4;
+  color: var(--col-fancy);
+  text-align: center;
+  width: toRem(698);
+  margin: 0 auto;
+}
+
+.main-page__connect-ethereum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--col-great);
+  width: toRem(822);
+  height: toRem(104);
+  border-radius: var(--border-radius-large);
+  margin: toRem(28) auto toRem(24);
+  padding: 0 toRem(64);
+
+  &--connected {
+    justify-content: center;
+    opacity: 0;
+    animation: vanish 4s;
+  }
+}
+
+.main-page__connect-ethereum-message {
+  font-size: toRem(20);
+  line-height: 1.4;
+  text-align: center;
+
+  &--bounded {
+    width: toRem(214);
+  }
+}
+
+.main-page__connect-ethereum-button {
+  width: toRem(256);
+  gap: toRem(8);
 }
 
 .main-page__container {
   display: flex;
+  justify-content: center;
+  gap: toRem(32);
+  margin-bottom: toRem(99);
+}
+
+.main-page__card {
+  display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  width: 70.69%;
-  margin-top: toRem(96);
+  align-items: center;
+  gap: toRem(16);
+  color: var(--col-fine);
+  background: var(--col-great);
+  border-radius: var(--border-radius-large);
+  width: toRem(395);
+  height: toRem(395);
+  padding: toRem(27) toRem(81);
 }
 
-.main-page__description {
-  background: var(--col-simple);
-  border-radius: toRem(4);
-  padding: toRem(25) toRem(26) toRem(25) toRem(24);
-  font-size: 2.09vw;
-  color: var(--col-intense);
-  letter-spacing: -0.015em;
-  line-height: 1.165;
-}
-
-.main-page__start-button {
-  margin-top: toRem(40);
-  width: toRem(320);
-  gap: toRem(10);
-}
-
-.main-page__button-icon {
-  height: toRem(24);
-  width: toRem(24);
-}
-
-.fade-enter-active {
-  animation: fade-in var(--transition-duration);
-}
-
-.fade-leave-active {
-  animation: fade-in var(--transition-duration) reverse;
-}
-
-@keyframes fade-in {
+@keyframes vanish {
   0% {
-    opacity: 0;
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
   }
 
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 </style>

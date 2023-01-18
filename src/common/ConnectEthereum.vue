@@ -1,13 +1,12 @@
 <template>
   <app-button
     class="connect-ethereum__connect-button"
-    :size="BUTTON_SIZES.large"
     :state="buttonState"
-    :preset="BUTTON_PRESETS.genius"
+    :preset="buttonPreset"
     @click.prevent="connectOrReferToInstallMetamask"
   >
-    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
     {{ buttonText }}
+    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
   </app-button>
 </template>
 
@@ -15,8 +14,17 @@
 import { computed, inject } from 'vue'
 import { AppButton, Icon } from '@/common'
 import { useContext, UseProvider } from '@/composables'
-import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
+import { BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
 import { abbrCenter } from '@/helpers'
+
+withDefaults(
+  defineProps<{
+    buttonPreset?: BUTTON_PRESETS
+  }>(),
+  {
+    buttonPreset: undefined,
+  },
+)
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
@@ -56,12 +64,11 @@ const connectOrReferToInstallMetamask = async () => {
 
 <style lang="scss" scoped>
 .connect-ethereum__connect-button {
-  gap: toRem(8.33);
-  width: toRem(320);
+  gap: toRem(16);
 }
 
 .connect-ethereum__button-icon {
-  height: toRem(31.2);
-  width: toRem(34.67);
+  height: toRem(24);
+  width: toRem(24);
 }
 </style>

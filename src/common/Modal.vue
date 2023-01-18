@@ -52,9 +52,7 @@ export default defineComponent({
     watch(
       () => props.isShown,
       newValue => {
-        newValue
-          ? Bus.emit(Bus.eventList.openModal)
-          : Bus.emit(Bus.eventList.closeModal)
+        if (newValue) Bus.emit(Bus.eventList.openModal)
       },
     )
 
@@ -85,11 +83,11 @@ export default defineComponent({
 }
 
 .modal__pane {
-  position: relative;
   background: var(--col-intense);
-  padding: toRem(40) toRem(24) toRem(30);
+  padding: toRem(32);
   border-radius: var(--border-radius-large);
   margin: auto;
+  width: toRem(608);
 }
 
 .modal-enter-active,
@@ -102,5 +100,13 @@ export default defineComponent({
 .modal-leave-to {
   opacity: 0;
   transform: scale(1.1);
+}
+
+.modal__wrapper::-webkit-scrollbar-thumb {
+  background: var(--col-flexible);
+
+  &:hover {
+    background: var(--col-brittle);
+  }
 }
 </style>

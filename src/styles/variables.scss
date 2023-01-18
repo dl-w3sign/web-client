@@ -5,19 +5,13 @@
 :after {
   /* brand colors */
 
-  --col-primary: #{$primary};
-  --col-basic: #{$basic};
-  --col-initial: #{$initial};
   --col-secondary: #{$secondary};
   --col-genius: #{$genius};
   --col-wise: #{$wise};
   --col-smart: #{$smart};
-  --col-intense: #{$intense};
-  --col-trendy: #{$trendy};
   --col-peaceful: #{$peaceful};
   --col-quiet: #{$quiet};
   --col-calm: #{$calm};
-  --col-pesky: #{$pesky};
   --col-weak: #{$weak};
   --col-clear: #{$clear};
   --col-pure: #{$pure};
@@ -26,8 +20,6 @@
   --col-wet: #{$wet};
   --col-crude: #{$crude};
   --col-speck: #{$speck};
-  --col-accent: #{$accent};
-  --col-spot: #{$spot};
   --col-dangerous: #{$dangerous};
   --col-soft: #{$soft};
   --col-mild: #{$mild};
@@ -35,22 +27,46 @@
   --col-alt: #{$alt};
   --col-home: #{$home};
   --col-lucky: #{$lucky};
-  --col-positive: #{$positive};
-  --col-negative: #{$negative};
   --col-neutral: #{$neutral};
   --col-glossy: #{$glossy};
   --col-fortunate: #{$fortunate};
 
+  --col-intense: #{$intense};
+  --col-rich: #{$rich};
+  --col-great: #{$great};
+  --col-fine: #{$fine};
+  --col-trendy: #{$trendy};
+  --col-fancy: #{$fancy};
+  --col-dense: #{$dense};
+  --col-rare: #{$rare};
+  --col-brittle: #{$brittle};
+  --col-flexible: #{$flexible};
+  --col-primary: #{$primary};
+  --col-basic: #{$basic};
+  --col-initial: #{$initial};
+  --col-original: #{$original};
+  --col-positive: #{$positive};
+  --col-negative: #{$negative};
+  --col-pesky: #{$pesky};
+  --col-accent: #{$accent};
+  --col-spot: #{$spot};
+  --col-stress: #{$stress};
+  --col-success: #{$success};
+  --col-lucky: #{$lucky};
+
   /* border radiuses */
 
-  --border-radius: #{toRem(4)};
-  --border-radius-large: #{toRem(10)};
+  --border-radius: #{toRem(8)};
+  --border-radius-medium: #{toRem(12)};
+  --border-radius-large: #{toRem(16)};
 
   /* transition */
   --transition-duration: 0.2s;
-  --transation-duration-slow: 0.5s;
+  --transition-duration-slow: 0.5s;
   --transition-delay: 0.5s;
 
   /* App variables */
-  --app-font-family: 'Roboto', 'Arial', sans-serif;
+  --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
+  --app-font-weight: 500;
+  --app-min-width: toRem(1020);
 }

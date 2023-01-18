@@ -10,7 +10,7 @@ export const config = {
   CTR_ADDRESS_TIMESTAMP: import.meta.env.VITE_APP_CTR_ADDRESS_TIMESTAMP,
   WEB3_PROVIDER_INSTALL_LINK: import.meta.env
     .VITE_APP_WEB3_PROVIDER_INSTALL_LINK,
-  FILE_MIME_TYPES: ['image/jpeg', 'image/png', 'application/pdf'],
+  FILE_MIME_TYPES: ['image/jpeg', 'image/png'],
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

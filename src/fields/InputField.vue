@@ -85,30 +85,10 @@ const copyContent = () => {
   display: block;
   width: 100%;
 
-  &--readonly {
-    @include field-readonly;
-  }
-
-  &--copied {
-    font-size: toRem(14);
-    border: none;
-    background: var(--col-lucky);
-    color: var(--col-home);
-    padding: toRem(13.5) toRem(59) toRem(13.5) toRem(12);
-    border-radius: toRem(2);
-  }
-
+  &--copied,
   &--with-right-icon {
-    padding-right: toRem(59);
+    padding-right: toRem(64);
   }
-
-  &::placeholder {
-    @include field-placeholder;
-  }
-
-  @include field-text;
-
-  @include field-border;
 }
 
 .input-field__copy-button {
@@ -116,24 +96,27 @@ const copyContent = () => {
   top: 0;
   right: 0;
   height: 100%;
-  width: toRem(46);
-  fill: var(--col-wet);
-  border-radius: 0 toRem(2) toRem(2) 0;
+  width: toRem(64);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  stroke: var(--col-primary);
 
   &:hover {
-    fill: var(--col-crude);
+    background: var(--col-basic);
+    stroke: var(--col-intense);
   }
 
   &:active {
-    fill: var(--col-alt);
+    background: var(--col-initial);
+    stroke: var(--col-intense);
   }
 }
 
 .input-field__icon {
   position: absolute;
-  top: toRem(12);
-  right: toRem(11);
+  top: toRem(16);
+  right: 0;
   height: toRem(24);
   width: toRem(24);
+  margin: auto toRem(24) auto toRem(16);
 }
 </style>

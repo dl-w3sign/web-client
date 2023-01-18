@@ -5,8 +5,6 @@ export function getFileIconName(file: File): ICON_NAMES {
   if (file.type === '') return ICON_NAMES.document
   const fileExt = file.name.split('.').pop()
   switch (fileExt) {
-    case 'doc':
-      return ICON_NAMES.fileExtDoc
     default:
       return ICON_NAMES.document
   }
@@ -28,4 +26,8 @@ export async function getKeccak256FileHash(file: File): Promise<Keccak256Hash> {
     }
     reader.readAsArrayBuffer(file)
   })
+}
+
+export function formatFileSize(size: number): string {
+  return `${Math.round(size / 1000)} KB`
 }
