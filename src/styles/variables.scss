@@ -5,32 +5,6 @@
 :after {
   /* brand colors */
 
-  --col-secondary: #{$secondary};
-  --col-genius: #{$genius};
-  --col-wise: #{$wise};
-  --col-smart: #{$smart};
-  --col-peaceful: #{$peaceful};
-  --col-quiet: #{$quiet};
-  --col-calm: #{$calm};
-  --col-weak: #{$weak};
-  --col-clear: #{$clear};
-  --col-pure: #{$pure};
-  --col-simple: #{$simple};
-  --col-net: #{$net};
-  --col-wet: #{$wet};
-  --col-crude: #{$crude};
-  --col-speck: #{$speck};
-  --col-dangerous: #{$dangerous};
-  --col-soft: #{$soft};
-  --col-mild: #{$mild};
-  --col-tender: #{$tender};
-  --col-alt: #{$alt};
-  --col-home: #{$home};
-  --col-lucky: #{$lucky};
-  --col-neutral: #{$neutral};
-  --col-glossy: #{$glossy};
-  --col-fortunate: #{$fortunate};
-
   --col-intense: #{$intense};
   --col-rich: #{$rich};
   --col-great: #{$great};
@@ -62,8 +36,6 @@
 
   /* transition */
   --transition-duration: 0.2s;
-  --transition-duration-slow: 0.5s;
-  --transition-delay: 0.5s;
 
   /* App variables */
   --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
