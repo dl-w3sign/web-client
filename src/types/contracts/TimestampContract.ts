@@ -41,16 +41,19 @@ export declare namespace ITimeStamping {
 
   export type DetailedStampInfoStruct = {
     timestamp: PromiseOrValue<BigNumberish>;
+    signersCount: PromiseOrValue<BigNumberish>;
     stampHash: PromiseOrValue<BytesLike>;
     signersInfo: ITimeStamping.SignerInfoStruct[];
   };
 
   export type DetailedStampInfoStructOutput = [
     BigNumber,
+    BigNumber,
     string,
     ITimeStamping.SignerInfoStructOutput[]
   ] & {
     timestamp: BigNumber;
+    signersCount: BigNumber;
     stampHash: string;
     signersInfo: ITimeStamping.SignerInfoStructOutput[];
   };
@@ -64,6 +67,7 @@ export interface TimestampContractInterface extends utils.Interface {
     "getStampInfo(bytes32)": FunctionFragment;
     "getStampInfoWithPagination(bytes32,uint256,uint256)": FunctionFragment;
     "getStampSignersCount(bytes32)": FunctionFragment;
+    "getUserInfo(address,bytes32)": FunctionFragment;
     "owner()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -81,6 +85,7 @@ export interface TimestampContractInterface extends utils.Interface {
       | "getStampInfo"
       | "getStampInfoWithPagination"
       | "getStampSignersCount"
+      | "getUserInfo"
       | "owner"
       | "proxiableUUID"
       | "renounceOwnership"
@@ -117,6 +122,10 @@ export interface TimestampContractInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getStampSignersCount",
     values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getUserInfo",
+    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -166,6 +175,10 @@ export interface TimestampContractInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getStampSignersCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUserInfo",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -335,6 +348,16 @@ export interface TimestampContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    getUserInfo(
+      user_: PromiseOrValue<string>,
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [ITimeStamping.SignerInfoStructOutput] & {
+        signerInfo_: ITimeStamping.SignerInfoStructOutput;
+      }
+    >;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
@@ -397,6 +420,12 @@ export interface TimestampContract extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getUserInfo(
+    user_: PromiseOrValue<string>,
+    stampHash_: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<ITimeStamping.SignerInfoStructOutput>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   proxiableUUID(overrides?: CallOverrides): Promise<string>;
@@ -456,6 +485,12 @@ export interface TimestampContract extends BaseContract {
       stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getUserInfo(
+      user_: PromiseOrValue<string>,
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<ITimeStamping.SignerInfoStructOutput>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -573,6 +608,12 @@ export interface TimestampContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getUserInfo(
+      user_: PromiseOrValue<string>,
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
@@ -632,6 +673,12 @@ export interface TimestampContract extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getStampSignersCount(
+      stampHash_: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getUserInfo(
+      user_: PromiseOrValue<string>,
       stampHash_: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

@@ -187,6 +187,11 @@ const _abi = [
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "signersCount",
+            type: "uint256",
+          },
+          {
             internalType: "bytes32",
             name: "stampHash",
             type: "bytes32",
@@ -245,6 +250,11 @@ const _abi = [
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "signersCount",
+            type: "uint256",
+          },
+          {
             internalType: "bytes32",
             name: "stampHash",
             type: "bytes32",
@@ -289,6 +299,42 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user_",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+    ],
+    name: "getUserInfo",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "signer",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "signatureTimestamp",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ITimeStamping.SignerInfo",
+        name: "signerInfo_",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
