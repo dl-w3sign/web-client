@@ -7,8 +7,4 @@ export enum BUTTON_STATES {
 export enum BUTTON_PRESETS {
   outlineBrittle = 'outline-brittle',
   primary = 'primary',
-
-  outlinePrimary = 'outline-primary',
-  genius = 'genius',
-  outlineAccent = 'outline-accent',
 }
