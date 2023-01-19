@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import {
   UseProvider,
   TimestampContract,
@@ -38,18 +38,17 @@ export const useTimestampContract = (
 
   const signers = ref<Signer[]>([])
 
-  const getStampInfo = async (fileHash: Keccak256Hash) => {
-    const receipt = await _instance.value?.getStampInfo(fileHash)
-    if (receipt) {
-      docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
-      signers.value = receipt.signersInfo.map(signerInfo => ({
-        address: signerInfo.signer,
-        signatureTimestamp: new BN(
-          signerInfo.signatureTimestamp._hex,
-        ).toNumber(),
-      }))
-    }
-  }
+  const signersCount = ref(0)
+
+  const signerInfo = ref<Signer>()
+
+  const isSignedBySigner = computed(() =>
+    typeof signerInfo.value?.signatureTimestamp === 'undefined'
+      ? undefined
+      : signerInfo.value?.signatureTimestamp
+      ? true
+      : false,
+  )
 
   const getStampInfoWithPagination = async (
     fileHash: Keccak256Hash,
@@ -61,14 +60,29 @@ export const useTimestampContract = (
       offset,
       limit,
     )
+
     if (receipt) {
       docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
+
       signers.value = receipt.signersInfo.map(signerInfo => ({
         address: signerInfo.signer,
         signatureTimestamp: new BN(
           signerInfo.signatureTimestamp._hex,
         ).toNumber(),
       }))
+
+      signersCount.value = new BN(receipt.signersCount._hex).toNumber()
+    }
+  }
+
+  const getUserInfo = async (userAddress: string, fileHash: Keccak256Hash) => {
+    const receipt = await _instance.value?.getUserInfo(userAddress, fileHash)
+
+    if (receipt) {
+      signerInfo.value = {
+        address: receipt.signer,
+        signatureTimestamp: new BN(receipt.signatureTimestamp._hex).toNumber(),
+      }
     }
   }
 
@@ -83,10 +97,13 @@ export const useTimestampContract = (
   return {
     docTimestamp,
     signers,
+    signersCount,
+    signerInfo,
+    isSignedBySigner,
 
     useTimestampContract,
-    getStampInfo,
     getStampInfoWithPagination,
+    getUserInfo,
     createStamp,
     sign,
   }

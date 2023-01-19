@@ -49,6 +49,7 @@
     "signature-timestamp-title": "Signed",
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
+    "already-signed-message": "You signed this document before",
     "error-default": "Something went wrong",
     "error-doc-not-found": "This document has not been uploaded yet"
   },
@@ -92,5 +93,8 @@
     "default-message-warning": "Something you are doing is not recommended",
     "default-message-info": "Something is happening. Just want you to know that",
     "default-message-default": "Just a message"
+  },
+  "pagination-control": {
+    "page-info": "{current} of {total}"
   }
 }

@@ -68,17 +68,16 @@
             </p>
           </div>
         </div>
+        <pagination-control
+          class="doc-verification-form__pagination-control"
+          :items-count="timestampContractInstance.signersCount.value"
+          :page-limit="pageLimit"
+          :on-page-change="onPageChange"
+        />
       </div>
-      <app-button
-        :class="[
-          'doc-verification-form__button',
-          'doc-verification-form__button--signer',
-        ]"
-        :preset="BUTTON_PRESETS.primary"
-        @click.prevent="signOrExit"
-      >
+      <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="signOrExit">
         {{
-          isSignedByCurrentSigner || isSigned
+          timestampContractInstance?.isSignedBySigner.value || isJustSigned
             ? $t('doc-verification-form.exit-button-text')
             : $t('doc-verification-form.sign-button-text')
         }}
@@ -125,21 +124,28 @@
 </template>
 
 <script lang="ts" setup>
-import { AppButton, Spinner, Icon } from '@/common'
+import { AppButton, Spinner, Icon, PaginationControl } from '@/common'
 import {
   useForm,
   useFormValidation,
   useTimestampContract,
   useContext,
+  UsePaginationCallbackArg,
 } from '@/composables'
-import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
+import {
+  APP_KEYS,
+  BUTTON_PRESETS,
+  BUTTON_STATES,
+  RPC_ERROR_MESSAGES,
+} from '@/enums'
+import { errors } from '@/errors'
 import { FileField, InputField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
 import { Keccak256Hash, UseProvider } from '@/types'
 import { required, maxValue } from '@/validators'
+import { useWindowSize } from '@vueuse/core'
 import { DateUtil } from '@/utils'
 import { ref, reactive, inject, computed } from 'vue'
-import { errors } from '@/errors'
 
 const props = withDefaults(
   defineProps<{
@@ -181,20 +187,26 @@ const {
 
 const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
-const isSigned = ref(false)
+const isJustSigned = ref(false)
 
 const timestampContractInstance = computed(() => {
   return web3Provider
     ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
     : undefined
 })
-const isSignedByCurrentSigner = computed(() =>
-  timestampContractInstance.value?.signers.value.find(
-    signer => signer.address === web3Provider?.selectedAddress.value,
+
+const { width: windowWidth } = useWindowSize()
+const pageLimit = computed(() => (windowWidth.value > 1000 ? 3 : 2))
+const onPageChange = async ({
+  newItemsOffset,
+  pageLimit,
+}: UsePaginationCallbackArg) => {
+  await timestampContractInstance.value?.getStampInfoWithPagination(
+    fileHash.value as Keccak256Hash,
+    newItemsOffset,
+    pageLimit,
   )
-    ? true
-    : false,
-)
+}
 
 const formatTimestamp = (timestamp: number): string => {
   return DateUtil.format(timestamp, 'X', 'MMM DD, YYYY [at] HH.mm')
@@ -209,9 +221,18 @@ const submitVerification = async () => {
     if (web3Provider?.chainId !== $config.CHAIN_ID)
       await web3Provider?.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.getStampInfo(fileHash.value)
+    await timestampContractInstance.value?.getStampInfoWithPagination(
+      fileHash.value,
+      0,
+      pageLimit.value,
+    )
     if (timestampContractInstance?.value?.docTimestamp.value === 0)
       throw new Error('Document not found')
+
+    await timestampContractInstance.value?.getUserInfo(
+      web3Provider?.selectedAddress.value as string,
+      fileHash.value,
+    )
 
     showConfirmation()
   } catch (err) {
@@ -233,8 +254,11 @@ const submitVerification = async () => {
 }
 
 const signOrExit = async () => {
-  if (isSignedByCurrentSigner.value || isSigned.value) {
-    props.cancel()
+  if (
+    timestampContractInstance.value?.isSignedBySigner.value ||
+    isJustSigned.value
+  ) {
+    if (props.cancel) props.cancel()
     return
   }
 
@@ -247,9 +271,16 @@ const signOrExit = async () => {
 
     await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
 
-    isSigned.value = true
+    isJustSigned.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
+    if (error.reason === RPC_ERROR_MESSAGES.alreadySigned) {
+      Bus.emit(
+        Bus.eventList.info,
+        $t('doc-verification-form.already-signed-message'),
+      )
+      isJustSigned.value = true
+    }
     ErrorHandler.processWithoutFeedback(error)
   }
   isSubmitting.value = false
@@ -261,7 +292,7 @@ const reset = () => {
   errorMessage.value = ''
   form.file = null
   fileHash.value = null
-  isSigned.value = false
+  isJustSigned.value = false
   resetState()
 }
 
@@ -293,6 +324,10 @@ Bus.on(Bus.eventList.openModal, reset)
   fill: var(--col-success);
 }
 
+.doc-verification-form__list-title {
+  margin-bottom: toRem(8);
+}
+
 .doc-verification-form__timestamp-info {
   display: flex;
   justify-content: end;
@@ -322,8 +357,8 @@ Bus.on(Bus.eventList.openModal, reset)
   color: var(--col-primary);
 }
 
-.doc-verification-form__list-title {
-  margin-bottom: toRem(8);
+.doc-verification-form__pagination-control {
+  margin: toRem(24) 0;
 }
 
 .doc-verification-form__note {
