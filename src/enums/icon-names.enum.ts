@@ -17,6 +17,7 @@ export enum ICON_NAMES {
   informationCircle = 'information-circle',
   metamask = 'metamask',
   note = 'note',
+  search = 'search',
   wavingHand = 'waving-hand',
   xCircle = 'x-circle',
 }

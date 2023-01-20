@@ -23,11 +23,7 @@
             {{ $t('doc-verification-form.doc-timestamp-title') }}
           </p>
           <p class="doc-verification-form__timestamp">
-            {{
-              formatTimestamp(
-                timestampContractInstance?.docTimestamp.value || 0,
-              )
-            }}
+            {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
           </p>
         </div>
       </div>
@@ -42,42 +38,67 @@
           {{ $t('doc-verification-form.success-msg') }}
         </p>
       </div>
-      <div v-if="timestampContractInstance?.signers.value.length">
-        <h4 class="doc-verification-form__list-title">
+      <div v-if="stampInfo?.signers.length">
+        <h4>
           {{ $t('doc-verification-form.list-title') }}
         </h4>
-        <div
-          v-for="signer in timestampContractInstance?.signers.value"
-          :key="signer.address"
-        >
+        <input-field
+          :model-value="addressToSearch"
+          @update:model-value="searchAddress"
+          class="doc-verification-form__search-input"
+          :placeholder="$t('doc-verification-form.search-placeholder')"
+          :left-icon="$icons.search"
+        />
+        <div v-if="foundSigner" class="doc-verification-form__address">
           <input-field
             class="doc-verification-form__address"
-            :model-value="signer.address"
+            :model-value="foundSigner.address"
             :is-readonly="true"
             :right-icon="$icons.checkCircle"
           />
           <div class="doc-verification-form__timestamp-info">
             <p
               class="doc-verification-form__timestamp-title"
-              v-if="signer.signatureTimestamp"
+              v-if="foundSigner.signatureTimestamp"
             >
               {{ $t('doc-verification-form.signature-timestamp-title') }}
             </p>
             <p class="doc-verification-form__timestamp">
-              {{ formatTimestamp(signer.signatureTimestamp || 0) }}
+              {{ formatTimestamp(foundSigner.signatureTimestamp) }}
             </p>
           </div>
         </div>
-        <pagination-control
-          class="doc-verification-form__pagination-control"
-          :items-count="timestampContractInstance.signersCount.value"
-          :page-limit="pageLimit"
-          :on-page-change="onPageChange"
-        />
+        <div v-show="!addressToSearch">
+          <div v-for="signer in stampInfo.signers" :key="signer.address">
+            <input-field
+              class="doc-verification-form__address"
+              :model-value="signer.address"
+              :is-readonly="true"
+              :right-icon="$icons.checkCircle"
+            />
+            <div class="doc-verification-form__timestamp-info">
+              <p
+                class="doc-verification-form__timestamp-title"
+                v-if="signer.signatureTimestamp"
+              >
+                {{ $t('doc-verification-form.signature-timestamp-title') }}
+              </p>
+              <p class="doc-verification-form__timestamp">
+                {{ formatTimestamp(signer.signatureTimestamp) }}
+              </p>
+            </div>
+          </div>
+          <pagination-control
+            class="doc-verification-form__pagination-control"
+            :items-count="stampInfo.signersTotalCount"
+            :page-limit="pageLimit"
+            :on-page-change="onPageChange"
+          />
+        </div>
       </div>
       <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="signOrExit">
         {{
-          timestampContractInstance?.isSignedBySigner.value || isJustSigned
+          isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
             ? $t('doc-verification-form.exit-button-text')
             : $t('doc-verification-form.sign-button-text')
         }}
@@ -130,7 +151,6 @@ import {
   useFormValidation,
   useTimestampContract,
   useContext,
-  UsePaginationCallbackArg,
 } from '@/composables'
 import {
   APP_KEYS,
@@ -140,8 +160,14 @@ import {
 } from '@/enums'
 import { errors } from '@/errors'
 import { FileField, InputField } from '@/fields'
-import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
-import { Keccak256Hash, UseProvider } from '@/types'
+import { getKeccak256FileHash, Bus, ErrorHandler, isAddress } from '@/helpers'
+import {
+  Keccak256Hash,
+  UseProvider,
+  UsePaginationCallbackArg,
+  SignerInfo,
+  StampInfo,
+} from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { DateUtil } from '@/utils'
@@ -187,7 +213,26 @@ const {
 
 const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
-const isJustSigned = ref(false)
+
+const addressToSearch = ref('')
+const foundSigner = ref<SignerInfo | null>()
+const searchAddress = async (newAddress: string) => {
+  addressToSearch.value = newAddress
+
+  if (isAddress(addressToSearch.value)) {
+    const signer = await timestampContractInstance?.value?.getSignerInfo(
+      addressToSearch.value,
+      fileHash.value as Keccak256Hash,
+    )
+    if (signer) foundSigner.value = signer
+  } else {
+    foundSigner.value = undefined
+  }
+}
+
+const stampInfo = ref<StampInfo | null>()
+const isAlreadySignedByCurrentSigner = ref(false)
+const isJustSignedByCurrentSigner = ref(false)
 
 const timestampContractInstance = computed(() => {
   return web3Provider
@@ -201,11 +246,12 @@ const onPageChange = async ({
   newItemsOffset,
   pageLimit,
 }: UsePaginationCallbackArg) => {
-  await timestampContractInstance.value?.getStampInfoWithPagination(
-    fileHash.value as Keccak256Hash,
-    newItemsOffset,
-    pageLimit,
-  )
+  stampInfo.value =
+    await timestampContractInstance.value?.getStampInfoWithPagination(
+      fileHash.value as Keccak256Hash,
+      newItemsOffset,
+      pageLimit,
+    )
 }
 
 const formatTimestamp = (timestamp: number): string => {
@@ -221,22 +267,25 @@ const submitVerification = async () => {
     if (web3Provider?.chainId !== $config.CHAIN_ID)
       await web3Provider?.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.getStampInfoWithPagination(
-      fileHash.value,
-      0,
-      pageLimit.value,
-    )
-    if (timestampContractInstance?.value?.docTimestamp.value === 0)
+    stampInfo.value =
+      await timestampContractInstance.value?.getStampInfoWithPagination(
+        fileHash.value,
+        0,
+        pageLimit.value,
+      )
+    if (stampInfo.value?.docTimestamp === 0)
       throw new Error('Document not found')
 
-    await timestampContractInstance.value?.getUserInfo(
+    const signerInfo = await timestampContractInstance.value?.getSignerInfo(
       web3Provider?.selectedAddress.value as string,
       fileHash.value,
     )
+    if (signerInfo?.signatureTimestamp)
+      isAlreadySignedByCurrentSigner.value = true
 
     showConfirmation()
   } catch (err) {
-    if (timestampContractInstance?.value?.docTimestamp.value === 0) {
+    if (stampInfo.value?.docTimestamp === 0) {
       errorMessage.value = $t('doc-verification-form.error-doc-not-found')
     } else {
       errorMessage.value = $t('doc-verification-form.error-default')
@@ -255,8 +304,8 @@ const submitVerification = async () => {
 
 const signOrExit = async () => {
   if (
-    timestampContractInstance.value?.isSignedBySigner.value ||
-    isJustSigned.value
+    isAlreadySignedByCurrentSigner.value ||
+    isJustSignedByCurrentSigner.value
   ) {
     if (props.cancel) props.cancel()
     return
@@ -271,7 +320,7 @@ const signOrExit = async () => {
 
     await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
 
-    isJustSigned.value = true
+    isJustSignedByCurrentSigner.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
     if (error.reason === RPC_ERROR_MESSAGES.alreadySigned) {
@@ -279,7 +328,7 @@ const signOrExit = async () => {
         Bus.eventList.info,
         $t('doc-verification-form.already-signed-message'),
       )
-      isJustSigned.value = true
+      isJustSignedByCurrentSigner.value = true
     }
     ErrorHandler.processWithoutFeedback(error)
   }
@@ -292,7 +341,10 @@ const reset = () => {
   errorMessage.value = ''
   form.file = null
   fileHash.value = null
-  isJustSigned.value = false
+  isAlreadySignedByCurrentSigner.value = false
+  isJustSignedByCurrentSigner.value = false
+  addressToSearch.value = ''
+  foundSigner.value = undefined
   resetState()
 }
 
@@ -322,10 +374,27 @@ Bus.on(Bus.eventList.openModal, reset)
 
 .doc-verification-form__address {
   fill: var(--col-success);
+  stroke: var(--col-success);
+  stroke-width: toRem(0);
+  transition: var(--transition-duration-slow);
+
+  &:hover,
+  &:active {
+    stroke-width: toRem(2);
+  }
 }
 
-.doc-verification-form__list-title {
-  margin-bottom: toRem(8);
+.doc-verification-form__search-input {
+  margin: toRem(8) 0 toRem(24);
+  stroke: var(--col-brittle);
+
+  &:hover {
+    stroke: var(--col-flexible);
+  }
+
+  &:focus-within {
+    stroke: var(--col-primary);
+  }
 }
 
 .doc-verification-form__timestamp-info {

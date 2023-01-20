@@ -35,6 +35,7 @@ textarea {
   padding: toRem(13) toRem(15);
   border: none;
   border-radius: var(--border-radius);
+  transition: var(--transition-duration);
 
   &:not(:read-only) {
     border: toRem(1) solid var(--col-brittle);
@@ -44,7 +45,7 @@ textarea {
     border-color: var(--col-flexible);
   }
 
-  &:not(:read-only):active {
+  &:not(:read-only):focus {
     border-color: var(--col-primary);
   }
 

@@ -7,8 +7,8 @@
       <input
         class="input-field__input"
         :class="[
-          isReadonly ? 'input-field__input--readonly' : '',
           isCopied ? 'input-field__input--copied' : '',
+          leftIcon ? 'input-field__input--with-left-icon' : '',
           rightIcon ? 'input-field__input--with-right-icon' : '',
         ]"
         :id="`input-field--${uid}`"
@@ -24,7 +24,16 @@
       >
         <icon class="input-field__icon" :name="$icons.clipboardCopy" />
       </app-button>
-      <icon v-else-if="rightIcon" :name="rightIcon" class="input-field__icon" />
+      <icon
+        class="input-field__icon input-field__icon--left"
+        v-else-if="leftIcon"
+        :name="leftIcon"
+      />
+      <icon
+        class="input-field__icon input-field__icon--right"
+        v-else-if="rightIcon"
+        :name="rightIcon"
+      />
     </div>
   </div>
 </template>
@@ -52,6 +61,7 @@ const props = withDefaults(
     placeholder?: string
     isReadonly?: boolean
     isCopied?: boolean
+    leftIcon?: ICON_NAMES
     rightIcon?: ICON_NAMES
   }>(),
   {
@@ -59,6 +69,7 @@ const props = withDefaults(
     placeholder: '',
     isReadonly: false,
     isCopied: false,
+    leftIcon: undefined,
     rightIcon: undefined,
   },
 )
@@ -70,6 +81,10 @@ const copyContent = () => {
 </script>
 
 <style lang="scss" scoped>
+.input-field {
+  transition: var(--transition-duration);
+}
+
 .input-field__label {
   display: block;
   margin-bottom: toRem(8);
@@ -86,8 +101,26 @@ const copyContent = () => {
   width: 100%;
 
   &--copied,
-  &--with-right-icon {
+  &--with-right-icon:read-only {
     padding-right: toRem(64);
+  }
+
+  &--with-left-icon {
+    padding-left: toRem(49);
+  }
+
+  & ~ .input-field__icon {
+    &--left {
+      top: toRem(14);
+      left: toRem(16);
+    }
+  }
+
+  &:read-only ~ .input-field__icon {
+    &--right {
+      top: toRem(16);
+      right: toRem(24);
+    }
   }
 }
 
@@ -113,10 +146,7 @@ const copyContent = () => {
 
 .input-field__icon {
   position: absolute;
-  top: toRem(16);
-  right: 0;
   height: toRem(24);
   width: toRem(24);
-  margin: auto toRem(24) auto toRem(16);
 }
 </style>

@@ -41,7 +41,8 @@
 
 <script lang="ts" setup>
 import { Icon } from '@/common'
-import { usePagination, UsePaginationCallback } from '@/composables'
+import { usePagination } from '@/composables'
+import { UsePaginationCallback } from '@/types'
 import { watch } from 'vue'
 
 const props = defineProps<{
