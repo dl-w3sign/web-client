@@ -83,16 +83,16 @@ watch(
 .pagination-control__button {
   fill: var(--col-negative);
 
+  &:disabled {
+    cursor: default;
+  }
+
   &:not([disabled]):hover {
     fill: var(--col-fancy);
   }
 
   &:not([disabled]):active {
     fill: var(--col-trendy);
-  }
-
-  &:disabled {
-    cursor: default;
   }
 }
 

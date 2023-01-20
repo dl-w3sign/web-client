@@ -33,27 +33,21 @@ textarea {
   line-height: 1.5;
   font-weight: 400;
   padding: toRem(13) toRem(15);
-  border: none;
+  border: toRem(1) solid var(--col-brittle);
   border-radius: var(--border-radius);
   transition: var(--transition-duration);
 
-  &:not(:read-only) {
-    border: toRem(1) solid var(--col-brittle);
-  }
-
-  &:not(:read-only):hover {
+  &:hover {
     border-color: var(--col-flexible);
   }
 
-  &:not(:read-only):focus {
+  &:focus {
+    outline: 0;
     border-color: var(--col-primary);
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:read-only {
+    border: none;
     background: var(--col-great);
     padding: toRem(16) toRem(24);
   }

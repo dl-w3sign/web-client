@@ -96,6 +96,12 @@ const copyContent = () => {
   position: relative;
 }
 
+.input-field__icon {
+  position: absolute;
+  height: toRem(24);
+  width: toRem(24);
+}
+
 .input-field__input {
   display: block;
   width: 100%;
@@ -142,11 +148,5 @@ const copyContent = () => {
     background: var(--col-initial);
     stroke: var(--col-intense);
   }
-}
-
-.input-field__icon {
-  position: absolute;
-  height: toRem(24);
-  width: toRem(24);
 }
 </style>
