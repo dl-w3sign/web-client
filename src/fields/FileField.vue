@@ -239,7 +239,7 @@ watch(
 
 .file-field__open-dialog-button {
   position: relative;
-  z-index: 100;
+  z-index: var(--z-file-field-open-dialog-button);
   font-size: inherit;
   line-height: inherit;
   color: var(--col-primary);

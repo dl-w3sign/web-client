@@ -8,7 +8,7 @@
       <h1 class="main-page__welcome-bottom">
         {{ $t('main-page.welcome-continuing') }}
       </h1>
-      <svg class="main-page__welcome-snake">
+      <svg class="main-page__welcome-background-img">
         <use xlink:href="branding/snake.svg#snake" />
       </svg>
     </div>
@@ -111,7 +111,7 @@ const hideDocVerificationModal = () => {
 <style lang="scss" scoped>
 .main-page__welcome {
   position: relative;
-  z-index: 20;
+  z-index: var(--z-main-page-welcome);
   width: toRem(986);
   margin: toRem(40) auto 0;
   height: toRem(166);
@@ -136,16 +136,16 @@ const hideDocVerificationModal = () => {
   margin-left: toRem(28);
 }
 
-.main-page__welcome-snake {
+.main-page__welcome-background-img {
   position: relative;
   bottom: toRem(28);
-  z-index: -10;
+  z-index: var(--z-main-page-welcome-background-img);
   width: toRem(977);
 }
 
 .main-page__description {
   position: relative;
-  z-index: 30;
+  z-index: var(--z-main-page-description);
   font-size: toRem(20);
   line-height: 1.4;
   color: var(--col-fancy);

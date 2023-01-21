@@ -54,7 +54,7 @@ init()
 <style lang="scss" scoped>
 .app__navbar {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--z-app-navbar);
   width: 100%;
 }
 
