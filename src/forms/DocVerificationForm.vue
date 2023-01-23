@@ -38,37 +38,17 @@
           {{ $t('doc-verification-form.success-msg') }}
         </p>
       </div>
-      <div v-if="stampInfo?.signers.length">
+      <div v-if="isSignedBySomeone">
         <h4>
           {{ $t('doc-verification-form.list-title') }}
         </h4>
         <input-field
-          :model-value="addressToSearch"
           @update:model-value="searchAddress"
           class="doc-verification-form__search-input"
           :placeholder="$t('doc-verification-form.search-placeholder')"
           :left-icon="$icons.search"
         />
-        <div v-if="foundSigner" class="doc-verification-form__address">
-          <input-field
-            class="doc-verification-form__address"
-            :model-value="foundSigner.address"
-            :is-readonly="true"
-            :right-icon="$icons.checkCircle"
-          />
-          <div class="doc-verification-form__timestamp-info">
-            <p
-              class="doc-verification-form__timestamp-title"
-              v-if="foundSigner.signatureTimestamp"
-            >
-              {{ $t('doc-verification-form.signature-timestamp-title') }}
-            </p>
-            <p class="doc-verification-form__timestamp">
-              {{ formatTimestamp(foundSigner.signatureTimestamp) }}
-            </p>
-          </div>
-        </div>
-        <div v-show="!addressToSearch">
+        <div v-if="stampInfo?.signers">
           <div v-for="signer in stampInfo.signers" :key="signer.address">
             <input-field
               class="doc-verification-form__address"
@@ -89,6 +69,7 @@
             </div>
           </div>
           <pagination-control
+            v-if="!addressToSearch && stampInfo.signers.length"
             class="doc-verification-form__pagination-control"
             :items-count="stampInfo.signersTotalCount"
             :page-limit="pageLimit"
@@ -165,7 +146,6 @@ import {
   Keccak256Hash,
   UseProvider,
   UsePaginationCallbackArg,
-  SignerInfo,
   StampInfo,
 } from '@/types'
 import { required, maxValue } from '@/validators'
@@ -215,22 +195,32 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const addressToSearch = ref('')
-const foundSigner = ref<SignerInfo | null>()
 const searchAddress = async (newAddress: string) => {
   addressToSearch.value = newAddress
 
-  if (isAddress(addressToSearch.value)) {
-    const signer = await timestampContractInstance?.value?.getSignerInfo(
-      addressToSearch.value,
-      fileHash.value as Keccak256Hash,
-    )
-    if (signer) foundSigner.value = signer
+  if (addressToSearch.value) {
+    if (stampInfo.value) stampInfo.value.signers.length = 0
+
+    if (isAddress(addressToSearch.value)) {
+      const signer = await timestampContractInstance?.value?.getSignerInfo(
+        addressToSearch.value,
+        fileHash.value as Keccak256Hash,
+      )
+
+      if (signer) stampInfo.value?.signers.push(signer)
+    }
   } else {
-    foundSigner.value = undefined
+    stampInfo.value =
+      await timestampContractInstance.value?.getStampInfoWithPagination(
+        fileHash.value as Keccak256Hash,
+        0,
+        pageLimit.value,
+      )
   }
 }
 
 const stampInfo = ref<StampInfo | null>()
+const isSignedBySomeone = ref(false)
 const isAlreadySignedByCurrentSigner = ref(false)
 const isJustSignedByCurrentSigner = ref(false)
 
@@ -276,12 +266,15 @@ const submitVerification = async () => {
     if (stampInfo.value?.docTimestamp === 0)
       throw new Error('Document not found')
 
-    const signerInfo = await timestampContractInstance.value?.getSignerInfo(
-      web3Provider?.selectedAddress.value as string,
-      fileHash.value,
-    )
-    if (signerInfo?.signatureTimestamp)
-      isAlreadySignedByCurrentSigner.value = true
+    if (stampInfo.value?.signers.length) {
+      isSignedBySomeone.value = true
+      const signerInfo = await timestampContractInstance.value?.getSignerInfo(
+        web3Provider?.selectedAddress.value as string,
+        fileHash.value,
+      )
+      if (signerInfo?.signatureTimestamp)
+        isAlreadySignedByCurrentSigner.value = true
+    }
 
     showConfirmation()
   } catch (err) {
@@ -341,10 +334,10 @@ const reset = () => {
   errorMessage.value = ''
   form.file = null
   fileHash.value = null
+  isSignedBySomeone.value = false
   isAlreadySignedByCurrentSigner.value = false
   isJustSignedByCurrentSigner.value = false
   addressToSearch.value = ''
-  foundSigner.value = undefined
   resetState()
 }
 

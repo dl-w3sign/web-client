@@ -56,7 +56,7 @@ const updateModelValue = (event: InputEvent) => {
 const uid = getCurrentInstance()?.uid
 const props = withDefaults(
   defineProps<{
-    modelValue: string
+    modelValue?: string
     label?: string
     placeholder?: string
     isReadonly?: boolean
@@ -65,6 +65,7 @@ const props = withDefaults(
     rightIcon?: ICON_NAMES
   }>(),
   {
+    modelValue: '',
     label: '',
     placeholder: '',
     isReadonly: false,
