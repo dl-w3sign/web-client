@@ -10,7 +10,7 @@
           {{ $t('main-page.welcome-continuing') }}
         </h1>
         <svg class="main-page__welcome-background-img">
-          <use xlink:href="branding/ribbon.svg#ribbon" />
+          <use xlink:href="/branding/ribbon.svg#ribbon" />
         </svg>
       </div>
       <p class="main-page__description">
@@ -44,7 +44,7 @@
         <h5>
           {{ $t('main-page.doc-creation-card-title') }}
         </h5>
-        <img src="branding/doc-creation-model.png" />
+        <img src="/branding/doc-creation-model.png" />
         <app-button
           :text="$t('main-page.doc-creation-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
@@ -64,7 +64,7 @@
         <h5>
           {{ $t('main-page.doc-verification-card-title') }}
         </h5>
-        <img src="branding/doc-verification-model.png" />
+        <img src="/branding/doc-verification-model.png" />
         <app-button
           :text="$t('main-page.doc-verification-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
