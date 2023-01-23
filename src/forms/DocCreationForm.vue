@@ -232,6 +232,8 @@ Bus.on(Bus.eventList.openModal, reset)
 
     @include note-error;
   }
+
+  @include note;
 }
 
 .doc-creation-form__note-icon {

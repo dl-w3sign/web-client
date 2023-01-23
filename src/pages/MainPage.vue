@@ -1,20 +1,22 @@
 <template>
   <div class="main-page">
-    <div class="main-page__welcome">
-      <h1 class="main-page__welcome-top">
-        {{ $t('main-page.welcome-beginning') }}
-        <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
-      </h1>
-      <h1 class="main-page__welcome-bottom">
-        {{ $t('main-page.welcome-continuing') }}
-      </h1>
-      <svg class="main-page__welcome-background-img">
-        <use xlink:href="branding/snake.svg#snake" />
-      </svg>
+    <div class="main-page__introduction">
+      <div class="main-page__welcome">
+        <h1 class="main-page__welcome-top">
+          {{ $t('main-page.welcome-beginning') }}
+          <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
+        </h1>
+        <h1>
+          {{ $t('main-page.welcome-continuing') }}
+        </h1>
+        <svg class="main-page__welcome-background-img">
+          <use xlink:href="branding/ribbon.svg#ribbon" />
+        </svg>
+      </div>
+      <p class="main-page__description">
+        {{ $t('main-page.description') }}
+      </p>
     </div>
-    <p class="main-page__description">
-      {{ $t('main-page.description') }}
-    </p>
     <div
       v-if="web3Provider?.isConnected.value"
       class="main-page__connect-ethereum main-page__connect-ethereum--connected"
@@ -109,20 +111,30 @@ const hideDocVerificationModal = () => {
 </script>
 
 <style lang="scss" scoped>
+.main-page__introduction {
+  margin: 0 auto;
+  padding: toRem(44) toRem(44) toRem(28);
+  fill: var(--col-peaceful);
+  transition: var(--transition-duration-slow);
+  width: max-content;
+
+  &:hover {
+    fill: var(--col-quiet);
+  }
+}
+
 .main-page__welcome {
   position: relative;
   z-index: var(--z-main-page-welcome);
-  width: toRem(986);
-  margin: toRem(40) auto 0;
-  height: toRem(166);
+  padding: 0 toRem(28) toRem(23);
 }
 
 .main-page__welcome-top {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: toRem(16);
-  width: max-content;
-  margin-left: toRem(284);
+  margin-bottom: toRem(7);
 }
 
 .main-page__welcome-top-icon {
@@ -130,22 +142,16 @@ const hideDocVerificationModal = () => {
   width: toRem(72);
 }
 
-.main-page__welcome-bottom {
-  width: max-content;
-  margin-top: toRem(7);
-  margin-left: toRem(28);
-}
-
 .main-page__welcome-background-img {
-  position: relative;
-  bottom: toRem(28);
+  position: absolute;
+  bottom: toRem(0);
+  left: toRem(0);
   z-index: var(--z-main-page-welcome-background-img);
   width: toRem(977);
+  height: toRem(51);
 }
 
 .main-page__description {
-  position: relative;
-  z-index: var(--z-main-page-description);
   font-size: toRem(20);
   line-height: 1.4;
   color: var(--col-fancy);
@@ -162,12 +168,14 @@ const hideDocVerificationModal = () => {
   width: toRem(822);
   height: toRem(104);
   border-radius: var(--border-radius-large);
-  margin: toRem(28) auto toRem(24);
+  margin: 0 auto toRem(24);
   padding: 0 toRem(64);
 
   &--connected {
     justify-content: center;
     opacity: 0;
+    transition-property: visibility;
+    transition-delay: 4s;
     animation: vanish 4s;
   }
 }

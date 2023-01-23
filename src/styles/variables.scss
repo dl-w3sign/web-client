@@ -8,6 +8,7 @@
   --col-intense: #{$intense};
   --col-rich: #{$rich};
   --col-great: #{$great};
+  --col-grand: #{$grand};
   --col-fine: #{$fine};
   --col-trendy: #{$trendy};
   --col-fancy: #{$fancy};
@@ -27,6 +28,9 @@
   --col-stress: #{$stress};
   --col-success: #{$success};
   --col-lucky: #{$lucky};
+  --col-peaceful: #{$peaceful};
+  --col-quiet: #{$quiet};
+  --col-tender: #{$tender};
 
   /* border radiuses */
 
@@ -36,6 +40,8 @@
 
   /* transition */
   --transition-duration: 0.2s;
+  --transition-duration-slow: 0.5s;
+  --transition-duration-fast: 0.1s;
 
   /* z-indexes */
   --z-modal: 5000;
@@ -43,10 +49,8 @@
   --z-file-field-open-dialog-button: 100;
   --z-main-page-welcome: 20;
   --z-main-page-welcome-background-img: -10;
-  --z-main-page-description: 30;
 
   /* App variables */
   --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   --app-font-weight: 500;
-  --app-min-width: toRem(1020);
 }

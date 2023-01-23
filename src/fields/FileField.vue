@@ -185,16 +185,18 @@ watch(
 
 .file-field__drop-zone {
   position: relative;
-  background: url('/branding/background-file-field-drop-zone.png');
+  background-image: url('/branding/background-file-field-drop-zone.png');
+  background-color: var(--col-great);
   display: flex;
   margin: auto;
   height: toRem(257);
   width: toRem(544);
   border-radius: var(--border-radius);
+  transition: var(--transition-duration-fast);
 
   &:hover,
   &--active {
-    background: url('/branding/background-file-field-drop-zone-active.png');
+    background-color: var(--col-grand);
   }
 }
 

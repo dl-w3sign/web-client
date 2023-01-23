@@ -21,7 +21,7 @@ import { BUTTON_PRESETS } from '@/enums'
   align-items: center;
   justify-content: space-between;
   padding: 0 6.7%;
-  height: toRem(84);
+  height: toRem(80);
   background: var(--col-intense);
   box-shadow: 0 toRem(4) toRem(24) var(--col-rare);
 }
@@ -38,6 +38,7 @@ import { BUTTON_PRESETS } from '@/enums'
 }
 
 .app-navbar__connect-ethereum {
+  height: toRem(48);
   width: toRem(253);
 }
 </style>

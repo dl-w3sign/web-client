@@ -47,6 +47,9 @@ $media-breakpoints: (
   font-size: toRem(16);
   font-weight: 400;
   line-height: 1.5;
+  color: var(--col-trendy);
+  background: var(--col-tender);
+  border: toRem(1) solid var(--col-primary);
   border-radius: var(--border-radius-medium);
   padding: toRem(24);
   font-feature-settings: 'tnum' on, 'lnum' on;
@@ -54,16 +57,12 @@ $media-breakpoints: (
 
 @mixin note-error {
   background: var(--col-stress);
-  border: toRem(1) solid var(--col-accent);
+  border-color: var(--col-accent);
   fill: var(--col-accent);
-
-  @include note;
 }
 
 @mixin note-success {
   background: var(--col-lucky);
-  border: toRem(1) solid var(--col-success);
+  border-color: var(--col-success);
   fill: var(--col-success);
-
-  @include note;
 }

@@ -86,11 +86,11 @@
     "default-title-error": "Error",
     "default-title-warning": "Warning",
     "default-title-info": "Info",
-    "default-title-default": "Just a message",
+    "default-title-default": "Message",
     "default-message-success": "Action successful",
     "default-message-error": "Something went wrong",
     "default-message-warning": "Something you are doing is not recommended",
-    "default-message-info": "Something is happening. Just want you to know that",
-    "default-message-default": "Just a message"
+    "default-message-info": "Unknown information",
+    "default-message-default": "Unknown message"
   }
 }
