@@ -42,7 +42,7 @@ export const useNotifications = (): void => {
     const defaultIconNames = {
       [TYPE.DEFAULT]: ICON_NAMES.informationCircle,
       [TYPE.INFO]: ICON_NAMES.informationCircle,
-      [TYPE.SUCCESS]: ICON_NAMES.check,
+      [TYPE.SUCCESS]: ICON_NAMES.checkCircle,
       [TYPE.ERROR]: ICON_NAMES.exclamationCircle,
       [TYPE.WARNING]: ICON_NAMES.exclamation,
     }

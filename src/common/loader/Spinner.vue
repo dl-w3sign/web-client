@@ -1,15 +1,16 @@
 <template>
   <div class="spinner">
-    <div class="spinner__inner" />
+    <animation
+      class="spinner__inner"
+      :animation-data="LoaderJSON"
+      :is-infinite="true"
+    />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'spinner',
-})
+<script lang="ts" setup>
+import { Animation } from '@/common'
+import LoaderJSON from '@/../loader.json'
 </script>
 
 <style lang="scss" scoped>
@@ -21,19 +22,7 @@ export default defineComponent({
 
 .spinner__inner {
   display: block;
-  width: toRem(130);
-  height: toRem(130);
-  background: url('/branding/spinner.svg');
-  animation: spinner 1.2s linear infinite;
-}
-
-@keyframes spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  width: toRem(121);
+  height: toRem(121);
 }
 </style>

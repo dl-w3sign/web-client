@@ -46,33 +46,40 @@ export default defineComponent({
 
 .Vue-Toastification__toast {
   &--success {
-    background: var(--col-fortunate);
+    @include note-success;
   }
 
   &--error {
-    background: var(--col-accent);
+    @include note-error;
   }
 
-  &--warning {
-    background: var(--col-primary);
+  @include note;
+}
+
+.Vue-Toastification__close-button {
+  opacity: 1;
+  height: toRem(24);
+  align-items: flex-start;
+  transition: var(--transition-duration);
+  color: var(--col-negative);
+
+  &:hover {
+    color: var(--col-fancy);
   }
 
-  &--info {
-    background: var(--col-glossy);
+  &:active {
+    color: var(--col-trendy);
   }
 }
 
 .notification {
-  display: grid;
-  place-items: center;
-  grid-template-columns: max-content 1fr;
-  grid-gap: toRem(16);
+  display: flex;
+  gap: toRem(8);
 }
 
 .notification .notification__icon {
-  max-width: toRem(48);
-  max-height: toRem(48);
-  fill: var(--col-intense);
+  max-width: toRem(24);
+  max-height: toRem(24);
 }
 
 .notification__details {
@@ -82,10 +89,8 @@ export default defineComponent({
 }
 
 .notification__title {
-  color: var(--col-intense);
-}
-
-.notification__message {
-  color: var(--col-intense);
+  font-size: toRem(16);
+  line-height: toRem(24);
+  font-weight: 700;
 }
 </style>

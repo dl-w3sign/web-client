@@ -1,25 +1,27 @@
 <template>
-  <div v-if="isAppInitialized">
-    <app-navbar class="app__navbar" />
-    <router-view v-slot="{ Component, route }">
-      <transition :name="route.meta.transition || 'fade'" mode="out-in">
-        <component class="app__scroll" :is="Component" />
-      </transition>
-    </router-view>
-  </div>
-  <animation
-    v-else
-    class="app__init"
-    :animation-data="LoaderJSON"
-    :is-infinite="true"
-  />
+  <transition name="fade">
+    <div v-if="isAppInitialized">
+      <app-navbar class="app__navbar" />
+      <router-view v-slot="{ Component, route }">
+        <transition :name="route.meta.transition || 'fade'" mode="out-in">
+          <component class="app__main" :is="Component" />
+        </transition>
+      </router-view>
+    </div>
+    <animation
+      v-else
+      class="app__init"
+      :animation-data="LoaderJSON"
+      :is-infinite="true"
+    />
+  </transition>
 </template>
 
 <script lang="ts" setup>
 import { AppNavbar, Animation } from '@/common'
 import { useNotifications, useProvider, useContext } from '@/composables'
 import { APP_KEYS } from '@/enums'
-import { ErrorHandler } from '@/helpers'
+import { Bus, ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
@@ -54,28 +56,27 @@ init()
 <style lang="scss" scoped>
 .app__navbar {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--z-app-navbar);
   width: 100%;
 }
 
-.app__scroll {
+.app__main {
   position: absolute;
-  top: toRem(84);
+  top: toRem(80);
   right: 0;
   bottom: 0;
   left: 0;
-  overflow-y: scroll;
-  height: calc(100vh - toRem(84));
+  overflow: auto;
+  height: calc(100vh - toRem(80));
   width: 100vw;
-  min-width: toRem(1020);
 }
 
 .fade-enter-active {
-  animation: fade-in var(--transation-duration-slow);
+  animation: fade-in var(--transition-duration-slow);
 }
 
 .fade-leave-active {
-  animation: fade-in var(--transation-duration-slow) reverse;
+  animation: fade-in var(--transition-duration-slow) reverse;
 }
 
 @keyframes fade-in {

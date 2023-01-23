@@ -440,6 +440,8 @@ Bus.on(Bus.eventList.openModal, reset)
   &--error {
     @include note-error;
   }
+
+  @include note;
 }
 
 .doc-verification-form__note-icon {
