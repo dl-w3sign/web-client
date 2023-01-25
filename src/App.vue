@@ -21,7 +21,7 @@
 import { AppNavbar, Animation } from '@/common'
 import { useNotifications, useProvider, useContext } from '@/composables'
 import { APP_KEYS } from '@/enums'
-import { Bus, ErrorHandler } from '@/helpers'
+import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
