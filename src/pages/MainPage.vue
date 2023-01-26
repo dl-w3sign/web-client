@@ -293,9 +293,6 @@ watch(
       newValue ? hideConnectEthereum() : showConnectEthereum()
     })
   },
-  {
-    immediate: true,
-  },
 )
 
 const getFileIconName = (n: number) => {
