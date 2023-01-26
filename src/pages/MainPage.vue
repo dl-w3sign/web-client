@@ -17,36 +17,41 @@
         {{ $t('main-page.description') }}
       </p>
     </div>
-    <transition name="vanish" mode="out-in">
-      <div
-        v-if="isConnectEthereumShown"
-        :class="{
-          'main-page__connect-ethereum': true,
-          'main-page__connect-ethereum--connected':
-            web3Provider?.isConnected.value,
-        }"
-      >
-        <p
+    <div
+      :class="{
+        'main-page__container': true,
+        'main-page__container--lifted': !isConnectEthereumShown,
+      }"
+    >
+      <transition name="fade">
+        <div
+          v-if="isConnectEthereumShown"
           :class="{
-            'main-page__connect-ethereum-message': true,
-            'main-page__connect-ethereum-message--bounded':
-              !web3Provider?.isConnected.value,
+            'main-page__connect-ethereum': true,
+            'main-page__connect-ethereum--connected':
+              web3Provider?.isConnected.value,
           }"
         >
-          {{
-            web3Provider?.isConnected.value
-              ? $t('main-page.connected-ethereum-message')
-              : $t('main-page.connect-ethereum-message')
-          }}
-        </p>
-        <connect-ethereum
-          v-if="!web3Provider?.isConnected.value"
-          class="main-page__connect-ethereum-button"
-          :button-preset="BUTTON_PRESETS.primary"
-        />
-      </div>
-    </transition>
-    <div class="main-page__container">
+          <p
+            :class="{
+              'main-page__connect-ethereum-message': true,
+              'main-page__connect-ethereum-message--bounded':
+                !web3Provider?.isConnected.value,
+            }"
+          >
+            {{
+              web3Provider?.isConnected.value
+                ? $t('main-page.connected-ethereum-message')
+                : $t('main-page.connect-ethereum-message')
+            }}
+          </p>
+          <connect-ethereum
+            v-if="!web3Provider?.isConnected.value"
+            class="main-page__connect-ethereum-button"
+            :button-preset="BUTTON_PRESETS.primary"
+          />
+        </div>
+      </transition>
       <div class="main-page__card">
         <h2 class="main-page__card-title">
           {{ $t('main-page.doc-creation-card-title') }}
@@ -277,11 +282,16 @@ const isConnectEthereumShown = ref(true)
 const hideConnectEthereum = () => {
   isConnectEthereumShown.value = false
 }
+const showConnectEthereum = () => {
+  isConnectEthereumShown.value = true
+}
 
 watch(
   () => web3Provider?.isConnected.value,
-  () => {
-    setTimeout(() => hideConnectEthereum())
+  newValue => {
+    setTimeout(() => {
+      newValue ? hideConnectEthereum() : showConnectEthereum()
+    })
   },
 )
 
@@ -359,6 +369,8 @@ const getStatusIconName = (n: number) => {
 }
 
 .main-page__connect-ethereum {
+  position: absolute;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -390,10 +402,18 @@ const getStatusIconName = (n: number) => {
 }
 
 .main-page__container {
+  position: relative;
   display: flex;
   justify-content: center;
   gap: toRem(32);
   margin-bottom: toRem(44);
+  padding-top: toRem(128);
+  transition: padding var(--transition-duration-slow) ease;
+
+  &--lifted {
+    transition-delay: 3.7s;
+    padding-top: 0;
+  }
 }
 
 .main-page__card {
@@ -669,17 +689,22 @@ const getStatusIconName = (n: number) => {
   margin-top: toRem(17.96);
 }
 
-.vanish-leave-to {
-  transition-delay: 2s;
-  animation: vanish 4s;
+.fade-leave-to {
+  animation: fade 2s ease 2s;
 }
 
-@keyframes vanish {
-  0% {
-    opacity: 1;
-  }
+.fade-enter-from {
+  display: none;
+}
 
-  50% {
+.fade-enter-to {
+  opacity: 0;
+  animation: fade var(--transition-duration-slow) ease
+    var(--transition-duration) reverse;
+}
+
+@keyframes fade {
+  0% {
     opacity: 1;
   }
 
