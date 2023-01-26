@@ -53,25 +53,27 @@
             :left-icon="$icons.search"
           />
           <div v-if="stampInfo?.signers">
-            <div v-for="signer in stampInfo.signers" :key="signer.address">
-              <input-field
-                class="doc-verification-form__address"
-                :model-value="signer.address"
-                :is-readonly="true"
-                :right-icon="$icons.checkCircle"
-              />
-              <div class="doc-verification-form__timestamp-info">
-                <p
-                  class="doc-verification-form__timestamp-title"
-                  v-if="signer.signatureTimestamp"
-                >
-                  {{ $t('doc-verification-form.signature-timestamp-title') }}
-                </p>
-                <p class="doc-verification-form__timestamp">
-                  {{ formatTimestamp(signer.signatureTimestamp) }}
-                </p>
+            <transition-group name="fade-list">
+              <div v-for="signer in stampInfo.signers" :key="signer.address">
+                <input-field
+                  class="doc-verification-form__address"
+                  :model-value="signer.address"
+                  :is-readonly="true"
+                  :right-icon="$icons.checkCircle"
+                />
+                <div class="doc-verification-form__timestamp-info">
+                  <p
+                    class="doc-verification-form__timestamp-title"
+                    v-if="signer.signatureTimestamp"
+                  >
+                    {{ $t('doc-verification-form.signature-timestamp-title') }}
+                  </p>
+                  <p class="doc-verification-form__timestamp">
+                    {{ formatTimestamp(signer.signatureTimestamp) }}
+                  </p>
+                </div>
               </div>
-            </div>
+            </transition-group>
             <pagination-control
               v-if="!addressToSearch && stampInfo.signers.length"
               class="doc-verification-form__pagination-control"
@@ -459,6 +461,14 @@ Bus.on(Bus.eventList.openModal, reset)
 
 .fade-enter-active {
   animation: fade ease-out var(--transition-duration-fast);
+}
+
+.fade-list-leave-active {
+  // display: none;
+}
+
+.fade-list-enter-active {
+  animation: fade ease var(--transition-duration-fast);
 }
 
 @keyframes fade {

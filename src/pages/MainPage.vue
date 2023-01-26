@@ -10,7 +10,7 @@
           {{ $t('main-page.welcome-continuing') }}
         </h1>
         <svg class="main-page__welcome-background-img">
-          <use href="branding/ribbon.svg#ribbon" />
+          <use href="/branding/ribbon.svg#ribbon" />
         </svg>
       </div>
       <p class="main-page__description">
@@ -292,6 +292,9 @@ watch(
     setTimeout(() => {
       newValue ? hideConnectEthereum() : showConnectEthereum()
     })
+  },
+  {
+    immediate: true,
   },
 )
 
