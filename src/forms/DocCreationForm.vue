@@ -1,74 +1,79 @@
 <template>
   <form class="doc-creation-form">
-    <div v-if="isSubmitting">
-      <spinner class="doc-creation-form__loader" />
-      <p class="doc-creation-form__please-wait-msg">
-        {{ $t('doc-creation-form.please-wait-msg') }}
-      </p>
-    </div>
-    <div v-else-if="isConfirmationShown">
-      <div class="doc-creation-form__note doc-creation-form__note--success">
-        <icon class="doc-creation-form__note-icon" :name="$icons.checkCircle" />
-        <p>
-          {{ $t('doc-creation-form.success-msg') }}
+    <transition name="fade">
+      <div v-if="isSubmitting">
+        <spinner class="doc-creation-form__loader" />
+        <p class="doc-creation-form__please-wait-msg">
+          {{ $t('doc-creation-form.please-wait-msg') }}
         </p>
       </div>
-      <input-field
-        class="doc-creation-form__doc-hash"
-        :model-value="fileHash || ''"
-        :is-copied="true"
-      />
-      <app-button
-        class="doc-creation-form__button"
-        :preset="BUTTON_PRESETS.primary"
-        @click.prevent="reset"
-      >
-        {{ $t('doc-creation-form.reset-button-text') }}
-      </app-button>
-    </div>
-    <div v-else-if="isFailureShown">
-      <file-field v-model="form.file" :is-readonly="true" />
-      <div class="doc-creation-form__note doc-creation-form__note--error">
-        <icon
-          class="doc-creation-form__note-icon"
-          :name="$icons.exclamationCircle"
+      <div v-else-if="isConfirmationShown">
+        <div class="doc-creation-form__note doc-creation-form__note--success">
+          <icon
+            class="doc-creation-form__note-icon"
+            :name="$icons.checkCircle"
+          />
+          <p>
+            {{ $t('doc-creation-form.success-msg') }}
+          </p>
+        </div>
+        <input-field
+          class="doc-creation-form__doc-hash"
+          :model-value="fileHash || ''"
+          :is-copied="true"
         />
-        <p v-if="errorMessage">
-          {{ errorMessage }}
-        </p>
-      </div>
-      <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
-        {{ $t('doc-creation-form.reset-button-text') }}
-      </app-button>
-    </div>
-    <div v-else>
-      <file-field v-model="form.file" />
-      <checkbox-field
-        v-show="form.file"
-        class="doc-creation-form__checkbox"
-        v-model="form.isSign"
-        :label="$t('doc-creation-form.checkbox-is-sign')"
-      />
-      <div class="doc-creation-form__buttons">
         <app-button
-          :preset="BUTTON_PRESETS.outlineBrittle"
-          @click.prevent="cancel"
-        >
-          {{ $t('doc-creation-form.cancel-button-text') }}
-        </app-button>
-        <app-button
+          class="doc-creation-form__button"
           :preset="BUTTON_PRESETS.primary"
-          :state="
-            isFormDisabled || !isFieldsValid
-              ? BUTTON_STATES.noneEvents
-              : undefined
-          "
-          @click.prevent="submit"
+          @click.prevent="reset"
         >
-          {{ $t('doc-creation-form.submit-button-text') }}
+          {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
-    </div>
+      <div v-else-if="isFailureShown">
+        <file-field v-model="form.file" :is-readonly="true" />
+        <div class="doc-creation-form__note doc-creation-form__note--error">
+          <icon
+            class="doc-creation-form__note-icon"
+            :name="$icons.exclamationCircle"
+          />
+          <p v-if="errorMessage">
+            {{ errorMessage }}
+          </p>
+        </div>
+        <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
+          {{ $t('doc-creation-form.reset-button-text') }}
+        </app-button>
+      </div>
+      <div v-else>
+        <file-field v-model="form.file" />
+        <checkbox-field
+          v-show="form.file"
+          class="doc-creation-form__checkbox"
+          v-model="form.isSign"
+          :label="$t('doc-creation-form.checkbox-is-sign')"
+        />
+        <div class="doc-creation-form__buttons">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click.prevent="cancel"
+          >
+            {{ $t('doc-creation-form.cancel-button-text') }}
+          </app-button>
+          <app-button
+            :preset="BUTTON_PRESETS.primary"
+            :state="
+              isFormDisabled || !isFieldsValid
+                ? BUTTON_STATES.noneEvents
+                : undefined
+            "
+            @click.prevent="submit"
+          >
+            {{ $t('doc-creation-form.submit-button-text') }}
+          </app-button>
+        </div>
+      </div>
+    </transition>
   </form>
 </template>
 
@@ -240,9 +245,28 @@ Bus.on(Bus.eventList.openModal, reset)
   height: toRem(24);
   width: toRem(24);
   flex-shrink: 0;
+  color: var(--col-intense);
 }
 
 .doc-creation-form__doc-hash {
   margin: toRem(24) 0;
+}
+
+.fade-leave-from {
+  display: none;
+}
+
+.fade-enter-active {
+  animation: fade var(--transition-duration);
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

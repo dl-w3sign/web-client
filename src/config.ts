@@ -1,6 +1,7 @@
 import packageJson from '../package.json'
 import { LogLevelDesc } from 'loglevel'
 import { pickBy, mapKeys } from 'lodash-es'
+import { FILE_TYPES } from '@/enums'
 
 export const config = {
   APP_NAME: import.meta.env.VITE_APP_NAME,
@@ -10,7 +11,7 @@ export const config = {
   CTR_ADDRESS_TIMESTAMP: import.meta.env.VITE_APP_CTR_ADDRESS_TIMESTAMP,
   WEB3_PROVIDER_INSTALL_LINK: import.meta.env
     .VITE_APP_WEB3_PROVIDER_INSTALL_LINK,
-  FILE_MIME_TYPES: ['image/jpeg', 'image/png'],
+  FILE_MIME_TYPES: [...Object.values(FILE_TYPES)],
 } as const
 
 Object.assign(config, _mapEnvCfg(import.meta.env))

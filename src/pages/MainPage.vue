@@ -10,117 +10,127 @@
           {{ $t('main-page.welcome-continuing') }}
         </h1>
         <svg class="main-page__welcome-background-img">
-          <use xlink:href="branding/ribbon.svg#ribbon" />
+          <use href="branding/ribbon.svg#ribbon" />
         </svg>
       </div>
       <p class="main-page__description">
         {{ $t('main-page.description') }}
       </p>
     </div>
-    <div
-      v-if="web3Provider?.isConnected.value"
-      class="main-page__connect-ethereum main-page__connect-ethereum--connected"
-    >
-      <p class="main-page__connect-ethereum-message">
-        {{ $t('main-page.connected-ethereum-message') }}
-      </p>
-    </div>
-    <div v-else class="main-page__connect-ethereum">
-      <p
-        :class="[
-          'main-page__connect-ethereum-message',
-          'main-page__connect-ethereum-message--bounded',
-        ]"
+    <transition name="vanish" mode="out-in">
+      <div
+        v-if="isConnectEthereumShown"
+        :class="{
+          'main-page__connect-ethereum': true,
+          'main-page__connect-ethereum--connected':
+            web3Provider?.isConnected.value,
+        }"
       >
-        {{ $t('main-page.connect-ethereum-message') }}
-      </p>
-      <connect-ethereum
-        class="main-page__connect-ethereum-button"
-        :button-preset="BUTTON_PRESETS.primary"
-      />
-    </div>
+        <p
+          :class="{
+            'main-page__connect-ethereum-message': true,
+            'main-page__connect-ethereum-message--bounded':
+              !web3Provider?.isConnected.value,
+          }"
+        >
+          {{
+            web3Provider?.isConnected.value
+              ? $t('main-page.connected-ethereum-message')
+              : $t('main-page.connect-ethereum-message')
+          }}
+        </p>
+        <connect-ethereum
+          v-if="!web3Provider?.isConnected.value"
+          class="main-page__connect-ethereum-button"
+          :button-preset="BUTTON_PRESETS.primary"
+        />
+      </div>
+    </transition>
     <div class="main-page__container">
       <div class="main-page__card">
         <h2 class="main-page__card-title">
           {{ $t('main-page.doc-creation-card-title') }}
         </h2>
-        <div class="main-page__illustration">
-          <div class="main-page__illustration-header">
-            <div class="main-page__illustration-header-tool-circle" />
-            <div class="main-page__illustration-header-tool-circle" />
-            <div class="main-page__illustration-header-tool-circle" />
-          </div>
-          <div class="main-page__illustration-main">
-            <ul class="main-page__illustration-info-bar">
-              <li class="main-page__illustration-info-bar-item">
-                <icon
-                  class="main-page__illustration-icon"
-                  :name="ICON_NAMES.download"
-                />
-                {{ $t('main-page.illustration-info-item-created') }}
-              </li>
-              <li
+        <div class="main-page__card-illustration">
+          <div class="main-page__illustration">
+            <div class="main-page__illustration-header">
+              <div class="main-page__illustration-header-tool-circle" />
+              <div class="main-page__illustration-header-tool-circle" />
+              <div class="main-page__illustration-header-tool-circle" />
+            </div>
+            <div class="main-page__illustration-main">
+              <ul class="main-page__illustration-info-bar">
+                <li class="main-page__illustration-info-bar-item">
+                  <icon
+                    class="main-page__illustration-icon"
+                    :name="ICON_NAMES.download"
+                  />
+                  {{ $t('main-page.illustration-info-item-created') }}
+                </li>
+                <li
+                  :class="[
+                    'main-page__illustration-info-bar-item',
+                    'main-page__illustration-info-bar-item--success',
+                  ]"
+                >
+                  <icon
+                    class="main-page__illustration-icon"
+                    :name="ICON_NAMES.check2"
+                  />
+                  {{ $t('main-page.illustration-info-item-checked') }}
+                </li>
+              </ul>
+              <h3
                 :class="[
-                  'main-page__illustration-info-bar-item',
-                  'main-page__illustration-info-bar-item--success',
+                  'main-page__illustration-skeleton',
+                  'main-page__illustration-skeleton--large',
                 ]"
+              />
+              <div
+                class="main-page__illustration-document"
+                v-for="n in 3"
+                :key="n"
               >
                 <icon
-                  class="main-page__illustration-icon"
-                  :name="ICON_NAMES.check2"
-                />
-                {{ $t('main-page.illustration-info-item-checked') }}
-              </li>
-            </ul>
-            <h3
-              :class="[
-                'main-page__illustration-skeleton',
-                'main-page__illustration-skeleton--large',
-              ]"
-            />
-            <div
-              class="main-page__illustration-document"
-              v-for="n in 3"
-              :key="n"
-            >
-              <icon
-                :class="[
-                  'main-page__illustration-icon',
-                  'main-page__illustration-icon--large',
-                ]"
-                :name="getFileIconName(n)"
-              />
-              <div>
-                <h4
                   :class="[
-                    'main-page__illustration-skeleton',
-                    'main-page__illustration-skeleton--medium',
+                    'main-page__illustration-icon',
+                    'main-page__illustration-icon--large',
                   ]"
+                  :name="getFileIconName(n)"
                 />
-                <p
-                  :class="{
-                    'main-page__illustration-skeleton': true,
-                    'main-page__illustration-skeleton--medium-wider': n === 1,
-                    'main-page__illustration-skeleton--medium-wide': n === 2,
-                    'main-page__illustration-skeleton--medium-widest': n === 3,
-                  }"
-                />
-                <p
-                  v-if="n === 1 || n === 2"
+                <div>
+                  <h4
+                    :class="[
+                      'main-page__illustration-skeleton',
+                      'main-page__illustration-skeleton--medium',
+                    ]"
+                  />
+                  <p
+                    :class="{
+                      'main-page__illustration-skeleton': true,
+                      'main-page__illustration-skeleton--medium-wider': n === 1,
+                      'main-page__illustration-skeleton--medium-wide': n === 2,
+                      'main-page__illustration-skeleton--medium-widest':
+                        n === 3,
+                    }"
+                  />
+                  <p
+                    v-if="n === 1 || n === 2"
+                    :class="[
+                      'main-page__illustration-skeleton',
+                      'main-page__illustration-skeleton--medium-short',
+                    ]"
+                  />
+                </div>
+                <icon
                   :class="[
-                    'main-page__illustration-skeleton',
-                    'main-page__illustration-skeleton--medium-short',
+                    'main-page__illustration-icon',
+                    'main-page__illustration-icon--medium',
+                    'main-page__illustration-icon--left-centred-white',
                   ]"
+                  :name="getStatusIconName(n)"
                 />
               </div>
-              <icon
-                :class="[
-                  'main-page__illustration-icon',
-                  'main-page__illustration-icon--medium',
-                  'main-page__illustration-icon--left-centred-white',
-                ]"
-                :name="getStatusIconName(n)"
-              />
             </div>
           </div>
         </div>
@@ -133,7 +143,6 @@
               : BUTTON_STATES.noneEvents
           "
           @click="showDocCreationModal"
-          style="flex-shink: 0"
         />
         <doc-creation-modal
           :is-shown="isDocCreationModalShown"
@@ -144,77 +153,79 @@
         <h2 class="main-page__card-title">
           {{ $t('main-page.doc-verification-card-title') }}
         </h2>
-        <div class="main-page__illustration">
-          <div class="main-page__illustration-header">
-            <div class="main-page__illustration-header-tool-circle" />
-            <div class="main-page__illustration-header-tool-circle" />
-            <div class="main-page__illustration-header-tool-circle" />
-          </div>
-          <div class="main-page__illustration-main">
-            <h3 class="main-page__illustration-title">
-              {{ $t('main-page.doc-verification-illustration-title') }}
-              <span class="main-page__illustration-spinner" />
-            </h3>
-            <div class="main-page__illustration-progress">
-              <div class="main-page__illustration-progress-bar" />
+        <div class="main-page__card-illustration">
+          <div class="main-page__illustration">
+            <div class="main-page__illustration-header">
+              <div class="main-page__illustration-header-tool-circle" />
+              <div class="main-page__illustration-header-tool-circle" />
+              <div class="main-page__illustration-header-tool-circle" />
             </div>
-            <h4
-              :class="[
-                'main-page__illustration-skeleton',
-                'main-page__illustration-skeleton--large',
-              ]"
-            />
-            <div
-              class="main-page__illustration-signer-info"
-              v-for="n in 2"
-              :key="n"
-            >
-              <div class="main-page__illustration-signer-address">
-                <div
-                  :class="{
-                    'main-page__illustration-signer-avatar': true,
-                    'main-page__illustration-signer-avatar--smart': n === 2,
-                  }"
-                />
-                <h5
-                  :class="[
-                    'main-page__illustration-skeleton',
-                    'main-page__illustration-skeleton--medium-longest',
-                  ]"
-                />
-                <icon
-                  :class="[
-                    'main-page__illustration-icon',
-                    'main-page__illustration-icon--medium',
-                    'main-page__illustration-icon--left-centred-white',
-                  ]"
-                  :name="ICON_NAMES.checkCircle"
-                />
+            <div class="main-page__illustration-main">
+              <h3 class="main-page__illustration-title">
+                {{ $t('main-page.doc-verification-illustration-title') }}
+                <span class="main-page__illustration-spinner" />
+              </h3>
+              <div class="main-page__illustration-progress">
+                <div class="main-page__illustration-progress-bar" />
               </div>
-              <div class="main-page__illustration-signer-timestamp">
-                <h5
-                  :class="[
-                    'main-page__illustration-skeleton',
-                    'main-page__illustration-skeleton--small-wide',
-                  ]"
-                />
-                <p
-                  :class="[
-                    'main-page__illustration-skeleton',
-                    'main-page__illustration-skeleton--small',
-                  ]"
-                />
-              </div>
-            </div>
-            <div class="main-page__illustration-pagination">
-              <div
-                v-for="n in 3"
-                :key="n"
+              <h4
                 :class="[
                   'main-page__illustration-skeleton',
-                  'main-page__illustration-skeleton--small-short',
+                  'main-page__illustration-skeleton--large',
                 ]"
               />
+              <div
+                class="main-page__illustration-signer-info"
+                v-for="n in 2"
+                :key="n"
+              >
+                <div class="main-page__illustration-signer-address">
+                  <div
+                    :class="{
+                      'main-page__illustration-signer-avatar': true,
+                      'main-page__illustration-signer-avatar--smart': n === 2,
+                    }"
+                  />
+                  <h5
+                    :class="[
+                      'main-page__illustration-skeleton',
+                      'main-page__illustration-skeleton--medium-longest',
+                    ]"
+                  />
+                  <icon
+                    :class="[
+                      'main-page__illustration-icon',
+                      'main-page__illustration-icon--medium',
+                      'main-page__illustration-icon--left-centred-white',
+                    ]"
+                    :name="ICON_NAMES.checkCircle"
+                  />
+                </div>
+                <div class="main-page__illustration-signer-timestamp">
+                  <h5
+                    :class="[
+                      'main-page__illustration-skeleton',
+                      'main-page__illustration-skeleton--small-wide',
+                    ]"
+                  />
+                  <p
+                    :class="[
+                      'main-page__illustration-skeleton',
+                      'main-page__illustration-skeleton--small',
+                    ]"
+                  />
+                </div>
+              </div>
+              <div class="main-page__illustration-pagination">
+                <div
+                  v-for="n in 3"
+                  :key="n"
+                  :class="[
+                    'main-page__illustration-skeleton',
+                    'main-page__illustration-skeleton--small-short',
+                  ]"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -242,7 +253,7 @@ import { AppButton, Icon, ConnectEthereum } from '@/common'
 import { UseProvider } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, APP_KEYS, ICON_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 
 const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 
@@ -261,6 +272,18 @@ const showDocVerificationModal = () => {
 const hideDocVerificationModal = () => {
   isDocVerificationModalShown.value = false
 }
+
+const isConnectEthereumShown = ref(true)
+const hideConnectEthereum = () => {
+  isConnectEthereumShown.value = false
+}
+
+watch(
+  () => web3Provider?.isConnected.value,
+  () => {
+    setTimeout(() => hideConnectEthereum())
+  },
+)
 
 const getFileIconName = (n: number) => {
   switch (n) {
@@ -348,10 +371,6 @@ const getStatusIconName = (n: number) => {
 
   &--connected {
     justify-content: center;
-    opacity: 0;
-    transition-property: visibility;
-    transition-delay: 4s;
-    animation: vanish 4s;
   }
 }
 
@@ -374,7 +393,7 @@ const getStatusIconName = (n: number) => {
   display: flex;
   justify-content: center;
   gap: toRem(32);
-  margin-bottom: toRem(99);
+  margin-bottom: toRem(44);
 }
 
 .main-page__card {
@@ -394,6 +413,14 @@ const getStatusIconName = (n: number) => {
   font-size: toRem(16);
   line-height: toRem(24);
   font-weight: 500;
+}
+
+.main-page__card-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: toRem(233);
+  width: toRem(233);
 }
 
 .main-page__illustration {
@@ -640,6 +667,11 @@ const getStatusIconName = (n: number) => {
   justify-content: center;
   gap: toRem(4.8);
   margin-top: toRem(17.96);
+}
+
+.vanish-leave-to {
+  transition-delay: 2s;
+  animation: vanish 4s;
 }
 
 @keyframes vanish {

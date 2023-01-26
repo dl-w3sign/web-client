@@ -111,19 +111,15 @@ h2 {
 }
 
 h3 {
-  line-height: 1.25;
-  font-size: toRem(32);
-  font-weight: 500;
+  @include h3;
 }
 
 h4 {
-  font-size: toRem(20);
-  line-height: 1.4;
+  @include h4;
 }
 
 h5 {
-  font-size: toRem(18);
-  line-height: toRem(24);
+  @include h5;
 }
 
 a {

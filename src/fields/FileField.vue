@@ -20,19 +20,25 @@
     </div>
     <div
       v-else-if="!isReadonly"
-      :class="[
-        'file-field__drop-zone',
-        isOverDropZone ? 'file-field__drop-zone--active' : '',
-      ]"
+      :class="{
+        'file-field__drop-zone': true,
+        'file-field__drop-zone--active': isOverDropZone,
+      }"
     >
       <label
         ref="dropZone"
         class="file-field__drop-zone-label"
         @click="openFileDialog"
       />
-      <div v-show="!isOverDropZone" class="file-field__not-drag-block">
-        <icon class="file-field__icon" :name="$icons.cloudUpload" />
-        <h6 class="file-field__title">
+      <div class="file-field__drop-zone-container">
+        <icon
+          :class="{
+            'file-field__drop-zone-icon': true,
+            'file-field__drop-zone-icon--large': isOverDropZone,
+          }"
+          :name="$icons.cloudUpload"
+        />
+        <h6 class="file-field__title" v-show="!isOverDropZone">
           {{ $t('file-field.title') }}
           <button
             class="file-field__open-dialog-button"
@@ -42,12 +48,9 @@
             <span class="file-field__open-dialog-button-underline" />
           </button>
         </h6>
-        <p class="file-field__require">
+        <p class="file-field__require" v-show="!isOverDropZone">
           {{ $t('file-field.require') }}
         </p>
-      </div>
-      <div v-show="isOverDropZone" class="file-field__drag-block">
-        <icon class="file-field__drag-icon" :name="$icons.cloudUpload" />
       </div>
     </div>
   </div>
@@ -56,6 +59,7 @@
 <script lang="ts" setup>
 import { Icon } from '@/common'
 import { useContext } from '@/composables'
+import { errors } from '@/errors'
 import { ErrorHandler, getFileIconName, formatFileSize } from '@/helpers'
 import { ref, watch } from 'vue'
 import { useDropZone, useFileDialog } from '@vueuse/core'
@@ -70,7 +74,6 @@ const props = withDefaults(
     isReadonly?: boolean
   }>(),
   {
-    accept: '',
     isReadonly: false,
   },
 )
@@ -78,19 +81,32 @@ const props = withDefaults(
 const checkType = (files: FileList | File[]) => {
   const fileMIMEType = files[0].type
   if (!$config.FILE_MIME_TYPES.find(type => type === fileMIMEType)) {
-    throw new Error('Uncorrect format')
+    throw new errors.FileTypeError()
   }
 }
 
-const { $config } = useContext()
+const checkSize = (files: FileList | File[]) => {
+  if (files[0].size > 1 * 1000 * 1000) throw new errors.FileSizeError()
+}
+
+const { $t, $config } = useContext()
 
 const dropZone = ref<HTMLLabelElement>()
 const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
   if (files) {
     try {
       checkType(files)
-    } catch (error) {
-      ErrorHandler.process(error, 'Uncorrect file type')
+      checkSize(files)
+    } catch (err) {
+      switch (err?.constructor) {
+        case errors.FileTypeError:
+          ErrorHandler.process(err, $t('file-field.error-uncorrect-file-type'))
+          break
+        case errors.FileSizeError:
+          ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
+          break
+      }
+
       return
     }
   }
@@ -123,8 +139,20 @@ watch(
     if (newValue.value) {
       try {
         checkType(newValue.value)
+        checkSize(newValue.value)
       } catch (err) {
-        ErrorHandler.process(err, 'Uncorrect file type')
+        switch (err?.constructor) {
+          case errors.FileTypeError:
+            ErrorHandler.process(
+              err,
+              $t('file-field.error-uncorrect-file-type'),
+            )
+            break
+          case errors.FileSizeError:
+            ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
+            break
+        }
+
         return
       }
     }
@@ -173,6 +201,8 @@ watch(
   width: toRem(24);
   fill: var(--col-fancy);
   flex-shrink: 0;
+  color: var(--col-intense);
+  transition: var(--transition-duration-fast);
 
   &:hover {
     fill: var(--col-accent);
@@ -210,7 +240,7 @@ watch(
   border-radius: var(--border-radius);
 }
 
-.file-field__not-drag-block {
+.file-field__drop-zone-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -219,18 +249,15 @@ watch(
   margin: auto;
 }
 
-.file-field__icon {
+.file-field__drop-zone-icon {
   width: toRem(40);
   height: toRem(40);
-}
+  color: var(--col-negative);
 
-.file-field__drag-block {
-  margin: auto;
-}
-
-.file-field__drag-icon {
-  height: toRem(80);
-  width: toRem(80);
+  &--large {
+    height: toRem(80);
+    width: toRem(80);
+  }
 }
 
 .file-field__title {

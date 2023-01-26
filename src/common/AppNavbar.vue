@@ -1,12 +1,14 @@
 <template>
   <header class="app-navbar">
-    <router-link to="/" class="app-navbar__logo">
-      {{ $t('navbar.logo') }}
-    </router-link>
-    <connect-ethereum
-      class="app-navbar__connect-ethereum"
-      :button-preset="BUTTON_PRESETS.outlineBrittle"
-    />
+    <div class="app-navbar__container">
+      <svg class="app-navbar__logo">
+        <use href="/branding/logo.svg#logo" />
+      </svg>
+      <connect-ethereum
+        class="app-navbar__connect-ethereum"
+        :button-preset="BUTTON_PRESETS.outlineBrittle"
+      />
+    </div>
   </header>
 </template>
 
@@ -19,22 +21,24 @@ import { BUTTON_PRESETS } from '@/enums'
 .app-navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 6.7%;
+  justify-content: center;
   height: toRem(80);
   background: var(--col-intense);
   box-shadow: 0 toRem(4) toRem(24) var(--col-rare);
 }
 
-.app-navbar__logo {
-  font-weight: 700;
-  font-size: toRem(32);
-  color: var(--col-trendy);
+.app-navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6.7%;
+  width: 100%;
+  max-width: toRem(1440);
+}
 
-  &:active,
-  &:hover {
-    color: var(--col-dense);
-  }
+.app-navbar__logo {
+  height: toRem(48);
+  width: toRem(48);
 }
 
 .app-navbar__connect-ethereum {

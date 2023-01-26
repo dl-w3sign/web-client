@@ -1,14 +1,9 @@
 <template>
   <div class="notification">
     <icon class="notification__icon" :name="iconName" />
-    <div class="notification__details">
-      <h4 class="notification__title">
-        {{ title }}
-      </h4>
-      <p class="notification__message">
-        {{ message }}
-      </p>
-    </div>
+    <p class="notification__message">
+      {{ message }}
+    </p>
   </div>
 </template>
 
@@ -22,10 +17,6 @@ export default defineComponent({
   name: 'notification',
   components: { Icon },
   props: {
-    title: {
-      type: String,
-      default: '',
-    },
     message: {
       type: String,
       required: true,
@@ -45,18 +36,39 @@ export default defineComponent({
 @import 'vue-toastification/src/scss/index';
 
 .Vue-Toastification__toast {
+  align-items: center;
+  cursor: default;
+
+  &--default,
+  &--info {
+    color: var(--col-primary);
+  }
+
   &--success {
+    color: var(--col-intense);
+
     @include note-success;
   }
 
   &--error {
+    color: var(--col-accent);
+
     @include note-error;
+  }
+
+  &--warning {
+    color: var(--col-wise);
+
+    @include note-warning;
   }
 
   @include note;
 }
 
 .Vue-Toastification__close-button {
+  position: absolute;
+  top: toRem(8);
+  right: toRem(16);
   opacity: 1;
   height: toRem(24);
   align-items: flex-start;
@@ -75,6 +87,7 @@ export default defineComponent({
 .notification {
   display: flex;
   gap: toRem(8);
+  padding-right: toRem(20);
 }
 
 .notification .notification__icon {
@@ -82,15 +95,7 @@ export default defineComponent({
   max-height: toRem(24);
 }
 
-.notification__details {
-  display: grid;
-  grid-gap: toRem(4);
-  width: 100%;
-}
-
-.notification__title {
-  font-size: toRem(16);
-  line-height: toRem(24);
-  font-weight: 700;
+.notification__message {
+  color: var(--col-trendy);
 }
 </style>
