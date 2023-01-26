@@ -58,11 +58,32 @@ $media-breakpoints: (
 @mixin note-error {
   background: var(--col-stress);
   border-color: var(--col-accent);
-  fill: var(--col-accent);
 }
 
 @mixin note-success {
   background: var(--col-lucky);
   border-color: var(--col-success);
-  fill: var(--col-success);
+}
+
+@mixin note-warning {
+  background: var(--col-weak);
+  border-color: var(--col-wise);
+}
+
+@mixin h3 {
+  font-size: toRem(32);
+  line-height: toRem(40);
+  font-weight: 500;
+}
+
+@mixin h4 {
+  font-size: toRem(20);
+  line-height: toRem(28);
+  font-weight: 500;
+}
+
+@mixin h5 {
+  font-size: toRem(18);
+  line-height: toRem(24);
+  font-weight: 500;
 }

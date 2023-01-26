@@ -1,127 +1,135 @@
 <template>
   <form class="doc-verification-form">
-    <div v-if="isSubmitting">
-      <spinner class="doc-verification-form__loader" />
-      <p class="doc-verification-form__please-wait-msg">
-        {{ $t('doc-verification-form.please-wait-msg') }}
-      </p>
-    </div>
-    <div v-else-if="isConfirmationShown">
-      <div class="doc-verification-form__doc-info">
-        <input-field
-          :model-value="fileHash || ''"
-          :is-copied="true"
-          :label="$t('doc-verification-form.document-hash-label')"
-        />
-        <div
-          :class="[
-            'doc-verification-form__timestamp-info',
-            'doc-verification-form__timestamp-info--top',
-          ]"
-        >
-          <p class="doc-verification-form__timestamp-title">
-            {{ $t('doc-verification-form.doc-timestamp-title') }}
-          </p>
-          <p class="doc-verification-form__timestamp">
-            {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
-          </p>
-        </div>
-      </div>
-      <div
-        class="doc-verification-form__note doc-verification-form__note--success"
-      >
-        <icon
-          class="doc-verification-form__note-icon"
-          :name="$icons.checkCircle"
-        />
-        <p>
-          {{ $t('doc-verification-form.success-msg') }}
+    <transition name="fade">
+      <div v-if="isSubmitting">
+        <spinner class="doc-verification-form__loader" />
+        <p class="doc-verification-form__please-wait-msg">
+          {{ $t('doc-verification-form.please-wait-msg') }}
         </p>
       </div>
-      <div v-if="isSignedBySomeone">
-        <h4>
-          {{ $t('doc-verification-form.list-title') }}
-        </h4>
-        <input-field
-          @update:model-value="searchAddress"
-          class="doc-verification-form__search-input"
-          :placeholder="$t('doc-verification-form.search-placeholder')"
-          :left-icon="$icons.search"
-        />
-        <div v-if="stampInfo?.signers">
-          <div v-for="signer in stampInfo.signers" :key="signer.address">
-            <input-field
-              class="doc-verification-form__address"
-              :model-value="signer.address"
-              :is-readonly="true"
-              :right-icon="$icons.checkCircle"
-            />
-            <div class="doc-verification-form__timestamp-info">
-              <p
-                class="doc-verification-form__timestamp-title"
-                v-if="signer.signatureTimestamp"
-              >
-                {{ $t('doc-verification-form.signature-timestamp-title') }}
-              </p>
-              <p class="doc-verification-form__timestamp">
-                {{ formatTimestamp(signer.signatureTimestamp) }}
-              </p>
-            </div>
-          </div>
-          <pagination-control
-            v-if="!addressToSearch && stampInfo.signers.length"
-            class="doc-verification-form__pagination-control"
-            :items-count="stampInfo.signersTotalCount"
-            :page-limit="pageLimit"
-            :on-page-change="onPageChange"
+      <div v-else-if="isConfirmationShown">
+        <div class="doc-verification-form__doc-info">
+          <input-field
+            :model-value="fileHash || ''"
+            :is-copied="true"
+            :label="$t('doc-verification-form.document-hash-label')"
           />
+          <div
+            :class="[
+              'doc-verification-form__timestamp-info',
+              'doc-verification-form__timestamp-info--top',
+            ]"
+          >
+            <p class="doc-verification-form__timestamp-title">
+              {{ $t('doc-verification-form.doc-timestamp-title') }}
+            </p>
+            <p class="doc-verification-form__timestamp">
+              {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
+            </p>
+          </div>
         </div>
-      </div>
-      <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="signOrExit">
-        {{
-          isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
-            ? $t('doc-verification-form.exit-button-text')
-            : $t('doc-verification-form.sign-button-text')
-        }}
-      </app-button>
-    </div>
-    <div v-else-if="isFailureShown">
-      <file-field :model-value="form.file" :is-readonly="true" />
-      <div
-        class="doc-verification-form__note doc-verification-form__note--error"
-      >
-        <icon
-          class="doc-verification-form__note-icon"
-          :name="$icons.exclamationCircle"
-        />
-        {{ errorMessage }}
-      </div>
-      <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
-        {{ $t('doc-verification-form.reset-button-text') }}
-      </app-button>
-    </div>
-    <div v-else>
-      <file-field v-model="form.file" />
-      <div class="doc-verification-form__buttons">
-        <app-button
-          :preset="BUTTON_PRESETS.outlineBrittle"
-          @click.prevent="cancel"
+        <div
+          :class="[
+            'doc-verification-form__note',
+            'doc-verification-form__note--success',
+          ]"
         >
-          {{ $t('doc-verification-form.cancel-button-text') }}
-        </app-button>
+          <icon
+            class="doc-verification-form__note-icon"
+            :name="$icons.checkCircle"
+          />
+          <p>
+            {{ $t('doc-verification-form.success-msg') }}
+          </p>
+        </div>
+        <div v-if="isSignedBySomeone">
+          <h4>
+            {{ $t('doc-verification-form.list-title') }}
+          </h4>
+          <input-field
+            @update:model-value="searchAddress"
+            class="doc-verification-form__search-input"
+            :placeholder="$t('doc-verification-form.search-placeholder')"
+            :left-icon="$icons.search"
+          />
+          <div v-if="stampInfo?.signers">
+            <div v-for="signer in stampInfo.signers" :key="signer.address">
+              <input-field
+                class="doc-verification-form__address"
+                :model-value="signer.address"
+                :is-readonly="true"
+                :right-icon="$icons.checkCircle"
+              />
+              <div class="doc-verification-form__timestamp-info">
+                <p
+                  class="doc-verification-form__timestamp-title"
+                  v-if="signer.signatureTimestamp"
+                >
+                  {{ $t('doc-verification-form.signature-timestamp-title') }}
+                </p>
+                <p class="doc-verification-form__timestamp">
+                  {{ formatTimestamp(signer.signatureTimestamp) }}
+                </p>
+              </div>
+            </div>
+            <pagination-control
+              v-if="!addressToSearch && stampInfo.signers.length"
+              class="doc-verification-form__pagination-control"
+              :items-count="stampInfo.signersTotalCount"
+              :page-limit="pageLimit"
+              :on-page-change="onPageChange"
+            />
+          </div>
+        </div>
         <app-button
           :preset="BUTTON_PRESETS.primary"
-          :state="
-            isFormDisabled || !isFieldsValid
-              ? BUTTON_STATES.noneEvents
-              : undefined
-          "
-          @click.prevent="submitVerification"
+          @click.prevent="signOrExit"
         >
-          {{ $t('doc-verification-form.submit-button-text') }}
+          {{
+            isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
+              ? $t('doc-verification-form.exit-button-text')
+              : $t('doc-verification-form.sign-button-text')
+          }}
         </app-button>
       </div>
-    </div>
+      <div v-else-if="isFailureShown">
+        <file-field :model-value="form.file" :is-readonly="true" />
+        <div
+          class="doc-verification-form__note doc-verification-form__note--error"
+        >
+          <icon
+            class="doc-verification-form__note-icon"
+            :name="$icons.exclamationCircle"
+          />
+          {{ errorMessage }}
+        </div>
+        <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
+          {{ $t('doc-verification-form.reset-button-text') }}
+        </app-button>
+      </div>
+      <div v-else>
+        <file-field v-model="form.file" />
+        <div class="doc-verification-form__buttons">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click.prevent="cancel"
+          >
+            {{ $t('doc-verification-form.cancel-button-text') }}
+          </app-button>
+          <app-button
+            :preset="BUTTON_PRESETS.primary"
+            :state="
+              isFormDisabled || !isFieldsValid
+                ? BUTTON_STATES.noneEvents
+                : undefined
+            "
+            @click.prevent="submitVerification"
+          >
+            {{ $t('doc-verification-form.submit-button-text') }}
+          </app-button>
+        </div>
+      </div>
+    </transition>
   </form>
 </template>
 
@@ -138,6 +146,7 @@ import {
   BUTTON_PRESETS,
   BUTTON_STATES,
   RPC_ERROR_MESSAGES,
+  TIMEZONES,
 } from '@/enums'
 import { errors } from '@/errors'
 import { FileField, InputField } from '@/fields'
@@ -150,7 +159,7 @@ import {
 } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { DateUtil } from '@/utils'
+import { Time } from '@/utils'
 import { ref, reactive, inject, computed } from 'vue'
 
 const props = withDefaults(
@@ -245,7 +254,7 @@ const onPageChange = async ({
 }
 
 const formatTimestamp = (timestamp: number): string => {
-  return DateUtil.format(timestamp, 'X', 'MMM DD, YYYY [at] HH.mm')
+  return new Time(timestamp, 'X').tz(TIMEZONES.CET).format('hh:mm A YYYY [CET]')
 }
 
 const submitVerification = async () => {
@@ -441,5 +450,24 @@ Bus.on(Bus.eventList.openModal, reset)
   height: toRem(24);
   width: toRem(24);
   flex-shrink: 0;
+  color: var(--col-intense);
+}
+
+.fade-leave-from {
+  display: none;
+}
+
+.fade-enter-active {
+  animation: fade ease-out var(--transition-duration-fast);
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

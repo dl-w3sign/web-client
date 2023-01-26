@@ -1,10 +1,21 @@
-import { ICON_NAMES } from '@/enums'
+import { FILE_TYPES, ICON_NAMES } from '@/enums'
 import { HashUtil, Keccak256Hash } from '@/utils'
 
 export function getFileIconName(file: File): ICON_NAMES {
-  if (file.type === '') return ICON_NAMES.document
-  const fileExt = file.name.split('.').pop()
-  switch (fileExt) {
+  switch (file.type) {
+    case FILE_TYPES.csv:
+      return ICON_NAMES.fileCsv
+    case FILE_TYPES.doc:
+    case FILE_TYPES.docx:
+      return ICON_NAMES.fileDoc
+    case FILE_TYPES.jpg:
+      return ICON_NAMES.fileJpg
+    case FILE_TYPES.pdf:
+      return ICON_NAMES.filePdf
+    case FILE_TYPES.png:
+      return ICON_NAMES.filePng
+    case FILE_TYPES.xls:
+      return ICON_NAMES.fileXls
     default:
       return ICON_NAMES.document
   }

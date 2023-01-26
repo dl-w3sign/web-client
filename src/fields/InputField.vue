@@ -20,9 +20,12 @@
       <app-button
         v-if="isCopied"
         class="input-field__copy-button"
-        @click.prevent="copyContent"
+        @click.prevent="copy()"
       >
-        <icon class="input-field__icon" :name="$icons.clipboardCopy" />
+        <icon
+          class="input-field__icon input-field__icon--copy"
+          :name="copied ? $icons.check : $icons.clipboardCopy"
+        />
       </app-button>
       <icon
         class="input-field__icon input-field__icon--left"
@@ -75,10 +78,10 @@ const props = withDefaults(
   },
 )
 
-const { copy } = useClipboard()
-const copyContent = () => {
-  copy(props.modelValue)
-}
+const { copy, copied } = useClipboard({
+  source: props.modelValue,
+  copiedDuring: 5000,
+})
 </script>
 
 <style lang="scss" scoped>
@@ -101,6 +104,35 @@ const copyContent = () => {
   position: absolute;
   height: toRem(24);
   width: toRem(24);
+  color: var(--col-intense);
+
+  &--copy {
+    color: inherit;
+  }
+}
+
+.input-field__copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: toRem(64);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  color: var(--col-primary);
+
+  &:hover {
+    background: var(--col-basic);
+    color: var(--col-intense);
+  }
+
+  &:active {
+    background: var(--col-initial);
+    color: var(--col-intense);
+  }
+
+  & .input-field__icon {
+    margin: auto toRem(24) auto toRem(16);
+  }
 }
 
 .input-field__input {
@@ -128,26 +160,6 @@ const copyContent = () => {
       top: toRem(16);
       right: toRem(24);
     }
-  }
-}
-
-.input-field__copy-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: toRem(64);
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  stroke: var(--col-primary);
-
-  &:hover {
-    background: var(--col-basic);
-    stroke: var(--col-intense);
-  }
-
-  &:active {
-    background: var(--col-initial);
-    stroke: var(--col-intense);
   }
 }
 </style>

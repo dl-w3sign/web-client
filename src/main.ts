@@ -27,7 +27,10 @@ const app = createApp({
 
 log.setDefaultLevel(config.LOG_LEVEL)
 
-app.use(router).use(store).use(i18n).use(VueToastificationPlugin)
+app.use(router).use(store).use(i18n).use(VueToastificationPlugin, {
+  transition: 'Vue-Toastification__fade',
+  newestOnTop: false,
+})
 
 app.config.globalProperties.$routes = ROUTE_NAMES
 app.config.globalProperties.$config = config

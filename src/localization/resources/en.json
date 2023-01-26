@@ -1,7 +1,4 @@
 {
-  "navbar": {
-    "logo": "TSS"
-  },
   "connect-ethereum": {
     "connect-button-text": "Connect to MetaMask",
     "connect-button-text-connecting": "Connecting...",
@@ -18,7 +15,10 @@
     "doc-creation-card-title": "CREATE DOCUMENT",
     "doc-creation-card-button-text": "Create document",
     "doc-verification-card-title": "VERIFY DOCUMENT",
-    "doc-verification-card-button-text": "Verify document"
+    "doc-verification-card-button-text": "Verify document",
+    "illustration-info-item-created": "Created",
+    "illustration-info-item-checked": "Checked",
+    "doc-verification-illustration-title": "Checking info"
   },
   "doc-creation-modal": {
     "title": "Document Creation"
@@ -57,7 +57,9 @@
   "file-field": {
     "title": "Drag and drop files or",
     "open-dialog-button-text": "Browse",
-    "require": "JPG, PNG, file size no more than 2 MB"
+    "require": "JPG, PNG, file size no more than 2 MB",
+    "error-uncorrect-file-type": "Uncorrect file type",
+    "error-exceeded-file-size": "File size exceeded"
   },
   "validations": {
     "field-error_required": "Please fill out this field"
@@ -84,11 +86,6 @@
     "provider-wrapper-method-not-found": "provider not exist or hasn't this method"
   },
   "notification": {
-    "default-title-success": "Success",
-    "default-title-error": "Error",
-    "default-title-warning": "Warning",
-    "default-title-info": "Info",
-    "default-title-default": "Message",
     "default-message-success": "Action successful",
     "default-message-error": "Something went wrong",
     "default-message-warning": "Something you are doing is not recommended",
