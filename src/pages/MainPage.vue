@@ -37,10 +37,16 @@ import { computed } from 'vue'
 
 const { $config } = useContext()
 const startButtonState = computed<BUTTON_STATES | undefined>(() => {
-  if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
-  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
-  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
-  else return undefined
+  switch (true) {
+    case web3Provider?.isInitFailed.value:
+      return BUTTON_STATES.notAllowed
+    case web3Provider?.isIniting.value:
+      return BUTTON_STATES.waiting
+    case web3Provider?.isConnecting.value:
+      return BUTTON_STATES.waiting
+    default:
+      return undefined
+  }
 })
 
 const connectOrReferToInstallMetamask = async () => {
