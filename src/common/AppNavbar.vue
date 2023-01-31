@@ -23,7 +23,6 @@
                 {{ $t('navbar.verify-document-button') }}
               </button>
             </li>
-            <li class="app-navbar__nav-line" />
           </ul>
         </nav>
       </transition>
@@ -136,15 +135,6 @@ const showDocVerificationModal = () => {
   &:focus {
     color: var(--col-primary);
   }
-}
-
-.app-navbar__nav-line {
-  position: absolute;
-  height: toRem(2);
-  background: var(--col-primary);
-  transition: var(--transation-duration-slow);
-  bottom: toRem(4);
-  pointer-events: none;
 }
 
 .app-navbar__connect-ethereum {
