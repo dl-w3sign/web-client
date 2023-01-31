@@ -63,21 +63,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
   useForm,
   useFormValidation,
-  UseProvider,
   useTimestampContract,
+  web3Provider,
 } from '@/composables'
-import {
-  APP_KEYS,
-  BUTTON_PRESETS,
-  BUTTON_STATES,
-  RPC_ERROR_MESSAGES,
-} from '@/enums'
+import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, InputField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, maxValue } from '@/validators'
@@ -88,7 +83,6 @@ const emit = defineEmits<{
   (event: 'complete'): void
 }>()
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
 
 const timestampContractInstance = computed(() => {

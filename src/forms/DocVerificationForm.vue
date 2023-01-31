@@ -112,14 +112,15 @@ import {
   useFormValidation,
   useTimestampContract,
   useContext,
+  web3Provider,
 } from '@/composables'
-import { APP_KEYS, BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
+import { BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, InputField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
-import { Keccak256Hash, UseProvider } from '@/types'
+import { Keccak256Hash } from '@/types'
 import { required, maxValue } from '@/validators'
 import { DateUtil } from '@/utils'
-import { ref, reactive, inject, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { errors } from '@/errors'
 
 const emit = defineEmits<{
@@ -129,8 +130,6 @@ const emit = defineEmits<{
 const form = reactive({
   file: null as File | null,
 })
-
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 
 const { $t, $config } = useContext()
 const { isFormValid } = useFormValidation(form, {

@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { AppNavbar } from '@/common'
-import { useNotifications, useProvider, useContext } from '@/composables'
+import { useNotifications, useContext, web3Provider } from '@/composables'
 import { IMAGE_SOURCES, APP_KEYS } from '@/enums'
 import { ErrorHandler, Bus } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
@@ -21,7 +21,6 @@ import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
 
 const web3Store = useWeb3ProvidersStore()
-const web3Provider = useProvider()
 const { $config } = useContext()
 
 const isAppInitialized = ref(false)
@@ -58,7 +57,6 @@ const showContent = () => {
   isContentShown.value = true
 }
 
-provide(APP_KEYS.web3Provider, web3Provider)
 provide(APP_KEYS.setAppWrapperBackground, setAppWrapperBackground)
 
 Bus.on(Bus.eventList.openModal, hideContent)

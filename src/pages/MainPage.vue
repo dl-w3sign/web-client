@@ -31,12 +31,11 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon } from '@/common'
-import { UseProvider, useContext } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES, APP_KEYS } from '@/enums'
-import { computed, inject } from 'vue'
+import { useContext, web3Provider } from '@/composables'
+import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES } from '@/enums'
+import { computed } from 'vue'
 
 const { $config } = useContext()
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const startButtonState = computed<BUTTON_STATES | undefined>(() => {
   if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
   else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting

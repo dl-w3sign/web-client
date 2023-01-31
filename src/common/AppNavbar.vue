@@ -47,12 +47,10 @@
 
 <script lang="ts" setup>
 import { ConnectEthereum } from '@/common'
-import { UseProvider } from '@/composables'
-import { APP_KEYS, ROUTE_NAMES } from '@/enums'
+import { web3Provider } from '@/composables'
+import { ROUTE_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
-import { ref, inject } from 'vue'
-
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+import { ref } from 'vue'
 
 const isDocCreationModalShown = ref(false)
 const updateDocCreationModalShow = (isShown: boolean) => {

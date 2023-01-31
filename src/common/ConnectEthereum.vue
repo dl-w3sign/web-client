@@ -12,13 +12,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { AppButton, Icon } from '@/common'
-import { useContext, UseProvider } from '@/composables'
-import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
+import { useContext, web3Provider } from '@/composables'
+import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
 import { abbrCenter } from '@/helpers'
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
 
 const buttonState = computed<BUTTON_STATES | undefined>(() => {
