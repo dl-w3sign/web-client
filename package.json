@@ -30,6 +30,7 @@
     "bignumber.js": "^9.0.2",
     "bs58": "^5.0.0",
     "dayjs": "^1.11.5",
+    "detect-browser": "^5.3.0",
     "ethers": "^5.7.0",
     "jsona": "^1.9.6",
     "lodash-es": "^4.17.21",
