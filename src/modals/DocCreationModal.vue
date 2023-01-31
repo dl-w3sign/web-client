@@ -6,7 +6,7 @@
       </h3>
       <doc-creation-form
         class="doc-creation-modal__form"
-        @complete="showCloseButton"
+        @complete="isCloseButtonShown = true"
       />
       <app-button
         v-show="isCloseButtonShown"
@@ -28,9 +28,6 @@ import { Bus } from '@/helpers'
 import { inject, useAttrs, watch, ref } from 'vue'
 
 const isCloseButtonShown = ref(false)
-const showCloseButton = () => {
-  isCloseButtonShown.value = true
-}
 
 const attrs = useAttrs()
 

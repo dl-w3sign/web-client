@@ -4,7 +4,7 @@
       <h3>{{ $t('doc-verification-modal.title') }}</h3>
       <doc-verification-form
         class="doc-verification-modal__form"
-        @complete="showCloseButton"
+        @complete="isCloseButtonShown = true"
       />
       <app-button
         v-show="isCloseButtonShown"
@@ -25,10 +25,7 @@ import { DocVerificationForm } from '@/forms'
 import { Bus } from '@/helpers'
 import { inject, useAttrs, watch, ref } from 'vue'
 
-const isCloseButtonShown = ref(false)
-const showCloseButton = () => {
-  isCloseButtonShown.value = true
-}
+const isCloseButtonShown = ref()
 
 const attrs = useAttrs()
 

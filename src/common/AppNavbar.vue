@@ -10,7 +10,7 @@
             <li class="app-navbar__nav-item">
               <button
                 class="app-navbar__nav-button"
-                @click="showDocCreationModal"
+                @click="isDocCreationModalShown = true"
               >
                 {{ $t('navbar.create-document-button') }}
               </button>
@@ -18,7 +18,7 @@
             <li class="app-navbar__nav-item">
               <button
                 class="app-navbar__nav-button"
-                @click="showDocVerificationModal"
+                @click="isDocVerificationModalShown = true"
               >
                 {{ $t('navbar.verify-document-button') }}
               </button>
@@ -56,16 +56,10 @@ const isDocCreationModalShown = ref(false)
 const updateDocCreationModalShow = (isShown: boolean) => {
   isDocCreationModalShown.value = isShown
 }
-const showDocCreationModal = () => {
-  isDocCreationModalShown.value = true
-}
 
 const isDocVerificationModalShown = ref(false)
 const updateDocVerificationModalShow = (isShown: boolean) => {
   isDocVerificationModalShown.value = isShown
-}
-const showDocVerificationModal = () => {
-  isDocVerificationModalShown.value = true
 }
 </script>
 
