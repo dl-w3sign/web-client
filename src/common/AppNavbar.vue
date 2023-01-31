@@ -1,6 +1,6 @@
 <template>
   <header class="app-navbar">
-    <router-link to="/" class="app-navbar__logo">
+    <router-link :to="{ name: ROUTE_NAMES.main }" class="app-navbar__logo">
       {{ $t('navbar.logo') }}
     </router-link>
     <div class="app-navbar__control-box">
@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import { ConnectEthereum } from '@/common'
 import { UseProvider } from '@/composables'
-import { APP_KEYS } from '@/enums'
+import { APP_KEYS, ROUTE_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
 import { ref, inject } from 'vue'
 
