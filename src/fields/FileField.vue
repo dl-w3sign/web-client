@@ -171,7 +171,11 @@ watch(
   padding: 0 toRem(24);
   gap: toRem(10);
   height: toRem(96);
-  width: toRem(544);
+
+  @include respond-to(850px) {
+    padding: 0 toRem(16);
+    height: toRem(76);
+  }
 }
 
 .file-field__file-meta {
@@ -186,13 +190,20 @@ watch(
 
 .file-field__file-name {
   @include text-ellipsis;
+
+  @include respond-to(850px) {
+    @include text-5;
+  }
 }
 
 .file-field__file-size {
   color: var(--col-fancy);
-  font-size: toRem(14);
-  line-height: toRem(20);
-  font-weight: 400;
+
+  @include text-4;
+
+  @include respond-to(850px) {
+    margin-top: toRem(4);
+  }
 }
 
 .file-field__cancel-button {
@@ -211,11 +222,16 @@ watch(
   &:active {
     fill: var(--col-spot);
   }
+
+  @include respond-to(850px) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 
 .file-field__drop-zone {
   position: relative;
-  background-image: url('/branding/background-file-field-drop-zone.png');
+  background-image: url('/branding/border-file-field-drop-zone.png');
   background-color: var(--col-great);
   display: flex;
   margin: auto;
@@ -227,6 +243,12 @@ watch(
   &:hover,
   &--active {
     background-color: var(--col-grand);
+  }
+
+  @include respond-to(850px) {
+    height: toRem(184);
+    width: toRem(311);
+    background-image: url('/branding/border-file-field-drop-zone-small.png');
   }
 }
 
@@ -261,9 +283,15 @@ watch(
 }
 
 .file-field__title {
-  font-size: toRem(20);
-  line-height: 1.4;
   margin-top: toRem(16);
+
+  @include h4;
+
+  @include respond-to(850px) {
+    margin-top: toRem(8);
+
+    @include h5;
+  }
 }
 
 .file-field__open-dialog-button {
@@ -292,11 +320,13 @@ watch(
 }
 
 .file-field__require {
-  font-family: 'Inter', 'Arial', sans-serif;
   color: var(--col-fine);
-  font-size: toRem(16);
-  font-weight: 400;
-  line-height: 1.5;
   margin-top: toRem(8);
+
+  @include text-2;
+
+  @include respond-to(850px) {
+    @include text-4;
+  }
 }
 </style>

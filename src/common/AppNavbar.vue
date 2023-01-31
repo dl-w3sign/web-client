@@ -25,6 +25,10 @@ import { BUTTON_PRESETS } from '@/enums'
   height: toRem(80);
   background: var(--col-intense);
   box-shadow: 0 toRem(4) toRem(24) var(--col-rare);
+
+  @include respond-to(850px) {
+    height: toRem(72);
+  }
 }
 
 .app-navbar__container {
@@ -43,6 +47,12 @@ import { BUTTON_PRESETS } from '@/enums'
 
 .app-navbar__connect-ethereum {
   height: toRem(48);
-  width: toRem(253);
+  width: toRem(226);
+
+  @include text-5;
+
+  @include respond-to(850px) {
+    width: toRem(216);
+  }
 }
 </style>

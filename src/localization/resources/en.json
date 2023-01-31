@@ -44,7 +44,7 @@
     "exit-button-text": "Ok",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "The document was found",
-    "document-hash-label": "Document Hash",
+    "document-hash-title": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
     "list-title": "List of signatory addresses",

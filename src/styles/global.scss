@@ -28,13 +28,10 @@ select,
 textarea {
   background: var(--col-intense);
   color: var(--col-fancy);
-  font-family: 'Inter', 'Arial', sans-serif;
-  font-size: toRem(16);
-  line-height: 1.5;
-  font-weight: 400;
   padding: toRem(13) toRem(15);
   border: toRem(1) solid var(--col-brittle);
   border-radius: var(--border-radius);
+  resize: none;
 
   &:hover {
     border-color: var(--col-flexible);
@@ -49,7 +46,17 @@ textarea {
     border: none;
     background: var(--col-great);
     padding: toRem(16) toRem(24);
+
+    @include text-1;
+
+    @include respond-to(850px) {
+      padding: toRem(12) toRem(16);
+
+      @include text-6;
+    }
   }
+
+  @include text-2;
 }
 
 body,
@@ -92,14 +99,6 @@ ul {
   list-style-type: none;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-weight: 500;
-  line-height: toRem(64);
-}
-
 h1 {
   font-size: toRem(56);
   line-height: toRem(64);
@@ -137,6 +136,11 @@ a {
 ::-webkit-scrollbar {
   height: toRem(8);
   width: toRem(8);
+
+  @include respond-to(850px) {
+    height: toRem(4);
+    width: toRem(4);
+  }
 }
 
 ::-webkit-scrollbar-track {

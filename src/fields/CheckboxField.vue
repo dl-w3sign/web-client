@@ -48,6 +48,7 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field {
   transition: var(--transition-duration);
   fill: var(--col-brittle);
+  width: max-content;
 
   &:not([disabled]):hover {
     fill: var(--col-flexible);
@@ -73,8 +74,7 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field__label {
   display: flex;
   align-items: center;
-  gap: toRem(11);
-  width: max-content;
+  gap: toRem(8);
   cursor: pointer;
   user-select: none;
 }
@@ -87,12 +87,19 @@ const updateModelValue = (event: InputEvent) => {
   width: toRem(18);
   height: toRem(18);
   margin: toRem(3);
+
+  @include respond-to(850px) {
+    width: toRem(15);
+    height: toRem(15);
+    margin: toRem(2.5);
+  }
 }
 
 .checkbox-field__label-message {
-  font-family: 'Inter', 'Arial', sans-serif;
-  font-size: toRem(16);
-  font-weight: 400;
-  line-height: 1.5;
+  @include text-2;
+
+  @include respond-to(850px) {
+    @include text-4;
+  }
 }
 </style>

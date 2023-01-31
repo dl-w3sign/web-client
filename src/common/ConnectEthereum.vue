@@ -64,7 +64,7 @@ const connectOrReferToInstallMetamask = async () => {
 
 <style lang="scss" scoped>
 .connect-ethereum__connect-button {
-  gap: toRem(16);
+  gap: toRem(10);
 }
 
 .connect-ethereum__button-icon {

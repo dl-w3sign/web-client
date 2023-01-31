@@ -80,6 +80,10 @@ export default defineComponent({
   background: var(--col-pesky);
   overflow-y: scroll;
   padding: 4%;
+
+  @include respond-to(850px) {
+    padding: 2%;
+  }
 }
 
 .modal__pane {
@@ -88,6 +92,11 @@ export default defineComponent({
   border-radius: var(--border-radius-large);
   margin: auto;
   width: toRem(608);
+
+  @include respond-to(850px) {
+    padding: toRem(16);
+    width: toRem(343);
+  }
 }
 
 .modal-enter-active,

@@ -43,16 +43,21 @@ $media-breakpoints: (
 @mixin note {
   display: flex;
   gap: toRem(16);
-  font-family: 'Inter', 'Arial', sans-serif;
-  font-size: toRem(16);
-  font-weight: 400;
-  line-height: 1.5;
   color: var(--col-trendy);
   background: var(--col-tender);
   border: toRem(1) solid var(--col-primary);
   border-radius: var(--border-radius-medium);
   padding: toRem(24);
   font-feature-settings: 'tnum' on, 'lnum' on;
+
+  @include text-2;
+
+  @include respond-to(850px) {
+    gap: toRem(8);
+    padding: toRem(12);
+
+    @include text-4;
+  }
 }
 
 @mixin note-error {
@@ -68,6 +73,12 @@ $media-breakpoints: (
 @mixin note-warning {
   background: var(--col-weak);
   border-color: var(--col-wise);
+}
+
+@mixin h2 {
+  font-weight: 600;
+  font-size: toRem(48);
+  line-height: toRem(56);
 }
 
 @mixin h3 {
@@ -86,4 +97,44 @@ $media-breakpoints: (
   font-size: toRem(18);
   line-height: toRem(24);
   font-weight: 500;
+}
+
+@mixin text-1 { // text-3
+  font-size: toRem(16);
+  line-height: toRem(24);
+  font-weight: 500;
+}
+
+@mixin text-2 { // body 2 inter
+  font-family: 'Inter', 'Arial', sans-serif;
+  font-size: toRem(16);
+  line-height: toRem(24);
+  font-weight: 400;
+}
+
+@mixin text-4 { // body-4-regular
+  font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
+  font-size: toRem(14);
+  line-height: toRem(20);
+  font-weight: 400;
+}
+
+@mixin text-5 { // body-4-medium
+  font-size: toRem(14);
+  line-height: toRem(20);
+  font-weight: 500;
+}
+
+@mixin text-6 { // body-5
+  font-family: 'Inter', 'Arial', sans-serif;
+  font-size: toRem(12);
+  line-height: toRem(20);
+  font-weight: 400;
+}
+
+@mixin text-caption {
+  font-weight: 500;
+  font-size: toRem(16);
+  line-height: toRem(24);
+  text-transform: uppercase;
 }
