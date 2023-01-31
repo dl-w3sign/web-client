@@ -438,6 +438,10 @@ Bus.on(Bus.eventList.openModal, reset)
   &:focus-within {
     stroke: var(--col-primary);
   }
+
+  @include respond-to(850px) {
+    margin: toRem(8) 0 toRem(12);
+  }
 }
 
 .doc-verification-form__timestamp-info {
@@ -484,6 +488,10 @@ Bus.on(Bus.eventList.openModal, reset)
 
 .doc-verification-form__pagination-control {
   margin: toRem(24) 0;
+
+  @include respond-to(850px) {
+    margin: toRem(12) 0;
+  }
 }
 
 .doc-verification-form__list-title {

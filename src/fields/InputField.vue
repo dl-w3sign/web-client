@@ -75,20 +75,36 @@ withDefaults(
   height: toRem(24);
   width: toRem(24);
   color: var(--col-intense);
+
+  @include respond-to(850px) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 
 .input-field__input {
   display: block;
   width: 100%;
+  transition: var(--transition-duration);
 
   &--with-left-icon {
     padding-left: toRem(49);
+
+    @include respond-to(850px) {
+      padding-left: toRem(41);
+    }
   }
 
   & ~ .input-field__icon {
     &--left {
-      top: toRem(14);
+      top: 0;
       left: toRem(16);
+      bottom: 0;
+      margin: auto 0;
+
+      @include respond-to(850px) {
+        left: toRem(12);
+      }
     }
   }
 }

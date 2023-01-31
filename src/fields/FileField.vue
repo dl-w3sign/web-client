@@ -322,10 +322,13 @@ watch(
 .file-field__require {
   color: var(--col-fine);
   margin-top: toRem(8);
+  text-align: center;
 
   @include text-2;
 
   @include respond-to(850px) {
+    max-width: toRem(240);
+
     @include text-4;
   }
 }

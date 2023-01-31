@@ -31,7 +31,6 @@ textarea {
   padding: toRem(13) toRem(15);
   border: toRem(1) solid var(--col-brittle);
   border-radius: var(--border-radius);
-  transition: var(--transition-duration);
   resize: none;
 
   &:hover {
@@ -58,6 +57,12 @@ textarea {
   }
 
   @include text-2;
+
+  @include respond-to(850px) {
+    padding: toRem(9) toRem(11);
+
+    @include text-4;
+  }
 }
 
 body,
