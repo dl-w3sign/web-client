@@ -12,7 +12,7 @@
         v-show="isCloseButtonShown"
         :preset="BUTTON_PRESETS.primary"
         class="doc-creation-modal__close-button"
-        @click.prevent="close"
+        @click="close"
       >
         {{ $t('doc-creation-modal.close-button-text') }}
       </app-button>

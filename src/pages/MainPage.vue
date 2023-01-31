@@ -19,7 +19,7 @@
           :preset="BUTTON_PRESETS.primary"
           :size="BUTTON_SIZES.large"
           :state="startButtonState"
-          @click.prevent="connectOrReferToInstallMetamask"
+          @click="connectOrReferToInstallMetamask"
         >
           {{ $t('main-page.start-button-text') }}
           <icon class="main-page__button-icon" :name="$icons.arrowRight" />

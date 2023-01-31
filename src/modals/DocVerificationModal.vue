@@ -10,7 +10,7 @@
         v-show="isCloseButtonShown"
         :preset="BUTTON_PRESETS.primary"
         class="doc-verification-modal__close-button"
-        @click.prevent="close"
+        @click="close"
       >
         {{ $t('doc-verification-modal.close-button-text') }}
       </app-button>

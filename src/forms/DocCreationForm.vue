@@ -1,5 +1,5 @@
 <template>
-  <form class="doc-creation-form">
+  <form class="doc-creation-form" @submit.prevent>
     <div v-if="isSubmitting" class="doc-creation-form__loader">
       <spinner />
       <p class="doc-creation-form__please-wait-msg">
@@ -34,7 +34,7 @@
       <app-button
         class="doc-creation-form__button"
         :preset="BUTTON_PRESETS.primary"
-        @click.prevent="reset"
+        @click="reset"
       >
         {{ $t('doc-creation-form.reset-button-text') }}
       </app-button>
@@ -54,7 +54,7 @@
             ? BUTTON_STATES.noneEvents
             : undefined
         "
-        @click.prevent="submit"
+        @click="submit"
       >
         {{ $t('doc-creation-form.submit-button-text') }}
       </app-button>

@@ -8,7 +8,7 @@
       <button
         v-if="!isReadonly"
         class="file-field__cancel-button"
-        @click.prevent="cancelFile"
+        @click="cancelFile"
       >
         <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
       </button>
@@ -33,7 +33,7 @@
         <p class="file-field__require">
           {{ $t('file-field.require') }}
         </p>
-        <button class="file-field__open-button" @click.prevent="openFileDialog">
+        <button class="file-field__open-button" @click="openFileDialog">
           {{ $t('file-field.label') }}
         </button>
       </div>

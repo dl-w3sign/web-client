@@ -1,5 +1,5 @@
 <template>
-  <form class="doc-verification-form">
+  <form class="doc-verification-form" @submit.prevent>
     <div v-if="isSubmitting" class="doc-verification-form__loader">
       <spinner />
       <p class="doc-verification-form__please-wait-msg">
@@ -65,7 +65,7 @@
           'doc-verification-form__button--signer',
         ]"
         :preset="BUTTON_PRESETS.primary"
-        @click.prevent="submitSignature"
+        @click="submitSignature"
       >
         {{ $t('doc-verification-form.sign-button-text') }}
       </app-button>
@@ -82,7 +82,7 @@
       <app-button
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"
-        @click.prevent="reset"
+        @click="reset"
       >
         {{ $t('doc-verification-form.reset-button-text') }}
       </app-button>
@@ -97,7 +97,7 @@
             ? BUTTON_STATES.noneEvents
             : undefined
         "
-        @click.prevent="submitVerification"
+        @click="submitVerification"
       >
         {{ $t('doc-verification-form.submit-button-text') }}
       </app-button>

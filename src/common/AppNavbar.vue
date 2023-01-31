@@ -10,7 +10,7 @@
             <li class="app-navbar__nav-item">
               <button
                 class="app-navbar__nav-button"
-                @click.prevent="showDocCreationModal"
+                @click="showDocCreationModal"
               >
                 {{ $t('navbar.create-document-button') }}
               </button>
@@ -18,7 +18,7 @@
             <li class="app-navbar__nav-item">
               <button
                 class="app-navbar__nav-button"
-                @click.prevent="showDocVerificationModal"
+                @click="showDocVerificationModal"
               >
                 {{ $t('navbar.verify-document-button') }}
               </button>

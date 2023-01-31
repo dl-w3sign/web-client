@@ -20,7 +20,7 @@
       <app-button
         v-if="isCopied"
         class="input-field__copy-button"
-        @click.prevent="copyContent"
+        @click="copyContent"
       >
         <icon class="input-field__icon" :name="$icons.clipboardCopy" />
       </app-button>

@@ -4,7 +4,7 @@
     :size="BUTTON_SIZES.large"
     :state="buttonState"
     :preset="BUTTON_PRESETS.genius"
-    @click.prevent="connectOrReferToInstallMetamask"
+    @click="connectOrReferToInstallMetamask"
   >
     <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
     {{ buttonText }}
