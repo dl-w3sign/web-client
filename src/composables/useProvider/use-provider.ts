@@ -113,12 +113,10 @@ export const useProvider = (): UseProvider => {
             await (providerWrp.value as ProviderWrapper).init()
           }
         } else {
-          isConnecting.value = false
           ErrorHandler.processWithoutFeedback(new Error('Invalid Provider'))
         }
       }
     } else if (!providerWrp.value?.connect) {
-      isConnecting.value = false
       ErrorHandler.processWithoutFeedback(
         new errors.ProviderWrapperMethodNotFoundError(),
       )
