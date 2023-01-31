@@ -15,57 +15,46 @@
   </teleport>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { ref, watch } from 'vue'
 import { Bus } from '@/helpers'
 
-const EVENTS = {
-  updateIsShown: 'update:is-shown',
+const emit = defineEmits<{
+  (event: 'update:is-shown', value: boolean): void
+}>()
+
+const props = withDefaults(
+  defineProps<{
+    isShown?: boolean
+    isCloseByClickOutside?: boolean
+  }>(),
+  {
+    isShown: false,
+    isCloseByClickOutside: true,
+  },
+)
+
+const modalWrapper = ref<HTMLDivElement | undefined>()
+
+const closeModal = () => {
+  emit('update:is-shown', false)
 }
 
-export default defineComponent({
-  name: 'modal',
-  props: {
-    isShown: {
-      type: Boolean,
-      default: false,
-    },
-    isCloseByClickOutside: {
-      type: Boolean,
-      default: true,
-    },
+const onWrapperClick = (event: PointerEvent) => {
+  if (event.target === modalWrapper.value) {
+    closeModal()
+    event.preventDefault()
+  }
+}
+
+watch(
+  () => props.isShown,
+  newValue => {
+    newValue
+      ? Bus.emit(Bus.eventList.openModal)
+      : Bus.emit(Bus.eventList.closeModal)
   },
-  setup(props, { emit }) {
-    const modalWrapper = ref<HTMLDivElement | undefined>()
-
-    const closeModal = () => {
-      emit(EVENTS.updateIsShown, false)
-    }
-
-    const onWrapperClick = (event: PointerEvent) => {
-      if (event.target === modalWrapper.value) {
-        closeModal()
-        event.preventDefault()
-      }
-    }
-
-    watch(
-      () => props.isShown,
-      newValue => {
-        newValue
-          ? Bus.emit(Bus.eventList.openModal)
-          : Bus.emit(Bus.eventList.closeModal)
-      },
-    )
-
-    return {
-      modalWrapper,
-
-      closeModal,
-      onWrapperClick,
-    }
-  },
-})
+)
 </script>
 
 <style lang="scss" scoped>

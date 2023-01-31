@@ -4,14 +4,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'spinner',
-})
-</script>
-
 <style lang="scss" scoped>
 .spinner {
   display: flex;
