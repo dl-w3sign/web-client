@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div v-if="isAppInitialized">
+    <div v-if="isAppInitialized" class="app__wrapper">
       <app-navbar class="app__navbar" />
       <router-view v-slot="{ Component, route }">
         <transition :name="route.meta.transition || 'fade'" mode="out-in">
@@ -54,10 +54,28 @@ init()
 </script>
 
 <style lang="scss" scoped>
+.app__wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: var(--col-rarest);
+  }
+
+  @include respond-to(380px) {
+    overflow: auto;
+  }
+}
+
 .app__navbar {
-  position: fixed;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: var(--z-app-navbar);
   width: 100%;
+  min-width: toRem(380);
 }
 
 .app__main {
@@ -66,9 +84,21 @@ init()
   right: 0;
   bottom: 0;
   left: 0;
-  overflow: auto;
+  overflow-y: scroll;
   height: calc(100vh - toRem(80));
-  width: 100vw;
+  width: 100%;
+  min-width: toRem(380);
+
+  @include respond-to(850px) {
+    top: toRem(72);
+    height: calc(100vh - toRem(72));
+  }
+
+  @include respond-to(380px) {
+    position: static;
+    padding-top: toRem(72);
+    height: max-content;
+  }
 }
 
 .fade-enter-active {

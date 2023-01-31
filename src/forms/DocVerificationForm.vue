@@ -1,5 +1,10 @@
 <template>
-  <form class="doc-verification-form">
+  <form
+    :class="{
+      'doc-verification-form': true,
+      'doc-verification-form--confirmation-hidden': !isConfirmationShown,
+    }"
+  >
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-verification-form__loader" />
@@ -9,11 +14,9 @@
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-verification-form__doc-info">
-          <input-field
-            :model-value="fileHash || ''"
-            :is-copied="true"
-            :label="$t('doc-verification-form.document-hash-label')"
-          />
+          <h5 class="doc-verification-form__doc-hash-title">
+            {{ $t('doc-verification-form.document-hash-title') }}
+          </h5>
           <div
             :class="[
               'doc-verification-form__timestamp-info',
@@ -28,6 +31,7 @@
             </p>
           </div>
         </div>
+        <textarea-field :model-value="fileHash || ''" :is-copied="true" />
         <div
           :class="[
             'doc-verification-form__note',
@@ -43,7 +47,7 @@
           </p>
         </div>
         <div v-if="isSignedBySomeone">
-          <h4>
+          <h4 class="doc-verification-form__list-title">
             {{ $t('doc-verification-form.list-title') }}
           </h4>
           <input-field
@@ -54,7 +58,7 @@
           />
           <div v-if="stampInfo?.signers">
             <div v-for="signer in stampInfo.signers" :key="signer.address">
-              <input-field
+              <textarea-field
                 class="doc-verification-form__address"
                 :model-value="signer.address"
                 :is-readonly="true"
@@ -149,7 +153,7 @@ import {
   TIMEZONES,
 } from '@/enums'
 import { errors } from '@/errors'
-import { FileField, InputField } from '@/fields'
+import { FileField, InputField, TextareaField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler, isAddress } from '@/helpers'
 import {
   Keccak256Hash,
@@ -354,24 +358,61 @@ Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>
+.doc-verification-form {
+  &--confirmation-hidden {
+    @include respond-to(850px) {
+      margin-top: toRem(16);
+    }
+  }
+}
+
 .doc-verification-form__buttons {
   display: flex;
   gap: toRem(16);
   margin-top: toRem(24);
+
+  @include respond-to(850px) {
+    gap: toRem(8);
+    margin-top: toRem(16);
+  }
 }
 
 .doc-verification-form__loader {
   margin: toRem(24) 0;
+
+  @include respond-to(850px) {
+    margin: toRem(16) 0;
+  }
 }
 
 .doc-verification-form__please-wait-msg {
   text-align: center;
-  font-size: toRem(18);
-  line-height: toRem(24);
+
+  @include h5;
+
+  @include respond-to(850px) {
+    @include text-1;
+  }
 }
 
 .doc-verification-form__doc-info {
-  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: toRem(8);
+
+  @include respond-to(850px) {
+    margin-bottom: toRem(4);
+  }
+}
+
+.doc-verification-form__doc-hash-title {
+  @include text-1;
+
+  @include respond-to(850px) {
+    margin-bottom: toRem(8);
+
+    @include text-5;
+  }
 }
 
 .doc-verification-form__address {
@@ -408,28 +449,49 @@ Bus.on(Bus.eventList.openModal, reset)
   line-height: 1.2;
 
   &--top {
-    position: absolute;
-    top: toRem(4);
-    right: 0;
-    margin: 0;
+    margin: 0 0 0 auto;
+    align-self: flex-end;
+  }
+
+  @include respond-to(850px) {
+    gap: toRem(4);
+
+    &:not(.doc-verification-form__timestamp-info--top) {
+      margin-bottom: toRem(12);
+    }
   }
 }
 
 .doc-verification-form__timestamp-title {
-  font-size: toRem(14);
-  line-height: toRem(20);
   color: var(--col-fine);
+
+  @include text-4;
+
+  @include respond-to(850px) {
+    @include text-6;
+  }
 }
 
 .doc-verification-form__timestamp {
-  font-size: toRem(14);
-  line-height: toRem(20);
-  font-weight: 400;
   color: var(--col-primary);
+
+  @include text-4;
+
+  @include respond-to(850px) {
+    @include text-6;
+  }
 }
 
 .doc-verification-form__pagination-control {
   margin: toRem(24) 0;
+}
+
+.doc-verification-form__list-title {
+  margin-bottom: toRem(8);
+
+  @include respond-to(850px) {
+    @include text-1;
+  }
 }
 
 .doc-verification-form__note {
@@ -437,10 +499,18 @@ Bus.on(Bus.eventList.openModal, reset)
 
   &--success {
     @include note-success;
+
+    @include respond-to(850px) {
+      margin: toRem(12) 0;
+    }
   }
 
   &--error {
     @include note-error;
+
+    @include respond-to(850px) {
+      margin: toRem(16) 0;
+    }
   }
 
   @include note;
@@ -451,6 +521,11 @@ Bus.on(Bus.eventList.openModal, reset)
   width: toRem(24);
   flex-shrink: 0;
   color: var(--col-intense);
+
+  @include respond-to(850px) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 
 .fade-leave-from {

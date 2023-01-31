@@ -24,5 +24,10 @@ import LoaderJSON from '@/../loader.json'
   display: block;
   width: toRem(121);
   height: toRem(121);
+
+  @include respond-to(850px) {
+    width: toRem(81);
+    height: toRem(81);
+  }
 }
 </style>

@@ -21,13 +21,25 @@ import { DocVerificationForm } from '@/forms'
 <style lang="scss" scoped>
 .doc-verification-modal__title {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: toRem(16);
   margin-bottom: toRem(24);
+
+  @include respond-to(850px) {
+    margin-bottom: toRem(12);
+
+    @include h4;
+  }
 }
 
 .doc-verification-modal__title-icon {
   width: toRem(40);
   height: toRem(40);
+
+  @include respond-to(850px) {
+    width: toRem(28);
+    height: toRem(28);
+  }
 }
 </style>

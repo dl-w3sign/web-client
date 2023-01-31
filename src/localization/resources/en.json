@@ -4,7 +4,8 @@
     "connect-button-text-connecting": "Connecting...",
     "connect-button-text-loading": "Loading...",
     "connect-button-text-failed-load": "Failed load",
-    "connect-button-text-install-provider": "Install MetaMask"
+    "connect-button-text-install-provider": "Install MetaMask",
+    "connect-button-text-go-to-metamask-app": "Go To MetaMask"
   },
   "main-page": {
     "welcome-beginning": "Welcome to",
@@ -44,8 +45,8 @@
     "exit-button-text": "Ok",
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "The document was found",
-    "document-hash-label": "Document Hash",
     "search-placeholder": "Search by address",
+    "document-hash-title": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
     "list-title": "List of signatory addresses",

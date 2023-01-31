@@ -37,8 +37,6 @@ withDefaults(
   height: toRem(52);
   border-radius: var(--border-radius);
   transition: var(--transition-duration);
-  font-size: toRem(16);
-  font-weight: 500;
 
   &--waiting {
     cursor: wait;
@@ -89,6 +87,14 @@ withDefaults(
       color: var(--col-positive);
       fill: var(--col-positive);
     }
+  }
+
+  @include text-1;
+
+  @include respond-to(850px) {
+    height: toRem(48);
+
+    @include text-5;
   }
 }
 </style>

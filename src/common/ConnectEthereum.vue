@@ -15,7 +15,8 @@ import { computed, inject } from 'vue'
 import { AppButton, Icon } from '@/common'
 import { useContext, UseProvider } from '@/composables'
 import { BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
-import { abbrCenter } from '@/helpers'
+import { abbrCenter, isMobile } from '@/helpers'
+import { router } from '@/router'
 
 withDefaults(
   defineProps<{
@@ -37,7 +38,9 @@ const buttonState = computed<BUTTON_STATES | undefined>(() => {
   else return undefined
 })
 const buttonText = computed<string>(() => {
-  if (!web3Provider?.selectedProvider.value)
+  if (!web3Provider?.selectedProvider.value && isMobile())
+    return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
+  else if (!web3Provider?.selectedProvider.value)
     return $t('connect-ethereum.connect-button-text-install-provider')
   else if (web3Provider?.isInitFailed.value)
     return $t('connect-ethereum.connect-button-text-failed-load')
@@ -50,7 +53,30 @@ const buttonText = computed<string>(() => {
   else return $t('connect-ethereum.connect-button-text')
 })
 
+const APP_URL = `https://metamask.app.link/dapp/${window.location.host}${router.currentRoute.value.fullPath}`
+const redirect = () => {
+  try {
+    window.open(APP_URL)
+  } catch (error) {
+    window.location.reload()
+  }
+}
+
+const handleMobileVersion = () => {
+  if (navigator.userAgent.includes('MetaMask')) {
+    web3Provider?.connect()
+    return
+  }
+
+  redirect()
+}
+
 const connectOrReferToInstallMetamask = async () => {
+  if (isMobile()) {
+    handleMobileVersion()
+    return
+  }
+
   if (web3Provider?.selectedProvider.value) {
     await web3Provider.connect()
 
@@ -64,7 +90,7 @@ const connectOrReferToInstallMetamask = async () => {
 
 <style lang="scss" scoped>
 .connect-ethereum__connect-button {
-  gap: toRem(16);
+  gap: toRem(10);
 }
 
 .connect-ethereum__button-icon {
