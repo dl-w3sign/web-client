@@ -67,7 +67,6 @@ const connectOrReferToInstallMetamask = async () => {
 .main-page__welcome-top {
   font-size: 8.1vw;
   color: var(--col-intense);
-  line-height: 1;
 }
 
 .main-page__welcome-bottom {
