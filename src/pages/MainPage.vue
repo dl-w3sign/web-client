@@ -65,12 +65,12 @@ const connectOrReferToInstallMetamask = async () => {
 }
 
 .main-page__welcome-top {
-  font-size: 8.1vw;
+  font-size: toRem(116);
   color: var(--col-intense);
 }
 
 .main-page__welcome-bottom {
-  font-size: 6.5vw;
+  font-size: toRem(94);
   color: var(--col-primary);
   line-height: 1.154;
   margin-top: toRem(4);
@@ -88,7 +88,7 @@ const connectOrReferToInstallMetamask = async () => {
   background: var(--col-simple);
   border-radius: toRem(4);
   padding: toRem(25) toRem(26) toRem(25) toRem(24);
-  font-size: 2.09vw;
+  font-size: toRem(30);
   color: var(--col-intense);
   letter-spacing: -0.015em;
   line-height: 1.165;
