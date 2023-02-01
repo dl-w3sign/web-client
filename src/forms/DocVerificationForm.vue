@@ -1,5 +1,10 @@
 <template>
   <form class="doc-verification-form" @submit.prevent>
+    <file-field
+      v-if="!isSubmitting && !isConfirmationShown"
+      v-model="form.file"
+      :is-readonly="isFailureShown"
+    />
     <div v-if="isSubmitting" class="doc-verification-form__loader">
       <spinner />
       <p class="doc-verification-form__please-wait-msg">
@@ -71,7 +76,6 @@
       </app-button>
     </div>
     <div v-else-if="isFailureShown">
-      <file-field :model-value="form.file" is-readonly />
       <div class="doc-verification-form__note-error">
         <icon
           class="doc-verification-form__note-error-icon"
@@ -88,7 +92,6 @@
       </app-button>
     </div>
     <div v-else>
-      <file-field v-model="form.file" />
       <app-button
         class="doc-verification-form__button"
         :preset="BUTTON_PRESETS.primary"

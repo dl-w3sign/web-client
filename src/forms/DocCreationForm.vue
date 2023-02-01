@@ -1,5 +1,10 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
+    <file-field
+      v-if="!isSubmitting && !isConfirmationShown"
+      v-model="form.file"
+      :is-readonly="isFailureShown"
+    />
     <div v-if="isSubmitting" class="doc-creation-form__loader">
       <spinner />
       <p class="doc-creation-form__please-wait-msg">
@@ -21,7 +26,6 @@
       />
     </div>
     <div v-else-if="isFailureShown">
-      <file-field v-model="form.file" is-readonly />
       <div class="doc-creation-form__note-error">
         <icon
           class="doc-creation-form__note-error-icon"
@@ -40,7 +44,6 @@
       </app-button>
     </div>
     <div v-else>
-      <file-field v-model="form.file" />
       <checkbox-field
         class="doc-creation-form__checkbox"
         v-model="form.isSign"
