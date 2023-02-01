@@ -16,8 +16,8 @@
       </p>
       <input-field
         :model-value="fileHash || ''"
-        :is-copied="true"
         :label="$t('doc-verification-form.document-hash-label')"
+        is-copied
       />
       <div class="doc-verification-form__timestamp-info">
         <p class="doc-verification-form__timestamp-title">
@@ -40,10 +40,10 @@
         >
           <input-field
             :model-value="signer.address"
-            :is-readonly="true"
             :right-icon="
               signer.signatureTimestamp ? $icons.checkCircle : undefined
             "
+            is-readonly
           />
           <div class="doc-verification-form__timestamp-info">
             <p
@@ -71,7 +71,7 @@
       </app-button>
     </div>
     <div v-else-if="isFailureShown">
-      <file-field :model-value="form.file" :is-readonly="true" />
+      <file-field :model-value="form.file" is-readonly />
       <div class="doc-verification-form__note-error">
         <icon
           class="doc-verification-form__note-error-icon"

@@ -16,12 +16,12 @@
       </p>
       <input-field
         :model-value="fileHash || ''"
-        :is-copied="true"
         :label="$t('doc-creation-form.document-hash-label')"
+        is-copied
       />
     </div>
     <div v-else-if="isFailureShown">
-      <file-field v-model="form.file" :is-readonly="true" />
+      <file-field v-model="form.file" is-readonly />
       <div class="doc-creation-form__note-error">
         <icon
           class="doc-creation-form__note-error-icon"
