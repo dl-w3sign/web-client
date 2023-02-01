@@ -250,7 +250,7 @@ Bus.on(Bus.eventList.openModal, reset)
 
 <style lang="scss" scoped>
 .doc-verification-form {
-  width: toRem(523);
+  min-width: toRem(523);
 }
 
 .doc-verification-form__button {

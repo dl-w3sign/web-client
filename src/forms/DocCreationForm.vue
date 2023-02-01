@@ -183,7 +183,7 @@ Bus.on(Bus.eventList.openModal, reset)
 
 <style lang="scss" scoped>
 .doc-creation-form {
-  width: toRem(523);
+  min-width: toRem(523);
 }
 
 .doc-creation-form__checkbox {

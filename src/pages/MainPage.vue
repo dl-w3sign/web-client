@@ -97,7 +97,7 @@ const connectOrReferToInstallMetamask = async () => {
 
 .main-page__start-button {
   margin-top: toRem(40);
-  width: toRem(320);
+  max-width: toRem(320);
   gap: toRem(10);
 }
 
