@@ -6,7 +6,8 @@
       state ? `app-button--${state}` : '',
       preset ? `app-button--${preset}` : '',
     ]"
-    :disabled="state === 'not-allowed' || state === 'waiting'"
+    :disabled="state === 'not-allowed' || state === 'waiting' || isDisabled"
+    v-bind="$attrs"
   >
     <slot>{{ text }}</slot>
   </button>
@@ -21,12 +22,14 @@ withDefaults(
     size?: BUTTON_SIZES
     state?: BUTTON_STATES
     preset?: BUTTON_PRESETS
+    isDisabled: boolean
   }>(),
   {
     text: '',
     size: undefined,
     state: undefined,
     preset: undefined,
+    isDisabled: false,
   },
 )
 </script>
