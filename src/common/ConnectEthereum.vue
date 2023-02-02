@@ -44,7 +44,7 @@ const buttonText = computed<string>(() => {
       return $t('connect-ethereum.connect-button-text-loading')
     case web3Provider.isConnecting.value:
       return $t('connect-ethereum.connect-button-text-connecting')
-    case web3Provider?.selectedAddress.value ? true : false:
+    case !!web3Provider?.selectedAddress.value:
       return abbrCenter(web3Provider.selectedAddress.value as string)
     default:
       return $t('connect-ethereum.connect-button-text')
