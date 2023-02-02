@@ -66,33 +66,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
   useForm,
   useFormValidation,
   useTimestampContract,
-  web3Provider,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, InputField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
 import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
-import { errors } from '@/errors'
+import { useWeb3ProvidersStore } from '@/store'
 
 const emit = defineEmits<{
   (event: 'complete'): void
 }>()
 
 const { $t, $config } = useContext()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
-    : undefined
-})
+const timestampContractInstance = useTimestampContract(
+  $config.CTR_ADDRESS_TIMESTAMP,
+)
 
 const {
   isFormDisabled,
@@ -138,29 +136,22 @@ const submit = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId.value !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.createStamp(
-      fileHash.value,
-      form.isSign,
-    )
+    await timestampContractInstance.createStamp(fileHash.value, form.isSign)
 
     showConfirmation()
     emit('complete')
   } catch (err) {
-    if (err?.constructor === errors.ProviderUserRejectedRequest) {
-      ErrorHandler.processWithoutFeedback(err)
+    if (err?.error) {
+      errorMessage.value = getErrorMessage(err?.error as EthProviderRpcError)
     } else {
-      if (err?.error) {
-        errorMessage.value = getErrorMessage(err?.error as EthProviderRpcError)
-      } else {
-        errorMessage.value = $t('doc-creation-form.error-default')
-      }
-
-      ErrorHandler.processWithoutFeedback(err)
-      showFailure()
+      errorMessage.value = $t('doc-creation-form.error-default')
     }
+    showFailure()
+
+    ErrorHandler.processWithoutFeedback(err)
   }
   isSubmitting.value = false
   enableForm()

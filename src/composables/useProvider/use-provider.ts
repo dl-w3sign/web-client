@@ -213,5 +213,3 @@ export const useProvider = (): UseProvider => {
     getAddressUrl,
   }
 }
-
-export const web3Provider: UseProvider = useProvider()

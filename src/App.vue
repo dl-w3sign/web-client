@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { AppNavbar } from '@/common'
-import { useNotifications, useContext, web3Provider } from '@/composables'
+import { useNotifications, useContext } from '@/composables'
 import { IMAGE_SOURCES, APP_KEYS } from '@/enums'
 import { ErrorHandler, Bus } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
@@ -21,6 +21,7 @@ import { DesignatedProvider } from '@/types'
 import { ref, provide } from 'vue'
 
 const web3Store = useWeb3ProvidersStore()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 const { $config } = useContext()
 
 const isAppInitialized = ref(false)

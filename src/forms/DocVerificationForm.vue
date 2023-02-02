@@ -115,7 +115,6 @@ import {
   useFormValidation,
   useTimestampContract,
   useContext,
-  web3Provider,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import { FileField, InputField } from '@/fields'
@@ -125,6 +124,7 @@ import { required, maxValue } from '@/validators'
 import { DateUtil } from '@/utils'
 import { ref, reactive, computed } from 'vue'
 import { errors } from '@/errors'
+import { useWeb3ProvidersStore } from '@/store'
 
 const emit = defineEmits<{
   (event: 'complete'): void
@@ -144,6 +144,10 @@ const { isFormValid } = useFormValidation(form, {
     },
   },
 })
+const { provider: web3Provider } = useWeb3ProvidersStore()
+const timestampContractInstance = useTimestampContract(
+  $config.CTR_ADDRESS_TIMESTAMP,
+)
 
 const {
   isFormDisabled,
@@ -161,14 +165,9 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 const isComplete = ref(false)
 
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
-    : undefined
-})
 const isSignedByCurrentSigner = computed(() =>
-  timestampContractInstance.value?.signers.value.find(
-    signer => signer.address === web3Provider?.selectedAddress.value,
+  timestampContractInstance.signers.value.find(
+    signer => signer.address === web3Provider.selectedAddress,
   )
     ? true
     : false,
@@ -186,11 +185,11 @@ const submitVerification = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.getStampInfo(fileHash.value)
-    if (timestampContractInstance?.value?.docTimestamp.value === 0)
+    await timestampContractInstance.getStampInfo(fileHash.value)
+    if (timestampContractInstance.docTimestamp.value === 0)
       throw new Error('Document not found')
 
     showConfirmation()
@@ -199,7 +198,7 @@ const submitVerification = async () => {
       isComplete.value = true
     }
   } catch (err) {
-    if (timestampContractInstance?.value?.docTimestamp.value === 0) {
+    if (timestampContractInstance.docTimestamp.value === 0) {
       errorMessage.value = $t('doc-verification-form.error-doc-not-found')
     } else {
       errorMessage.value = $t('doc-verification-form.error-default')
@@ -221,10 +220,10 @@ const submitSignature = async () => {
   isSubmitting.value = true
   isConfirmationShown.value = false
   try {
-    if (web3Provider?.chainId !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
+    await timestampContractInstance.sign(fileHash.value as Keccak256Hash)
 
     emit('complete')
     isComplete.value = true

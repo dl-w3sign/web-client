@@ -5,7 +5,7 @@
     </router-link>
     <div class="app-navbar__control-box">
       <transition name="fade">
-        <nav class="app-navbar__nav" v-if="web3Provider?.isConnected.value">
+        <nav class="app-navbar__nav" v-if="web3Provider.isConnected">
           <ul class="app-navbar__nav-list">
             <li class="app-navbar__nav-item">
               <button
@@ -30,7 +30,7 @@
         class="app-navbar__connect-ethereum"
         :class="{
           'app-navbar__connect-ethereum--not-connected':
-            !web3Provider?.isConnected.value,
+            !web3Provider.isConnected,
         }"
       />
     </div>
@@ -47,10 +47,12 @@
 
 <script lang="ts" setup>
 import { ConnectEthereum } from '@/common'
-import { web3Provider } from '@/composables'
 import { ROUTE_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
+import { useWeb3ProvidersStore } from '@/store'
 import { ref } from 'vue'
+
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
 const isDocCreationModalShown = ref(false)
 const updateDocCreationModalShow = (isShown: boolean) => {

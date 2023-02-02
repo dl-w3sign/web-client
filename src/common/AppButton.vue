@@ -22,7 +22,7 @@ withDefaults(
     size?: BUTTON_SIZES
     state?: BUTTON_STATES
     preset?: BUTTON_PRESETS
-    isDisabled: boolean
+    isDisabled?: boolean
   }>(),
   {
     text: '',

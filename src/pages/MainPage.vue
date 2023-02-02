@@ -14,7 +14,7 @@
       </div>
       <transition name="fade">
         <app-button
-          v-show="!web3Provider?.isConnected.value"
+          v-show="!web3Provider.isConnected"
           class="main-page__start-button"
           :preset="BUTTON_PRESETS.primary"
           :size="BUTTON_SIZES.large"
@@ -31,18 +31,21 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon } from '@/common'
-import { useContext, web3Provider } from '@/composables'
+import { useContext } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES } from '@/enums'
+import { useWeb3ProvidersStore } from '@/store'
 import { computed } from 'vue'
 
 const { $config } = useContext()
+const { provider: web3Provider } = useWeb3ProvidersStore()
+
 const startButtonState = computed<BUTTON_STATES | undefined>(() => {
   switch (true) {
-    case web3Provider?.isInitFailed.value:
+    case web3Provider.isInitFailed:
       return BUTTON_STATES.notAllowed
-    case web3Provider?.isIniting.value:
+    case web3Provider.isIniting:
       return BUTTON_STATES.waiting
-    case web3Provider?.isConnecting.value:
+    case web3Provider.isConnecting:
       return BUTTON_STATES.waiting
     default:
       return undefined
@@ -50,7 +53,7 @@ const startButtonState = computed<BUTTON_STATES | undefined>(() => {
 })
 
 const connectOrReferToInstallMetamask = async () => {
-  if (web3Provider?.selectedProvider.value) {
+  if (web3Provider.selectedProvider) {
     await web3Provider.connect()
     await web3Provider.switchChain($config.CHAIN_ID)
   } else {
