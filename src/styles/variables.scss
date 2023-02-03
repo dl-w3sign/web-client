@@ -1,0 +1,56 @@
+@import '../../static/branding/app-colors';
+
+:root,
+:before,
+:after {
+  /* brand colors */
+
+  --col-primary: #{$primary};
+  --col-basic: #{$basic};
+  --col-initial: #{$initial};
+  --col-secondary: #{$secondary};
+  --col-genius: #{$genius};
+  --col-wise: #{$wise};
+  --col-smart: #{$smart};
+  --col-intense: #{$intense};
+  --col-trendy: #{$trendy};
+  --col-peaceful: #{$peaceful};
+  --col-quiet: #{$quiet};
+  --col-calm: #{$calm};
+  --col-pesky: #{$pesky};
+  --col-weak: #{$weak};
+  --col-clear: #{$clear};
+  --col-pure: #{$pure};
+  --col-simple: #{$simple};
+  --col-net: #{$net};
+  --col-wet: #{$wet};
+  --col-crude: #{$crude};
+  --col-speck: #{$speck};
+  --col-accent: #{$accent};
+  --col-spot: #{$spot};
+  --col-dangerous: #{$dangerous};
+  --col-soft: #{$soft};
+  --col-mild: #{$mild};
+  --col-tender: #{$tender};
+  --col-alt: #{$alt};
+  --col-home: #{$home};
+  --col-lucky: #{$lucky};
+  --col-positive: #{$positive};
+  --col-negative: #{$negative};
+  --col-neutral: #{$neutral};
+  --col-glossy: #{$glossy};
+  --col-fortunate: #{$fortunate};
+
+  /* border radiuses */
+
+  --border-radius: #{toRem(4)};
+  --border-radius-large: #{toRem(10)};
+
+  /* transition */
+  --transition-duration: 0.2s;
+  --transation-duration-slow: 0.5s;
+  --transition-delay: 0.5s;
+
+  /* App variables */
+  --app-font-family: 'Roboto', 'Arial', sans-serif;
+}

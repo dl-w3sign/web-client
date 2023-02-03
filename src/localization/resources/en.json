@@ -1,16 +1,94 @@
 {
-  "time-stamping-form": {
-    "enter-hash": "Enter your Hash:",
-    "clear": "✖",
-    "create-time-stamp": "Create time stamp",
-    "check": "Check",
-    "load": "Load",
-    "result": "Result",
-    "error": "Error",
-    "created": "Created",
-    "somethings-gone-wrong": "Something’s Gone Wrong",
-    "time-stamping": "Time stamping",
-    "hash-already-exists": "Hash already exists",
-    "hash-not-found": "Hash not found"
+  "navbar": {
+    "logo": "TSS",
+    "create-document-button": "Create Document",
+    "verify-document-button": "Verify Document"
+  },
+  "connect-ethereum": {
+    "connect-button-text": "Connect to MetaMask",
+    "connect-button-text-connecting": "Connecting...",
+    "connect-button-text-loading": "Loading...",
+    "connect-button-text-failed-load": "Failed load",
+    "connect-button-text-install-provider": "Install MetaMask"
+  },
+  "main-page": {
+    "welcome-beginning": "Welcome to",
+    "welcome-continuing": "Time Stamping Service",
+    "description": "You can sign a document with other counterparties and time stamp it on the blockchain and further confirm the authenticity of the document and signatures",
+    "start-button-text": "Let’s Start"
+  },
+  "doc-creation-modal": {
+    "title": "Document Creation",
+    "close-button-text": "Ok"
+  },
+  "doc-verification-modal": {
+    "title": "Document Verification",
+    "close-button-text": "Ok"
+  },
+  "doc-creation-form": {
+    "checkbox-is-sign": "Sign at once by current account",
+    "submit-button-text": "Create Document",
+    "reset-button-text": "Create Another Document",
+    "please-wait-msg": "Please, wait a moment...",
+    "success-msg": "Your document was successfully created",
+    "document-hash-label": "Document Hash",
+    "error-default": "Something went wrong",
+    "error-hash-collision": "This document has already been uploaded and sent for signatures before"
+  },
+  "doc-verification-form": {
+    "submit-button-text": "Verify Document",
+    "reset-button-text": "Upload Another Document",
+    "sign-button-text": "Sign",
+    "please-wait-msg": "Please, wait a moment...",
+    "success-msg": "The document was found",
+    "document-hash-label": "Document Hash",
+    "doc-timestamp-title": "Document Creation Date:",
+    "signature-timestamp-title": "Signed",
+    "message-instead-timestamp": "The document has not been signed yet",
+    "list-title": "List of signatory addresses",
+    "sign-success-message": "You have successfully signed the document",
+    "error-default": "Something went wrong",
+    "error-doc-not-found": "This document has not been uploaded yet"
+  },
+  "file-field": {
+    "title": "Select a file or drag and drop here",
+    "require": "JPG, PNG or PDF, file size no more than 10MB",
+    "label": "Select file"
+  },
+  "validations": {
+    "field-error_required": "Please fill out this field"
+  },
+  "errors": {
+    "default": "Something went wrong",
+    "provider-user-rejected-request": "User rejected request.",
+    "provider-unauthorized": "The requested method and/or account has not been authorized by the user.",
+    "provider-unsupported-method": "The Provider does not support the requested method.",
+    "provider-disconnected": "The Provider is disconnected from all chains.",
+    "provider-chain-disconnected": "The Provider is not connected to the requested chain.",
+    "provider-parse-error": "Invalid JSON standard",
+    "provider-invalid-request": "JSON is not a valid request object standard",
+    "provider-method-not-found": "Method does not exist standard",
+    "provider-invalid-params": "Invalid method parameters standard",
+    "provider-internal-error": "Internal JSON-RPC error standard",
+    "provider-invalid-input": "Missing or invalid parameters non-standard",
+    "provider-resource-not-found": "equested resource not found non-standard",
+    "provider-resource-unavailable": "Requested resource not available non-standard",
+    "provider-transaction-rejected": "Transaction creation failed non-standard",
+    "provider-method-not-supported": "Method is not implemented non-standard",
+    "provider-limit-exceeded": "Request exceeds defined limit non-standard",
+    "provider-json-rpc-version-not-supported": "Version of JSON-RPC protocol is not supported non-standard",
+    "provider-wrapper-method-not-found": "Provider does not exist or method not supported"
+  },
+  "notification": {
+    "default-title-success": "Success",
+    "default-title-error": "Error",
+    "default-title-warning": "Warning",
+    "default-title-info": "Info",
+    "default-title-default": "Message",
+    "default-message-success": "Action successful",
+    "default-message-error": "Something went wrong",
+    "default-message-warning": "Unknown warning",
+    "default-message-info": "Unknown information",
+    "default-message-default": "Unknown message"
   }
 }

@@ -1,24 +1,25 @@
-# Logs
-logs
-*.log
+.DS_Store
+node_modules/
+OLD/
+dist/
+dist-ssr/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+test/unit/coverage
+selenium-debug.log
+.eslintcache
+package-lock.json
 
-node_modules
-dist
-dist-ssr
-*.local
+deprecated
 
 # Editor directories and files
-.vscode
-!.vscode/extensions.json
 .idea
-.DS_Store
+.vscode
+.fleet
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.local
+stats.html
