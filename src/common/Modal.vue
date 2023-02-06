@@ -1,8 +1,8 @@
 <template>
   <teleport to="#modal">
-    <transition name="modal">
+    <transition name="modal" appear>
       <div
-        v-show="isShown"
+        v-if="isShown"
         class="modal__wrapper"
         ref="modalWrapper"
         @click="onWrapperClick"
@@ -16,14 +16,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
-import { Bus } from '@/helpers'
+import { ref } from 'vue'
 
 const emit = defineEmits<{
   (event: 'update:is-shown', value: boolean): void
 }>()
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isShown?: boolean
     isCloseByClickOutside?: boolean
@@ -46,13 +45,6 @@ const onWrapperClick = (event: PointerEvent) => {
     event.preventDefault()
   }
 }
-
-watch(
-  () => props.isShown,
-  newValue => {
-    if (newValue) Bus.emit(Bus.eventList.openModal)
-  },
-)
 </script>
 
 <style lang="scss" scoped>

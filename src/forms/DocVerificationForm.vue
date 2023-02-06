@@ -262,8 +262,6 @@ const reset = () => {
   isSigned.value = false
   resetState()
 }
-
-Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>

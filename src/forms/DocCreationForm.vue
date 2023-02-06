@@ -81,7 +81,7 @@ import {
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
+import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
 import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
@@ -177,8 +177,6 @@ const reset = () => {
   isFailureShown.value = false
   isFormDisabled.value = false
 }
-
-Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>
