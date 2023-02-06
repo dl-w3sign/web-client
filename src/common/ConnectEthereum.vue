@@ -91,8 +91,10 @@ const connectOrReferToInstallMetamask = async () => {
   if (web3Provider?.selectedProvider) {
     await web3Provider.connect()
 
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
+    setTimeout(() => {
+      if (web3Provider.isConnected && web3Provider.chainId !== $config.CHAIN_ID)
+        web3Provider.switchChain($config.CHAIN_ID)
+    }, 200)
   } else {
     window.open($config.WEB3_PROVIDER_INSTALL_LINK)
   }
