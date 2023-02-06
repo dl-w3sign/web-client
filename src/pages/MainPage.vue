@@ -28,25 +28,24 @@
           v-if="isConnectEthereumShown"
           :class="{
             'main-page__connect-ethereum': true,
-            'main-page__connect-ethereum--connected':
-              web3Provider?.isConnected.value,
+            'main-page__connect-ethereum--connected': web3Provider?.isConnected,
           }"
         >
           <p
             :class="{
               'main-page__connect-ethereum-message': true,
               'main-page__connect-ethereum-message--bounded':
-                !web3Provider?.isConnected.value,
+                !web3Provider?.isConnected,
             }"
           >
             {{
-              web3Provider?.isConnected.value
+              web3Provider?.isConnected
                 ? $t('main-page.connected-ethereum-message')
                 : $t('main-page.connect-ethereum-message')
             }}
           </p>
           <connect-ethereum
-            v-if="!web3Provider?.isConnected.value"
+            v-if="!web3Provider?.isConnected"
             class="main-page__connect-ethereum-button"
             :button-preset="BUTTON_PRESETS.primary"
           />
@@ -144,9 +143,7 @@
           :text="$t('main-page.doc-creation-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
           :state="
-            web3Provider?.isConnected.value
-              ? undefined
-              : BUTTON_STATES.noneEvents
+            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
           @click="showDocCreationModal"
         />
@@ -240,9 +237,7 @@
           :text="$t('main-page.doc-verification-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
           :state="
-            web3Provider?.isConnected.value
-              ? undefined
-              : BUTTON_STATES.noneEvents
+            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
           @click="showDocVerificationModal"
         />
@@ -257,12 +252,12 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon, ConnectEthereum } from '@/common'
-import { UseProvider } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, APP_KEYS, ICON_NAMES } from '@/enums'
+import { BUTTON_PRESETS, BUTTON_STATES, ICON_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
-import { inject, ref, watch } from 'vue'
+import { useWeb3ProvidersStore } from '@/store'
+import { ref, watch } from 'vue'
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
 const isDocCreationModalShown = ref(false)
 const showDocCreationModal = () => {
@@ -289,7 +284,7 @@ const showConnectEthereum = () => {
 }
 
 watch(
-  () => web3Provider?.isConnected.value,
+  () => web3Provider?.isConnected,
   newValue => {
     setTimeout(() => {
       newValue ? hideConnectEthereum() : showConnectEthereum()

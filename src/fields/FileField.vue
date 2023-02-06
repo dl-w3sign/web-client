@@ -13,7 +13,7 @@
       <button
         v-if="!isReadonly"
         class="file-field__cancel-button"
-        @click.prevent="cancelFile"
+        @click="cancelFile"
       >
         <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
       </button>

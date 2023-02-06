@@ -11,12 +11,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { AppButton, Icon } from '@/common'
-import { useContext, UseProvider } from '@/composables'
-import { BUTTON_STATES, BUTTON_PRESETS, APP_KEYS } from '@/enums'
+import { useContext } from '@/composables'
+import { BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
 import { abbrCenter, isMobile } from '@/helpers'
 import { router } from '@/router'
+import { useWeb3ProvidersStore } from '@/store'
 
 withDefaults(
   defineProps<{
@@ -27,30 +28,40 @@ withDefaults(
   },
 )
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
 const buttonState = computed<BUTTON_STATES | undefined>(() => {
-  if (web3Provider?.isInitFailed.value) return BUTTON_STATES.notAllowed
-  else if (web3Provider?.isIniting.value) return BUTTON_STATES.waiting
-  else if (web3Provider?.isConnecting.value) return BUTTON_STATES.waiting
-  else if (web3Provider?.isConnected.value) return BUTTON_STATES.noneEvents
-  else return undefined
+  switch (true) {
+    case web3Provider.isInitFailed:
+      return BUTTON_STATES.notAllowed
+    case web3Provider.isIniting:
+      return BUTTON_STATES.waiting
+    case web3Provider.isConnecting:
+      return BUTTON_STATES.waiting
+    case web3Provider.isConnected:
+      return BUTTON_STATES.noneEvents
+    default:
+      return undefined
+  }
 })
 const buttonText = computed<string>(() => {
-  if (!web3Provider?.selectedProvider.value && isMobile())
-    return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
-  else if (!web3Provider?.selectedProvider.value)
-    return $t('connect-ethereum.connect-button-text-install-provider')
-  else if (web3Provider?.isInitFailed.value)
-    return $t('connect-ethereum.connect-button-text-failed-load')
-  else if (web3Provider?.isIniting.value)
-    return $t('connect-ethereum.connect-button-text-loading')
-  else if (web3Provider?.isConnecting.value)
-    return $t('connect-ethereum.connect-button-text-connecting')
-  else if (web3Provider?.selectedAddress.value)
-    return abbrCenter(web3Provider.selectedAddress.value)
-  else return $t('connect-ethereum.connect-button-text')
+  switch (true) {
+    case !web3Provider?.selectedProvider && isMobile():
+      return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
+    case !web3Provider?.selectedProvider:
+      return $t('connect-ethereum.connect-button-text-install-provider')
+    case web3Provider?.isInitFailed:
+      return $t('connect-ethereum.connect-button-text-failed-load')
+    case web3Provider?.isIniting:
+      return $t('connect-ethereum.connect-button-text-loading')
+    case web3Provider?.isConnecting:
+      return $t('connect-ethereum.connect-button-text-connecting')
+    case !!web3Provider?.selectedAddress:
+      return abbrCenter(web3Provider.selectedAddress as string)
+    default:
+      return $t('connect-ethereum.connect-button-text')
+  }
 })
 
 const APP_URL = `https://metamask.app.link/dapp/${window.location.host}${router.currentRoute.value.fullPath}`
@@ -77,10 +88,10 @@ const connectOrReferToInstallMetamask = async () => {
     return
   }
 
-  if (web3Provider?.selectedProvider.value) {
+  if (web3Provider?.selectedProvider) {
     await web3Provider.connect()
 
-    if (web3Provider.chainId.value !== $config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
   } else {
     window.open($config.WEB3_PROVIDER_INSTALL_LINK)

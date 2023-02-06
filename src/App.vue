@@ -19,16 +19,15 @@
 
 <script lang="ts" setup>
 import { AppNavbar, Animation } from '@/common'
-import { useNotifications, useProvider, useContext } from '@/composables'
-import { APP_KEYS } from '@/enums'
+import { useNotifications, useContext } from '@/composables'
 import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
 import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
-const web3Provider = useProvider()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 const { $config } = useContext()
 
 const isAppInitialized = ref(false)
@@ -47,8 +46,6 @@ const init = async () => {
   }
   isAppInitialized.value = true
 }
-
-provide(APP_KEYS.web3Provider, web3Provider)
 
 init()
 </script>
