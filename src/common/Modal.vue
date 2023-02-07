@@ -50,17 +50,40 @@ const onWrapperClick = (event: PointerEvent) => {
 <style lang="scss" scoped>
 .modal__wrapper {
   display: flex;
-  position: fixed;
+  position: absolute;
   z-index: var(--z-modal);
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: vh(100);
+  height: 100vh;
   background: var(--col-pesky);
   overflow-y: scroll;
   padding: 4%;
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--col-flexible);
+
+    &:hover {
+      background: var(--col-brittle);
+
+      @include respond-to(380px) {
+        background: var(--col-flexible);
+      }
+    }
+
+    @include respond-to(380px) {
+      background: var(--col-brittle);
+    }
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    @include respond-to(380px) {
+      background: var(--col-rich);
+    }
+  }
 
   @include respond-to(850px) {
     padding: 2%;
@@ -73,6 +96,7 @@ const onWrapperClick = (event: PointerEvent) => {
   border-radius: var(--border-radius-large);
   margin: auto;
   width: toRem(608);
+  flex-shrink: 0;
 
   @include respond-to(850px) {
     padding: toRem(16);
@@ -90,13 +114,5 @@ const onWrapperClick = (event: PointerEvent) => {
 .modal-leave-to {
   opacity: 0;
   transform: scale(1.1);
-}
-
-.modal__wrapper::-webkit-scrollbar-thumb {
-  background: var(--col-flexible);
-
-  &:hover {
-    background: var(--col-brittle);
-  }
 }
 </style>

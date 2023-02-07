@@ -153,7 +153,6 @@ const { textarea } = useTextareaAutosize({
   & .textarea-field__icon {
     position: static;
     color: inherit;
-    transition: var(--transition-duration);
   }
 
   @include respond-to(850px) {

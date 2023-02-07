@@ -19,8 +19,17 @@ body, #app {
   flex-direction: column;
   flex: 1;
   color: var(--col-trendy);
-  min-height: vh(100);
+  max-height: 100vh;
   background: var(--col-rich);
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: var(--col-rarest);
+  }
+
+  @include respond-to(380px) {
+    overflow: auto;
+  }
 }
 
 input,
