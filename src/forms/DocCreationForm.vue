@@ -171,6 +171,7 @@ const submit = async () => {
 
     showConfirmation()
   } catch (err) {
+    alert(err)
     if (
       err?.constructor === errors.ProviderUserRejectedRequest ||
       err?.code === errors.ACTION_REJECTED
