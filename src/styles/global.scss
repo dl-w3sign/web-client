@@ -153,6 +153,11 @@ a {
   height: toRem(8);
   width: toRem(8);
 
+  @include respond-to(956px) {
+    height: toRem(6);
+    width: toRem(6);
+  }
+
   @include respond-to(850px) {
     height: toRem(4);
     width: toRem(4);

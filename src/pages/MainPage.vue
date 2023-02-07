@@ -359,15 +359,7 @@ const getStatusIconName = (n: number) => {
   padding: 0 toRem(28) toRem(23);
 
   @include respond-to(1100px) {
-    // задать паддинги для свг
-  }
-
-  @include respond-to(956px) {
-    // задать паддинги для свг
-  }
-
-  @include respond-to(850px) {
-    // задать паддинги для свг
+    padding-bottom: toRem(18);
   }
 }
 
@@ -438,6 +430,10 @@ const getStatusIconName = (n: number) => {
   z-index: var(--z-main-page-welcome-background-img);
   height: toRem(51);
   width: 99.1%;
+
+  @include respond-to(1100px) {
+    height: toRem(44);
+  }
 }
 
 .main-page__description {

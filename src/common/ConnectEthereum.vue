@@ -110,5 +110,15 @@ const connectOrReferToInstallMetamask = async () => {
 .connect-ethereum__button-icon {
   height: toRem(24);
   width: toRem(24);
+
+  .app-navbar & {
+    height: toRem(20);
+    width: toRem(20);
+  }
+
+  @include respond-to(850px) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 </style>
