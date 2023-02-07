@@ -91,6 +91,7 @@ const connectOrReferToInstallMetamask = async () => {
   if (web3Provider?.selectedProvider) {
     await web3Provider.connect()
 
+    // TODO: discuss
     setTimeout(() => {
       if (web3Provider.isConnected && web3Provider.chainId !== $config.CHAIN_ID)
         web3Provider.switchChain($config.CHAIN_ID)

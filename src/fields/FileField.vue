@@ -238,7 +238,7 @@ watch(
   height: toRem(257);
   width: toRem(544);
   border-radius: var(--border-radius);
-  transition: var(--transition-duration-fast);
+  transition: background-color var(--transition-duration-fast);
 
   &:hover,
   &--active {

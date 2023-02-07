@@ -38,6 +38,10 @@ import { BUTTON_PRESETS } from '@/enums'
   padding: 0 6.7%;
   width: 100%;
   max-width: toRem(1440);
+
+  @include respond-to(850px) {
+    padding: 0 4.5%;
+  }
 }
 
 .app-navbar__logo {

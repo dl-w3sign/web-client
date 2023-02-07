@@ -43,10 +43,10 @@
 
 <script lang="ts" setup>
 import { Icon, AppButton } from '@/common'
-import { getCurrentInstance } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
-import { useTextareaAutosize } from '@vueuse/core'
+import { getCurrentInstance } from 'vue'
+import { useTextareaAutosize, useWindowSize } from '@vueuse/core'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
@@ -57,7 +57,6 @@ const updateModelValue = (event: InputEvent) => {
   emit('update:modelValue', eventTarget.value)
 }
 
-const { textarea } = useTextareaAutosize()
 const uid = getCurrentInstance()?.uid
 const props = withDefaults(
   defineProps<{
@@ -80,6 +79,11 @@ const props = withDefaults(
 const { copy, copied } = useClipboard({
   source: props.modelValue,
   copiedDuring: 5000,
+})
+
+const { width: windowWidth } = useWindowSize()
+const { textarea } = useTextareaAutosize({
+  watch: windowWidth,
 })
 </script>
 
@@ -149,6 +153,7 @@ const { copy, copied } = useClipboard({
   & .textarea-field__icon {
     position: static;
     color: inherit;
+    transition: var(--transition-duration);
   }
 
   @include respond-to(850px) {

@@ -56,7 +56,12 @@
           {{ $t('main-page.doc-creation-card-title') }}
         </h2>
         <div class="main-page__card-illustration">
-          <div class="main-page__illustration">
+          <div
+            :class="{
+              'main-page__illustration': true,
+              'main-page__illustration--active': web3Provider.isConnected,
+            }"
+          >
             <div class="main-page__illustration-header">
               <div class="main-page__illustration-header-tool-circle" />
               <div class="main-page__illustration-header-tool-circle" />
@@ -95,13 +100,15 @@
                 v-for="n in 3"
                 :key="n"
               >
-                <icon
-                  :class="[
-                    'main-page__illustration-icon',
-                    'main-page__illustration-icon--large',
-                  ]"
-                  :name="getFileIconName(n)"
-                />
+                <div class="main-page__illustration-icon-wrp">
+                  <icon
+                    :class="[
+                      'main-page__illustration-icon',
+                      'main-page__illustration-icon--large',
+                    ]"
+                    :name="getFileIconName(n)"
+                  />
+                </div>
                 <div>
                   <h4
                     :class="[
@@ -157,7 +164,12 @@
           {{ $t('main-page.doc-verification-card-title') }}
         </h2>
         <div class="main-page__card-illustration">
-          <div class="main-page__illustration">
+          <div
+            :class="{
+              'main-page__illustration': true,
+              'main-page__illustration--active': web3Provider.isConnected,
+            }"
+          >
             <div class="main-page__illustration-header">
               <div class="main-page__illustration-header-tool-circle" />
               <div class="main-page__illustration-header-tool-circle" />
@@ -457,9 +469,14 @@ const getStatusIconName = (n: number) => {
   height: toRem(104);
   border-radius: var(--border-radius-large);
   padding: toRem(24) 7.8%;
+  transition: background-color var(--transition-duration-slow);
 
   &--connected {
     justify-content: center;
+  }
+
+  &:hover {
+    background: var(--col-mild);
   }
 
   @include respond-to(850px) {
@@ -560,6 +577,11 @@ const getStatusIconName = (n: number) => {
   width: toRem(395);
   height: toRem(395);
   padding: toRem(27) toRem(81);
+  transition: background-color var(--transition-duration-slow);
+
+  &:hover {
+    background: var(--col-mild);
+  }
 
   @include respond-to(850px) {
     width: 100%;
@@ -627,6 +649,21 @@ const getStatusIconName = (n: number) => {
   background: var(--col-intense);
   opacity: 0.8;
   border-radius: 50%;
+  transition: background-color var(--transition-duration);
+
+  &:hover {
+    &:nth-of-type(1) {
+      background: var(--col-creative);
+    }
+
+    &:nth-of-type(2) {
+      background: var(--col-implicit);
+    }
+
+    &:nth-of-type(3) {
+      background: var(--col-visual);
+    }
+  }
 }
 
 .main-page__illustration-main {
@@ -657,6 +694,12 @@ const getStatusIconName = (n: number) => {
   &--success {
     background: var(--col-simple);
     color: var(--col-success);
+  }
+}
+
+.main-page__illustration-icon-wrp {
+  .main-page__illustration--active & {
+    @include shimmer-animation;
   }
 }
 
@@ -751,6 +794,10 @@ const getStatusIconName = (n: number) => {
     border-radius: toRem(7);
     margin-left: toRem(4.8);
   }
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
+  }
 }
 
 .main-page__illustration-document {
@@ -787,6 +834,10 @@ const getStatusIconName = (n: number) => {
   border-right-color: transparent;
   margin: toRem(1.8);
   transform: rotate(-30deg);
+
+  .main-page__illustration--active & {
+    animation: rotate 13s ease infinite;
+  }
 }
 
 .main-page__illustration-progress {
@@ -801,6 +852,10 @@ const getStatusIconName = (n: number) => {
   width: 71.08%;
   border-radius: inherit;
   background: var(--col-peaceful);
+
+  .main-page__illustration--active & {
+    animation: progress 13s ease infinite;
+  }
 }
 
 .main-page__illustration-signer-info {
@@ -816,6 +871,10 @@ const getStatusIconName = (n: number) => {
   background: var(--col-great);
   border-radius: toRem(14);
   padding: toRem(4.8) toRem(9.6);
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
+  }
 }
 
 .main-page__illustration-signer-avatar {
@@ -826,6 +885,10 @@ const getStatusIconName = (n: number) => {
 
   &--smart {
     background: var(--col-smart);
+  }
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
   }
 }
 
@@ -863,6 +926,44 @@ const getStatusIconName = (n: number) => {
 
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  23% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes progress {
+  0% {
+    background: var(--col-peaceful);
+  }
+
+  11% {
+    background: var(--col-quiet);
+  }
+
+  23% {
+    background: var(--col-peaceful);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(-30deg);
+  }
+
+  23% {
+    transform: rotate(330deg);
+  }
+
+  100% {
+    transform: rotate(330deg);
   }
 }
 </style>

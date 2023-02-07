@@ -42,6 +42,10 @@ textarea {
     border-color: var(--col-primary);
   }
 
+  &::placeholder {
+    color: var(--col-fine);
+  }
+
   &:read-only {
     border: none;
     background: var(--col-great);
@@ -68,7 +72,6 @@ button {
   border: none;
   width: auto;
   overflow: visible;
-  cursor: pointer;
   user-select: none;
   background: transparent;
   font-family: var(--app-font-family);
@@ -90,6 +93,10 @@ button {
     border: 0;
     padding: 0;
   }
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 body,
@@ -106,7 +113,7 @@ h1 {
 }
 
 h2 {
-  font-size: toRem(24);
+  @include h2;
 }
 
 h3 {
