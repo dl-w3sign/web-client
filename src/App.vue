@@ -8,12 +8,13 @@
         </transition>
       </router-view>
     </div>
-    <animation
-      v-else
-      class="app__init"
-      :animation-data="LoaderJSON"
-      :is-infinite="true"
-    />
+    <div v-else class="app__init">
+      <animation
+        class="app__loader"
+        :animation-data="LoaderJSON"
+        :is-infinite="true"
+      />
+    </div>
   </transition>
 </template>
 
@@ -96,6 +97,11 @@ init()
     padding-top: toRem(72);
     height: max-content;
   }
+}
+
+.app__loader {
+  max-height: toRem(500);
+  max-width: toRem(500);
 }
 
 .fade-enter-active {

@@ -929,16 +929,6 @@ const getStatusIconName = (n: number) => {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  23% {
-    transform: translateX(100%);
-  }
-}
-
 @keyframes progress {
   0% {
     background: var(--col-peaceful);
