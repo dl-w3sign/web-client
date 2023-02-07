@@ -28,25 +28,24 @@
           v-if="isConnectEthereumShown"
           :class="{
             'main-page__connect-ethereum': true,
-            'main-page__connect-ethereum--connected':
-              web3Provider?.isConnected.value,
+            'main-page__connect-ethereum--connected': web3Provider?.isConnected,
           }"
         >
           <p
             :class="{
               'main-page__connect-ethereum-message': true,
               'main-page__connect-ethereum-message--bounded':
-                !web3Provider?.isConnected.value,
+                !web3Provider?.isConnected,
             }"
           >
             {{
-              web3Provider?.isConnected.value
+              web3Provider?.isConnected
                 ? $t('main-page.connected-ethereum-message')
                 : $t('main-page.connect-ethereum-message')
             }}
           </p>
           <connect-ethereum
-            v-if="!web3Provider?.isConnected.value"
+            v-if="!web3Provider?.isConnected"
             class="main-page__connect-ethereum-button"
             :button-preset="BUTTON_PRESETS.primary"
           />
@@ -57,7 +56,12 @@
           {{ $t('main-page.doc-creation-card-title') }}
         </h2>
         <div class="main-page__card-illustration">
-          <div class="main-page__illustration">
+          <div
+            :class="{
+              'main-page__illustration': true,
+              'main-page__illustration--active': web3Provider.isConnected,
+            }"
+          >
             <div class="main-page__illustration-header">
               <div class="main-page__illustration-header-tool-circle" />
               <div class="main-page__illustration-header-tool-circle" />
@@ -96,13 +100,15 @@
                 v-for="n in 3"
                 :key="n"
               >
-                <icon
-                  :class="[
-                    'main-page__illustration-icon',
-                    'main-page__illustration-icon--large',
-                  ]"
-                  :name="getFileIconName(n)"
-                />
+                <div class="main-page__illustration-icon-wrp">
+                  <icon
+                    :class="[
+                      'main-page__illustration-icon',
+                      'main-page__illustration-icon--large',
+                    ]"
+                    :name="getFileIconName(n)"
+                  />
+                </div>
                 <div>
                   <h4
                     :class="[
@@ -144,9 +150,7 @@
           :text="$t('main-page.doc-creation-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
           :state="
-            web3Provider?.isConnected.value
-              ? undefined
-              : BUTTON_STATES.noneEvents
+            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
           @click="showDocCreationModal"
         />
@@ -160,7 +164,12 @@
           {{ $t('main-page.doc-verification-card-title') }}
         </h2>
         <div class="main-page__card-illustration">
-          <div class="main-page__illustration">
+          <div
+            :class="{
+              'main-page__illustration': true,
+              'main-page__illustration--active': web3Provider.isConnected,
+            }"
+          >
             <div class="main-page__illustration-header">
               <div class="main-page__illustration-header-tool-circle" />
               <div class="main-page__illustration-header-tool-circle" />
@@ -240,9 +249,7 @@
           :text="$t('main-page.doc-verification-card-button-text')"
           :preset="BUTTON_PRESETS.primary"
           :state="
-            web3Provider?.isConnected.value
-              ? undefined
-              : BUTTON_STATES.noneEvents
+            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
           @click="showDocVerificationModal"
         />
@@ -257,12 +264,12 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon, ConnectEthereum } from '@/common'
-import { UseProvider } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, APP_KEYS, ICON_NAMES } from '@/enums'
+import { BUTTON_PRESETS, BUTTON_STATES, ICON_NAMES } from '@/enums'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
-import { inject, ref, watch } from 'vue'
+import { useWeb3ProvidersStore } from '@/store'
+import { ref, watch } from 'vue'
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
 const isDocCreationModalShown = ref(false)
 const showDocCreationModal = () => {
@@ -289,7 +296,7 @@ const showConnectEthereum = () => {
 }
 
 watch(
-  () => web3Provider?.isConnected.value,
+  () => web3Provider?.isConnected,
   newValue => {
     setTimeout(() => {
       newValue ? hideConnectEthereum() : showConnectEthereum()
@@ -352,15 +359,7 @@ const getStatusIconName = (n: number) => {
   padding: 0 toRem(28) toRem(23);
 
   @include respond-to(1100px) {
-    // задать паддинги для свг
-  }
-
-  @include respond-to(956px) {
-    // задать паддинги для свг
-  }
-
-  @include respond-to(850px) {
-    // задать паддинги для свг
+    padding-bottom: toRem(18);
   }
 }
 
@@ -431,6 +430,10 @@ const getStatusIconName = (n: number) => {
   z-index: var(--z-main-page-welcome-background-img);
   height: toRem(51);
   width: 99.1%;
+
+  @include respond-to(1100px) {
+    height: toRem(44);
+  }
 }
 
 .main-page__description {
@@ -462,9 +465,14 @@ const getStatusIconName = (n: number) => {
   height: toRem(104);
   border-radius: var(--border-radius-large);
   padding: toRem(24) 7.8%;
+  transition: background-color var(--transition-duration-slow);
 
   &--connected {
     justify-content: center;
+  }
+
+  &:hover {
+    background: var(--col-mild);
   }
 
   @include respond-to(850px) {
@@ -565,6 +573,11 @@ const getStatusIconName = (n: number) => {
   width: toRem(395);
   height: toRem(395);
   padding: toRem(27) toRem(81);
+  transition: background-color var(--transition-duration-slow);
+
+  &:hover {
+    background: var(--col-mild);
+  }
 
   @include respond-to(850px) {
     width: 100%;
@@ -632,6 +645,21 @@ const getStatusIconName = (n: number) => {
   background: var(--col-intense);
   opacity: 0.8;
   border-radius: 50%;
+  transition: background-color var(--transition-duration);
+
+  &:hover {
+    &:nth-of-type(1) {
+      background: var(--col-creative);
+    }
+
+    &:nth-of-type(2) {
+      background: var(--col-implicit);
+    }
+
+    &:nth-of-type(3) {
+      background: var(--col-visual);
+    }
+  }
 }
 
 .main-page__illustration-main {
@@ -662,6 +690,12 @@ const getStatusIconName = (n: number) => {
   &--success {
     background: var(--col-simple);
     color: var(--col-success);
+  }
+}
+
+.main-page__illustration-icon-wrp {
+  .main-page__illustration--active & {
+    @include shimmer-animation;
   }
 }
 
@@ -756,6 +790,10 @@ const getStatusIconName = (n: number) => {
     border-radius: toRem(7);
     margin-left: toRem(4.8);
   }
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
+  }
 }
 
 .main-page__illustration-document {
@@ -792,6 +830,10 @@ const getStatusIconName = (n: number) => {
   border-right-color: transparent;
   margin: toRem(1.8);
   transform: rotate(-30deg);
+
+  .main-page__illustration--active & {
+    animation: rotate 13s ease infinite;
+  }
 }
 
 .main-page__illustration-progress {
@@ -806,6 +848,10 @@ const getStatusIconName = (n: number) => {
   width: 71.08%;
   border-radius: inherit;
   background: var(--col-peaceful);
+
+  .main-page__illustration--active & {
+    animation: progress 13s ease infinite;
+  }
 }
 
 .main-page__illustration-signer-info {
@@ -821,6 +867,10 @@ const getStatusIconName = (n: number) => {
   background: var(--col-great);
   border-radius: toRem(14);
   padding: toRem(4.8) toRem(9.6);
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
+  }
 }
 
 .main-page__illustration-signer-avatar {
@@ -831,6 +881,10 @@ const getStatusIconName = (n: number) => {
 
   &--smart {
     background: var(--col-smart);
+  }
+
+  .main-page__illustration--active & {
+    @include shimmer-animation;
   }
 }
 
@@ -868,6 +922,34 @@ const getStatusIconName = (n: number) => {
 
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes progress {
+  0% {
+    background: var(--col-peaceful);
+  }
+
+  11% {
+    background: var(--col-quiet);
+  }
+
+  23% {
+    background: var(--col-peaceful);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(-30deg);
+  }
+
+  23% {
+    transform: rotate(330deg);
+  }
+
+  100% {
+    transform: rotate(330deg);
   }
 }
 </style>

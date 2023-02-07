@@ -22,13 +22,8 @@ import { BUTTON_PRESETS } from '@/enums'
   display: flex;
   align-items: center;
   justify-content: center;
-  height: toRem(80);
   background: var(--col-intense);
   box-shadow: 0 toRem(4) toRem(24) var(--col-rare);
-
-  @include respond-to(850px) {
-    height: toRem(72);
-  }
 }
 
 .app-navbar__container {
@@ -38,6 +33,10 @@ import { BUTTON_PRESETS } from '@/enums'
   padding: 0 6.7%;
   width: 100%;
   max-width: toRem(1440);
+
+  @include respond-to(850px) {
+    padding: 0 4.5%;
+  }
 }
 
 .app-navbar__logo {

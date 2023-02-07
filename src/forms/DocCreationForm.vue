@@ -1,5 +1,5 @@
 <template>
-  <form class="doc-creation-form">
+  <form class="doc-creation-form" @submit.prevent>
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-creation-form__loader" />
@@ -20,18 +20,14 @@
         <textarea-field
           class="doc-creation-form__doc-hash"
           :model-value="fileHash || ''"
-          :is-copied="true"
+          is-copied
         />
-        <app-button
-          class="doc-creation-form__button"
-          :preset="BUTTON_PRESETS.primary"
-          @click.prevent="reset"
-        >
+        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field v-model="form.file" :is-readonly="true" />
+        <file-field :model-value="form.file" is-readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
             class="doc-creation-form__note-icon"
@@ -41,7 +37,7 @@
             {{ errorMessage }}
           </p>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
+        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
@@ -54,10 +50,7 @@
           :label="$t('doc-creation-form.checkbox-is-sign')"
         />
         <div class="doc-creation-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click.prevent="cancel"
-          >
+          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -67,7 +60,7 @@
                 ? BUTTON_STATES.noneEvents
                 : undefined
             "
-            @click.prevent="submit"
+            @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
           </app-button>
@@ -78,26 +71,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, reactive } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
   useForm,
   useFormValidation,
-  UseProvider,
   useTimestampContract,
 } from '@/composables'
-import {
-  APP_KEYS,
-  BUTTON_PRESETS,
-  BUTTON_STATES,
-  RPC_ERROR_MESSAGES,
-} from '@/enums'
+import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash, Bus } from '@/helpers'
+import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
 import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
-import { errors } from '@/errors'
+import { useWeb3ProvidersStore } from '@/store'
 
 withDefaults(
   defineProps<{
@@ -108,14 +95,12 @@ withDefaults(
   },
 )
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
 const { $t, $config } = useContext()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
-    : undefined
-})
+const timestampContractInstance = useTimestampContract(
+  $config.CTR_ADDRESS_TIMESTAMP,
+)
 
 const {
   isFormDisabled,
@@ -161,31 +146,21 @@ const submit = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId.value !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.createStamp(
-      fileHash.value,
-      form.isSign,
-    )
+    await timestampContractInstance.createStamp(fileHash.value, form.isSign)
 
     showConfirmation()
   } catch (err) {
-    if (
-      err?.constructor === errors.ProviderUserRejectedRequest ||
-      err?.code === errors.ACTION_REJECTED
-    ) {
-      ErrorHandler.processWithoutFeedback(err)
-    } else {
-      if (err?.error) {
-        errorMessage.value = getErrorMessage(err?.error as EthProviderRpcError)
-      } else {
-        errorMessage.value = $t('doc-creation-form.error-default')
-      }
+    err?.error
+      ? (errorMessage.value = getErrorMessage(
+          err?.error as EthProviderRpcError,
+        ))
+      : (errorMessage.value = $t('doc-creation-form.error-default'))
 
-      ErrorHandler.processWithoutFeedback(err)
-      showFailure()
-    }
+    showFailure()
+    ErrorHandler.processWithoutFeedback(err)
   }
   isSubmitting.value = false
   enableForm()
@@ -202,8 +177,6 @@ const reset = () => {
   isFailureShown.value = false
   isFormDisabled.value = false
 }
-
-Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>

@@ -1,11 +1,11 @@
 import { ref } from 'vue'
 import {
-  UseProvider,
   TimestampContract,
   TimestampContract__factory,
   Keccak256Hash,
 } from '@/types'
 import { BN } from '@/utils'
+import { useWeb3ProvidersStore } from '@/store'
 import { ContractTransaction } from 'ethers'
 
 export type SignerInfo = {
@@ -36,25 +36,19 @@ export type UseTimestampContract = {
   sign: (fileHash: Keccak256Hash) => Promise<ContractTransaction | null>
 }
 
-export const useTimestampContract = (
-  provider: UseProvider,
-  address: string,
-): UseTimestampContract => {
+export const useTimestampContract = (address: string): UseTimestampContract => {
   const _instance = ref<TimestampContract | undefined>()
   const _instance_rw = ref<TimestampContract | undefined>()
+  const { provider } = useWeb3ProvidersStore()
 
-  if (
-    address &&
-    provider.currentProvider.value &&
-    provider.currentSigner.value
-  ) {
+  if (address && provider.currentProvider && provider.currentSigner) {
     _instance.value = TimestampContract__factory.connect(
       address,
-      provider.currentProvider.value,
+      provider.currentProvider,
     )
     _instance_rw.value = TimestampContract__factory.connect(
       address,
-      provider.currentSigner.value,
+      provider.currentSigner,
     )
   }
 

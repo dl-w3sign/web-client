@@ -19,8 +19,17 @@ body, #app {
   flex-direction: column;
   flex: 1;
   color: var(--col-trendy);
-  min-height: vh(100);
+  max-height: 100vh;
   background: var(--col-rich);
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: var(--col-rarest);
+  }
+
+  @include respond-to(380px) {
+    overflow: auto;
+  }
 }
 
 input,
@@ -40,6 +49,10 @@ textarea {
   &:focus {
     outline: 0;
     border-color: var(--col-primary);
+  }
+
+  &::placeholder {
+    color: var(--col-fine);
   }
 
   &:read-only {
@@ -74,7 +87,6 @@ button {
   border: none;
   width: auto;
   overflow: visible;
-  cursor: pointer;
   user-select: none;
   background: transparent;
   font-family: var(--app-font-family);
@@ -96,6 +108,10 @@ button {
     border: 0;
     padding: 0;
   }
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 body,
@@ -112,7 +128,7 @@ h1 {
 }
 
 h2 {
-  font-size: toRem(24);
+  @include h2;
 }
 
 h3 {
@@ -142,6 +158,11 @@ a {
 ::-webkit-scrollbar {
   height: toRem(8);
   width: toRem(8);
+
+  @include respond-to(956px) {
+    height: toRem(6);
+    width: toRem(6);
+  }
 
   @include respond-to(850px) {
     height: toRem(4);
