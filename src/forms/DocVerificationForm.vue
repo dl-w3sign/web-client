@@ -4,6 +4,7 @@
       'doc-verification-form': true,
       'doc-verification-form--confirmation-hidden': !isConfirmationShown,
     }"
+    @submit.prevent
   >
     <transition name="fade">
       <div v-if="isSubmitting">
@@ -85,10 +86,7 @@
             />
           </div>
         </div>
-        <app-button
-          :preset="BUTTON_PRESETS.primary"
-          @click.prevent="signOrExit"
-        >
+        <app-button :preset="BUTTON_PRESETS.primary" @click="signOrExit">
           {{
             isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
               ? $t('doc-verification-form.exit-button-text')
@@ -97,7 +95,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" :is-readonly="true" />
+        <file-field :model-value="form.file" is-readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
         >
@@ -107,17 +105,14 @@
           />
           {{ errorMessage }}
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click.prevent="reset">
+        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else>
         <file-field v-model="form.file" />
         <div class="doc-verification-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click.prevent="cancel"
-          >
+          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -127,7 +122,7 @@
                 ? BUTTON_STATES.noneEvents
                 : undefined
             "
-            @click.prevent="submitVerification"
+            @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
           </app-button>
@@ -146,25 +141,19 @@ import {
   useContext,
 } from '@/composables'
 import {
-  APP_KEYS,
   BUTTON_PRESETS,
   BUTTON_STATES,
   RPC_ERROR_MESSAGES,
   TIMEZONES,
 } from '@/enums'
-import { errors } from '@/errors'
 import { FileField, InputField, TextareaField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler, isAddress } from '@/helpers'
-import {
-  Keccak256Hash,
-  UseProvider,
-  UsePaginationCallbackArg,
-  StampInfo,
-} from '@/types'
+import { Keccak256Hash, UsePaginationCallbackArg, StampInfo } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { Time } from '@/utils'
-import { ref, reactive, inject, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
+import { useWeb3ProvidersStore } from '@/store'
 
 const props = withDefaults(
   defineProps<{
@@ -179,8 +168,6 @@ const form = reactive({
   file: null as File | null,
 })
 
-const web3Provider = inject<UseProvider>(APP_KEYS.web3Provider)
-
 const { $t, $config } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
   file: {
@@ -191,6 +178,10 @@ const { isFieldsValid } = useFormValidation(form, {
     },
   },
 })
+const { provider: web3Provider } = useWeb3ProvidersStore()
+const timestampContractInstance = useTimestampContract(
+  $config.CTR_ADDRESS_TIMESTAMP,
+)
 
 const {
   isFormDisabled,
@@ -215,7 +206,7 @@ const searchAddress = async (newAddress: string) => {
     if (stampInfo.value) stampInfo.value.signers.length = 0
 
     if (isAddress(addressToSearch.value)) {
-      const signer = await timestampContractInstance?.value?.getSignerInfo(
+      const signer = await timestampContractInstance.getSignerInfo(
         addressToSearch.value,
         fileHash.value as Keccak256Hash,
       )
@@ -224,7 +215,7 @@ const searchAddress = async (newAddress: string) => {
     }
   } else {
     stampInfo.value =
-      await timestampContractInstance.value?.getStampInfoWithPagination(
+      await timestampContractInstance.getStampInfoWithPagination(
         fileHash.value as Keccak256Hash,
         0,
         pageLimit.value,
@@ -237,24 +228,17 @@ const isSignedBySomeone = ref(false)
 const isAlreadySignedByCurrentSigner = ref(false)
 const isJustSignedByCurrentSigner = ref(false)
 
-const timestampContractInstance = computed(() => {
-  return web3Provider
-    ? useTimestampContract(web3Provider, $config.CTR_ADDRESS_TIMESTAMP)
-    : undefined
-})
-
 const { width: windowWidth } = useWindowSize()
-const pageLimit = computed(() => (windowWidth.value > 1000 ? 3 : 2))
+const pageLimit = computed(() => (windowWidth.value < 850 ? 2 : 3))
 const onPageChange = async ({
   newItemsOffset,
   pageLimit,
 }: UsePaginationCallbackArg) => {
-  stampInfo.value =
-    await timestampContractInstance.value?.getStampInfoWithPagination(
-      fileHash.value as Keccak256Hash,
-      newItemsOffset,
-      pageLimit,
-    )
+  stampInfo.value = await timestampContractInstance.getStampInfoWithPagination(
+    fileHash.value as Keccak256Hash,
+    newItemsOffset,
+    pageLimit,
+  )
 }
 
 const formatTimestamp = (timestamp: number): string => {
@@ -267,11 +251,11 @@ const submitVerification = async () => {
   try {
     fileHash.value = await getKeccak256FileHash(form.file as File)
 
-    if (web3Provider?.chainId !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
     stampInfo.value =
-      await timestampContractInstance.value?.getStampInfoWithPagination(
+      await timestampContractInstance.getStampInfoWithPagination(
         fileHash.value,
         0,
         pageLimit.value,
@@ -281,8 +265,8 @@ const submitVerification = async () => {
 
     if (stampInfo.value?.signers.length) {
       isSignedBySomeone.value = true
-      const signerInfo = await timestampContractInstance.value?.getSignerInfo(
-        web3Provider?.selectedAddress.value as string,
+      const signerInfo = await timestampContractInstance.getSignerInfo(
+        web3Provider?.selectedAddress as string,
         fileHash.value,
       )
       if (signerInfo?.signatureTimestamp)
@@ -291,18 +275,12 @@ const submitVerification = async () => {
 
     showConfirmation()
   } catch (err) {
-    if (stampInfo.value?.docTimestamp === 0) {
-      errorMessage.value = $t('doc-verification-form.error-doc-not-found')
-    } else {
-      errorMessage.value = $t('doc-verification-form.error-default')
-    }
+    stampInfo.value?.docTimestamp === 0
+      ? (errorMessage.value = $t('doc-verification-form.error-doc-not-found'))
+      : (errorMessage.value = $t('doc-verification-form.error-default'))
 
-    if (err?.constructor === errors.ProviderUserRejectedRequest) {
-      ErrorHandler.processWithoutFeedback(err)
-    } else {
-      ErrorHandler.processWithoutFeedback(err)
-      showFailure()
-    }
+    ErrorHandler.processWithoutFeedback(err)
+    showFailure()
   }
   isSubmitting.value = false
   enableForm()
@@ -321,10 +299,10 @@ const signOrExit = async () => {
   isSubmitting.value = true
   isConfirmationShown.value = false
   try {
-    if (web3Provider?.chainId !== $config.CHAIN_ID)
-      await web3Provider?.switchChain($config.CHAIN_ID)
+    if (web3Provider.chainId !== $config.CHAIN_ID)
+      await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.value?.sign(fileHash.value as Keccak256Hash)
+    await timestampContractInstance.sign(fileHash.value as Keccak256Hash)
 
     isJustSignedByCurrentSigner.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
@@ -354,8 +332,6 @@ const reset = () => {
   addressToSearch.value = ''
   resetState()
 }
-
-Bus.on(Bus.eventList.openModal, reset)
 </script>
 
 <style lang="scss" scoped>
@@ -546,7 +522,7 @@ Bus.on(Bus.eventList.openModal, reset)
 }
 
 .fade-list-leave-active {
-  // display: none;
+  // TODO: to discuss
 }
 
 .fade-list-enter-active {

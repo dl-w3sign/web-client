@@ -1,8 +1,8 @@
 <template>
   <teleport to="#modal">
-    <transition name="modal">
+    <transition name="modal" appear>
       <div
-        v-show="isShown"
+        v-if="isShown"
         class="modal__wrapper"
         ref="modalWrapper"
         @click="onWrapperClick"
@@ -15,71 +15,75 @@
   </teleport>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { Bus } from '@/helpers'
+<script lang="ts" setup>
+import { ref } from 'vue'
 
-const EVENTS = {
-  updateIsShown: 'update:is-shown',
+const emit = defineEmits<{
+  (event: 'update:is-shown', value: boolean): void
+}>()
+
+withDefaults(
+  defineProps<{
+    isShown?: boolean
+    isCloseByClickOutside?: boolean
+  }>(),
+  {
+    isShown: false,
+    isCloseByClickOutside: true,
+  },
+)
+
+const modalWrapper = ref<HTMLDivElement | undefined>()
+
+const closeModal = () => {
+  emit('update:is-shown', false)
 }
 
-export default defineComponent({
-  name: 'modal',
-  props: {
-    isShown: {
-      type: Boolean,
-      default: false,
-    },
-    isCloseByClickOutside: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  setup(props, { emit }) {
-    const modalWrapper = ref<HTMLDivElement | undefined>()
-
-    const closeModal = () => {
-      emit(EVENTS.updateIsShown, false)
-    }
-
-    const onWrapperClick = (event: PointerEvent) => {
-      if (event.target === modalWrapper.value) {
-        closeModal()
-        event.preventDefault()
-      }
-    }
-
-    watch(
-      () => props.isShown,
-      newValue => {
-        if (newValue) Bus.emit(Bus.eventList.openModal)
-      },
-    )
-
-    return {
-      modalWrapper,
-
-      closeModal,
-      onWrapperClick,
-    }
-  },
-})
+const onWrapperClick = (event: PointerEvent) => {
+  if (event.target === modalWrapper.value) {
+    closeModal()
+    event.preventDefault()
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .modal__wrapper {
   display: flex;
-  position: fixed;
+  position: absolute;
   z-index: var(--z-modal);
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: vh(100);
+  height: 100vh;
   background: var(--col-pesky);
   overflow-y: scroll;
   padding: 4%;
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--col-flexible);
+
+    &:hover {
+      background: var(--col-brittle);
+
+      @include respond-to(380px) {
+        background: var(--col-flexible);
+      }
+    }
+
+    @include respond-to(380px) {
+      background: var(--col-brittle);
+    }
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    @include respond-to(380px) {
+      background: var(--col-rich);
+    }
+  }
 
   @include respond-to(850px) {
     padding: 2%;
@@ -92,6 +96,7 @@ export default defineComponent({
   border-radius: var(--border-radius-large);
   margin: auto;
   width: toRem(608);
+  flex-shrink: 0;
 
   @include respond-to(850px) {
     padding: toRem(16);
@@ -109,13 +114,5 @@ export default defineComponent({
 .modal-leave-to {
   opacity: 0;
   transform: scale(1.1);
-}
-
-.modal__wrapper::-webkit-scrollbar-thumb {
-  background: var(--col-flexible);
-
-  &:hover {
-    background: var(--col-brittle);
-  }
 }
 </style>

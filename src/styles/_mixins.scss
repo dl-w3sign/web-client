@@ -138,3 +138,36 @@ $media-breakpoints: (
   line-height: toRem(24);
   text-transform: uppercase;
 }
+
+@mixin shimmer-animation {
+  position: relative;
+  overflow: hidden;
+
+  &:after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(#ffffff, 0) 0,
+      rgba(#ffffff, 0.2) 20%,
+      rgba(#ffffff, 0.5) 60%,
+      rgba(#ffffff, 0)
+    );
+    animation: shimmer 13s ease infinite;
+    content: '';
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  23% {
+    transform: translateX(100%);
+  }
+}

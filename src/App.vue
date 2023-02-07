@@ -8,27 +8,27 @@
         </transition>
       </router-view>
     </div>
-    <animation
-      v-else
-      class="app__init"
-      :animation-data="LoaderJSON"
-      :is-infinite="true"
-    />
+    <div v-else class="app__init">
+      <animation
+        class="app__loader"
+        :animation-data="LoaderJSON"
+        :is-infinite="true"
+      />
+    </div>
   </transition>
 </template>
 
 <script lang="ts" setup>
 import { AppNavbar, Animation } from '@/common'
-import { useNotifications, useProvider, useContext } from '@/composables'
-import { APP_KEYS } from '@/enums'
+import { useNotifications, useContext } from '@/composables'
 import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
 import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
-const web3Provider = useProvider()
+const { provider: web3Provider } = useWeb3ProvidersStore()
 const { $config } = useContext()
 
 const isAppInitialized = ref(false)
@@ -48,57 +48,38 @@ const init = async () => {
   isAppInitialized.value = true
 }
 
-provide(APP_KEYS.web3Provider, web3Provider)
-
 init()
 </script>
 
 <style lang="scss" scoped>
 .app__wrapper {
-  position: relative;
-  height: 100vh;
-  width: 100vw;
-
-  &::-webkit-scrollbar-track,
-  &::-webkit-scrollbar-corner {
-    background: var(--col-rarest);
-  }
-
-  @include respond-to(380px) {
-    overflow: auto;
-  }
+  min-width: toRem(380);
 }
 
 .app__navbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: var(--z-app-navbar);
-  width: 100%;
-  min-width: toRem(380);
+  height: toRem(80);
+
+  @include respond-to(850px) {
+    height: toRem(72);
+  }
 }
 
 .app__main {
-  position: absolute;
-  top: toRem(80);
-  right: 0;
-  bottom: 0;
-  left: 0;
   overflow-y: scroll;
   height: calc(100vh - toRem(80));
-  width: 100%;
-  min-width: toRem(380);
 
   @include respond-to(850px) {
-    top: toRem(72);
     height: calc(100vh - toRem(72));
   }
 
   @include respond-to(380px) {
-    position: static;
-    padding-top: toRem(72);
     height: max-content;
   }
+}
+
+.app__loader {
+  max-height: toRem(500);
+  max-width: toRem(500);
 }
 
 .fade-enter-active {
