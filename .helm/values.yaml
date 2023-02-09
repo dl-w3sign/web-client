@@ -83,9 +83,6 @@ ingress:
         if ($request_uri ~* /env.js) {
           add_header Cache-Control "no-cache,no-store";
         }
-        if ($request_uri ~* /static/env.js) {
-          add_header Cache-Control "no-cache,no-store";
-        }
   hosts:
     - host: chart-example.local
       paths:
