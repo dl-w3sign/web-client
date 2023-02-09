@@ -29,6 +29,9 @@
   },
   "doc-creation-form": {
     "checkbox-is-sign": "Sign a document",
+    "checkbox-is-indicating-addresses": "Indicate the wallet address",
+    "wallets-addresses-title": "Wallet Address",
+    "wallet-address-placeholder": "Enter Wallet Address",
     "cancel-button-text": "Cancel",
     "submit-button-text": "Create Document",
     "reset-button-text": "Create Another Document",

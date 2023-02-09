@@ -15,6 +15,7 @@
           isReadonly ? 'textarea-field__textarea--readonly' : '',
           isCopied ? 'textarea-field__textarea--copied' : '',
           rightIcon ? 'textarea-field__textarea--with-right-icon' : '',
+          isRemovable ? 'textarea-field__textarea--removable' : '',
         ]"
         :id="`textarea-field--${uid}`"
         :readonly="isReadonly || isCopied"
@@ -22,8 +23,15 @@
         :value="modelValue"
         @input="updateModelValue"
       />
+      <button
+        v-if="isRemovable"
+        class="textarea-field__remove-button"
+        @click="emit('remove')"
+      >
+        <icon :name="$icons.xCircle" />
+      </button>
       <app-button
-        v-if="isCopied"
+        v-else-if="isCopied"
         class="textarea-field__copy-button"
         @click.prevent="copy()"
       >
@@ -50,6 +58,7 @@ import { useTextareaAutosize, useWindowSize } from '@vueuse/core'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
+  (event: 'remove'): void
 }>()
 
 const updateModelValue = (event: InputEvent) => {
@@ -65,6 +74,7 @@ const props = withDefaults(
     placeholder?: string
     isReadonly?: boolean
     isCopied?: boolean
+    isRemovable?: boolean
     rightIcon?: ICON_NAMES
   }>(),
   {
@@ -72,6 +82,7 @@ const props = withDefaults(
     placeholder: '',
     isReadonly: false,
     isCopied: false,
+    isRemovable: false,
     rightIcon: undefined,
   },
 )
@@ -104,7 +115,8 @@ const { textarea } = useTextareaAutosize({
   width: 100%;
 
   &--copied,
-  &--with-right-icon {
+  &--with-right-icon,
+  &--removable {
     padding-right: toRem(64);
 
     @include respond-to(850px) {
@@ -157,6 +169,34 @@ const { textarea } = useTextareaAutosize({
 
   @include respond-to(850px) {
     width: toRem(32);
+  }
+}
+
+.textarea-field__remove-button {
+  position: absolute;
+  top: 0;
+  right: toRem(24);
+  bottom: 0;
+  margin: auto 0;
+  height: toRem(24);
+  width: toRem(24);
+  fill: var(--col-fancy);
+  flex-shrink: 0;
+  color: var(--col-intense);
+  transition: var(--transition-duration-fast);
+
+  &:hover {
+    fill: var(--col-accent);
+  }
+
+  &:active {
+    fill: var(--col-spot);
+  }
+
+  @include respond-to(850px) {
+    right: toRem(12);
+    height: toRem(20);
+    width: toRem(20);
   }
 }
 </style>

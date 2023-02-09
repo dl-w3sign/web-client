@@ -43,12 +43,39 @@
       </div>
       <div v-else>
         <file-field v-model="form.file" />
-        <checkbox-field
-          v-show="form.file"
-          class="doc-creation-form__checkbox"
-          v-model="form.isSign"
-          :label="$t('doc-creation-form.checkbox-is-sign')"
-        />
+        <transition name="fade">
+          <div v-show="form.file" class="doc-creation-form__container">
+            <checkbox-field
+              v-model="form.isSign"
+              :label="$t('doc-creation-form.checkbox-is-sign')"
+            />
+            <checkbox-field
+              v-model="form.isIndicatingAddresses"
+              :label="$t('doc-creation-form.checkbox-is-indicating-addresses')"
+            />
+          </div>
+        </transition>
+        <transition name="fade">
+          <div v-show="form.file && form.isIndicatingAddresses">
+            <h4 class="doc-creation-form__wallets-addresses-title">
+              {{ $t('doc-creation-form.wallets-addresses-title') }}
+            </h4>
+            <input-field
+              :placeholder="$t('doc-creation-form.wallet-address-placeholder')"
+              :model-value="walletAddress"
+              @update:model-value="addIndicatedAddress"
+            />
+            <textarea-field
+              class="doc-creation-form__wallet-address"
+              v-for="address in form.indicatedAddresses"
+              :key="address"
+              :model-value="address"
+              @remove="removeIndicatedAddress(address)"
+              is-readonly
+              is-removable
+            />
+          </div>
+        </transition>
         <div class="doc-creation-form__buttons">
           <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
             {{ $t('doc-creation-form.cancel-button-text') }}
@@ -80,9 +107,9 @@ import {
   useTimestampContract,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
-import { FileField, TextareaField, CheckboxField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
-import { required, maxValue } from '@/validators'
+import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
+import { ErrorHandler, getKeccak256FileHash, isAddress } from '@/helpers'
+import { required, maxValue, requiredIf } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -114,11 +141,14 @@ const {
 } = useForm()
 
 const fileHash = ref<Keccak256Hash | null>(null)
+const walletAddress = ref('')
 const errorMessage = ref('')
 
 const form = reactive({
   file: null as File | null,
   isSign: true,
+  isIndicatingAddresses: false,
+  indicatedAddresses: [] as string[],
 })
 
 const { isFieldsValid } = useFormValidation(form, {
@@ -129,7 +159,26 @@ const { isFieldsValid } = useFormValidation(form, {
       maxValue: maxValue(10 * 1000 * 1000),
     },
   },
+  indicatedAddresses: {
+    required: requiredIf(() => form.isIndicatingAddresses),
+    // TODO: simple string[] array validation
+  },
 })
+
+const addIndicatedAddress = (address: string) => {
+  if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
+    form.indicatedAddresses.push(address)
+    setTimeout(() => (walletAddress.value = '')) // TODO: to discuss
+  }
+
+  walletAddress.value = address
+}
+
+const removeIndicatedAddress = (address: string) => {
+  form.indicatedAddresses = form.indicatedAddresses.filter(
+    indicatedAddress => indicatedAddress !== address,
+  )
+}
 
 const getErrorMessage = (error: EthProviderRpcError): string => {
   switch (error.message) {
@@ -172,6 +221,8 @@ const reset = () => {
 
   form.file = null
   form.isSign = true
+  form.isIndicatingAddresses = false
+  form.indicatedAddresses = []
 
   isConfirmationShown.value = false
   isFailureShown.value = false
@@ -180,7 +231,31 @@ const reset = () => {
 </script>
 
 <style lang="scss" scoped>
-.doc-creation-form__checkbox {
+.doc-creation-form__container {
+  display: flex;
+  gap: toRem(24);
+  margin-top: toRem(24);
+
+  @include respond-to(850px) {
+    flex-direction: column;
+    gap: toRem(16);
+    margin-top: toRem(16);
+  }
+}
+
+.doc-creation-form__wallets-addresses-title {
+  margin: toRem(24) 0 toRem(8);
+
+  @include text-2;
+
+  @include respond-to(850px) {
+    margin-top: toRem(16);
+
+    @include text-4;
+  }
+}
+
+.doc-creation-form__wallet-address {
   margin-top: toRem(24);
 
   @include respond-to(850px) {
