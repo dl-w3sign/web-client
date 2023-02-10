@@ -12,6 +12,11 @@ import { i18n } from '@/localization'
 import { config } from '@config'
 import { router } from '@/router'
 import { store } from '@/store'
+import { Buffer } from 'buffer'
+import process from 'process'
+
+window.Buffer = Buffer
+window.process = process
 
 const app = createApp({
   setup() {
