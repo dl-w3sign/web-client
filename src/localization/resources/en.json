@@ -16,10 +16,14 @@
     "doc-creation-card-title": "CREATE DOCUMENT",
     "doc-creation-card-button-text": "Create document",
     "doc-verification-card-title": "VERIFY DOCUMENT",
-    "doc-verification-card-button-text": "Verify document",
-    "illustration-info-item-created": "Created",
-    "illustration-info-item-checked": "Checked",
-    "doc-verification-illustration-title": "Checking info"
+    "doc-verification-card-button-text": "Verify document"
+  },
+  "doc-creation-illustration": {
+    "info-item-created": "Created",
+    "info-item-checked": "Checked"
+  },
+  "doc-verification-illustration": {
+    "title": "Checking info"
   },
   "doc-creation-modal": {
     "title": "Document Creation"
