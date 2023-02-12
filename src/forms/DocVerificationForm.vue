@@ -111,7 +111,10 @@
       <div v-else>
         <file-field v-model="form.file" />
         <div class="doc-verification-form__buttons">
-          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click="emit('cancel')"
+          >
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -148,14 +151,9 @@ import { Time } from '@/utils'
 import { ref, reactive, computed } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
 
-const props = withDefaults(
-  defineProps<{
-    cancel?: () => void
-  }>(),
-  {
-    cancel: undefined,
-  },
-)
+const emit = defineEmits<{
+  (event: 'cancel'): void
+}>()
 
 const form = reactive({
   file: null as File | null,
@@ -231,7 +229,7 @@ const submitVerification = async () => {
 
 const signOrExit = async () => {
   if (isSignedByCurrentSigner.value || isSigned.value) {
-    if (props.cancel) props.cancel()
+    emit('cancel')
     return
   }
 

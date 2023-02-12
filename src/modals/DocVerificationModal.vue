@@ -8,7 +8,7 @@
         />
         {{ $t('doc-verification-modal.title') }}
       </h3>
-      <doc-verification-form :cancel="close" />
+      <doc-verification-form @cancel="close" />
     </div>
   </modal>
 </template>
