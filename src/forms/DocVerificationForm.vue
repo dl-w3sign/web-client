@@ -36,7 +36,7 @@
             </p>
           </div>
         </div>
-        <textarea-field :model-value="fileHash || ''" :is-copied="true" />
+        <textarea-field :model-value="fileHash || ''" is-copied />
         <div
           :class="[
             'doc-verification-form__note',
@@ -62,8 +62,8 @@
             <textarea-field
               class="doc-verification-form__address"
               :model-value="signer.address"
-              :is-readonly="true"
               :right-icon="$icons.checkCircle"
+              is-readonly
             />
             <div class="doc-verification-form__timestamp-info">
               <p
@@ -192,12 +192,11 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 const isSigned = ref(false)
 
-const isSignedByCurrentSigner = computed(() =>
-  timestampContractInstance.signers.value.find(
-    signer => signer.address === web3Provider.selectedAddress,
-  )
-    ? true
-    : false,
+const isSignedByCurrentSigner = computed(
+  () =>
+    !!timestampContractInstance.signers.value.find(
+      signer => signer.address === web3Provider.selectedAddress,
+    ),
 )
 
 const formatTimestamp = (timestamp: number): string => {

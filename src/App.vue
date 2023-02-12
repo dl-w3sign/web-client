@@ -9,11 +9,7 @@
       </router-view>
     </div>
     <div v-else class="app__init">
-      <animation
-        class="app__loader"
-        :animation-data="LoaderJSON"
-        :is-infinite="true"
-      />
+      <animation class="app__loader" :animation-data="LoaderJSON" is-infinite />
     </div>
   </transition>
 </template>
