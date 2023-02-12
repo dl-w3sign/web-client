@@ -6,13 +6,17 @@
     <div class="input-field__input-wrapper">
       <input
         class="input-field__input"
-        :class="{ 'input-field__input--with-right-icon': rightIcon }"
+        :class="{ 'input-field__input--with-right-icon': rightIconName }"
         :id="`input-field--${uid}`"
         :placeholder="placeholder"
         :value="modelValue"
         @input="updateModelValue"
       />
-      <icon v-if="rightIcon" :name="rightIcon" class="input-field__icon" />
+      <icon
+        v-if="rightIconName"
+        :name="rightIconName"
+        class="input-field__icon"
+      />
     </div>
   </div>
 </template>
@@ -37,12 +41,12 @@ withDefaults(
     modelValue: string
     label?: string
     placeholder?: string
-    rightIcon?: ICON_NAMES
+    rightIconName?: ICON_NAMES
   }>(),
   {
     label: '',
     placeholder: '',
-    rightIcon: undefined,
+    rightIconName: undefined,
   },
 )
 </script>

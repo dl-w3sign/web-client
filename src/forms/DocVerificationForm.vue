@@ -62,7 +62,7 @@
             <textarea-field
               class="doc-verification-form__address"
               :model-value="signer.address"
-              :right-icon="$icons.checkCircle"
+              :right-icon-name="$icons.checkCircle"
               is-readonly
             />
             <div class="doc-verification-form__timestamp-info">

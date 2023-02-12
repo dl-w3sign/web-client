@@ -14,7 +14,7 @@
         :class="{
           'textarea-field__textarea--readonly': isReadonly,
           'textarea-field__textarea--copied': isCopied,
-          'textarea-field__textarea--with-right-icon': rightIcon,
+          'textarea-field__textarea--with-right-icon': rightIconName,
         }"
         :id="`textarea-field--${uid}`"
         :readonly="isReadonly || isCopied"
@@ -33,8 +33,8 @@
         />
       </app-button>
       <icon
-        v-else-if="rightIcon"
-        :name="rightIcon"
+        v-else-if="rightIconName"
+        :name="rightIconName"
         class="textarea-field__icon"
       />
     </div>
@@ -65,14 +65,14 @@ const props = withDefaults(
     placeholder?: string
     isReadonly?: boolean
     isCopied?: boolean
-    rightIcon?: ICON_NAMES
+    rightIconName?: ICON_NAMES
   }>(),
   {
     label: '',
     placeholder: '',
     isReadonly: false,
     isCopied: false,
-    rightIcon: undefined,
+    rightIconName: undefined,
   },
 )
 
