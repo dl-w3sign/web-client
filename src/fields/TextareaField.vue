@@ -11,11 +11,11 @@
       <textarea
         ref="textarea"
         class="textarea-field__textarea"
-        :class="[
-          isReadonly ? 'textarea-field__textarea--readonly' : '',
-          isCopied ? 'textarea-field__textarea--copied' : '',
-          rightIcon ? 'textarea-field__textarea--with-right-icon' : '',
-        ]"
+        :class="{
+          'textarea-field__textarea--readonly': isReadonly,
+          'textarea-field__textarea--copied': isCopied,
+          'textarea-field__textarea--with-right-icon': rightIcon,
+        }"
         :id="`textarea-field--${uid}`"
         :readonly="isReadonly || isCopied"
         :placeholder="placeholder"

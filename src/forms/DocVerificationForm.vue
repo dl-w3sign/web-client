@@ -1,7 +1,7 @@
 <template>
   <form
+    class="doc-verification-form"
     :class="{
-      'doc-verification-form': true,
       'doc-verification-form--confirmation-hidden': !isConfirmationShown,
     }"
     @submit.prevent

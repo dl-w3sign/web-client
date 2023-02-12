@@ -20,10 +20,8 @@
     </div>
     <div
       v-else-if="!isReadonly"
-      :class="{
-        'file-field__drop-zone': true,
-        'file-field__drop-zone--active': isOverDropZone,
-      }"
+      class="file-field__drop-zone"
+      :class="{ 'file-field__drop-zone--active': isOverDropZone }"
     >
       <label
         ref="dropZone"
@@ -32,10 +30,8 @@
       />
       <div class="file-field__drop-zone-container">
         <icon
-          :class="{
-            'file-field__drop-zone-icon': true,
-            'file-field__drop-zone-icon--large': isOverDropZone,
-          }"
+          class="file-field__drop-zone-icon"
+          :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
           :name="$icons.cloudUpload"
         />
         <h6 class="file-field__title" v-show="!isOverDropZone">

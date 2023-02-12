@@ -1,9 +1,7 @@
 <template>
   <div
-    :class="{
-      'doc-verification-illustration': true,
-      'doc-verification-illustration--active': isActive,
-    }"
+    class="doc-verification-illustration"
+    :class="{ 'doc-verification-illustration--active': isActive }"
   >
     <div class="doc-verification-illustration__header">
       <div
@@ -29,8 +27,8 @@
       <div v-for="n in 2" :key="n">
         <div class="doc-verification-illustration__signer-address">
           <div
+            class="doc-verification-illustration__signer-avatar"
             :class="{
-              'doc-verification-illustration__signer-avatar': true,
               'doc-verification-illustration__signer-avatar--smart': n === 2,
             }"
           />

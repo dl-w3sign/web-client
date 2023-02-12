@@ -6,9 +6,7 @@
     <div class="input-field__input-wrapper">
       <input
         class="input-field__input"
-        :class="{
-          'input-field__input--with-right-icon': rightIcon,
-        }"
+        :class="{ 'input-field__input--with-right-icon': rightIcon }"
         :id="`input-field--${uid}`"
         :placeholder="placeholder"
         :value="modelValue"

@@ -18,22 +18,20 @@
       </p>
     </div>
     <div
-      :class="{
-        'main-page__container': true,
-        'main-page__container--lifted': !isConnectEthereumShown,
-      }"
+      class="main-page__container"
+      :class="{ 'main-page__container--lifted': !isConnectEthereumShown }"
     >
       <transition name="fade">
         <div
           v-if="isConnectEthereumShown"
+          class="main-page__connect-ethereum"
           :class="{
-            'main-page__connect-ethereum': true,
             'main-page__connect-ethereum--connected': web3Provider?.isConnected,
           }"
         >
           <p
+            class="main-page__connect-ethereum-message"
             :class="{
-              'main-page__connect-ethereum-message': true,
               'main-page__connect-ethereum-message--bounded':
                 !web3Provider?.isConnected,
             }"

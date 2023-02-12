@@ -1,10 +1,10 @@
 <template>
   <button
     class="app-button"
-    :class="[
-      state ? `app-button--${state}` : '',
-      preset ? `app-button--${preset}` : '',
-    ]"
+    :class="{
+      [`app-button--${state}`]: state,
+      [`app-button--${preset}`]: preset,
+    }"
     :disabled="state === 'not-allowed' || state === 'waiting' || isDisabled"
     v-bind="$attrs"
   >

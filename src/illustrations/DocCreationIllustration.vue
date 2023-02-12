@@ -1,9 +1,7 @@
 <template>
   <div
-    :class="{
-      'doc-creation-illustration': true,
-      'doc-creation-illustration--active': isActive,
-    }"
+    class="doc-creation-illustration"
+    :class="{ 'doc-creation-illustration--active': isActive }"
   >
     <div class="doc-creation-illustration__header">
       <div
@@ -17,8 +15,8 @@
         <li
           v-for="n in 2"
           :key="n"
+          class="doc-creation-illustration__info-bar-item"
           :class="{
-            'doc-creation-illustration__info-bar-item': true,
             'doc-creation-illustration__info-bar-item--success': n === 2,
           }"
         >
@@ -55,8 +53,8 @@
         <div>
           <h4 class="doc-creation-illustration__skeleton" />
           <p
+            class="doc-creation-illustration__skeleton"
             :class="{
-              'doc-creation-illustration__skeleton': true,
               'doc-creation-illustration__skeleton--wider': n === 1,
               'doc-creation-illustration__skeleton--wide': n === 2,
               'doc-creation-illustration__skeleton--widest': n === 3,
