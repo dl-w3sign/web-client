@@ -41,7 +41,6 @@
             @click.prevent="openFileDialog"
           >
             {{ $t('file-field.open-dialog-button-text') }}
-            <span class="file-field__open-dialog-button-underline" />
           </button>
         </h6>
         <p class="file-field__require" v-show="!isOverDropZone">
@@ -297,22 +296,31 @@ watch(
   line-height: inherit;
   color: var(--col-primary);
 
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: toRem(1.7);
+    display: block;
+    height: toRem(0.8);
+    width: 100%;
+    background: var(--col-primary);
+  }
+
   &:hover {
     color: var(--col-basic);
+
+    &:after {
+      background: var(--col-basic);
+    }
   }
 
   &:active {
     color: var(--col-initial);
-  }
-}
 
-.file-field__open-dialog-button-underline {
-  position: absolute;
-  bottom: toRem(1.7);
-  display: block;
-  height: toRem(0.8);
-  width: 100%;
-  background: var(--col-primary);
+    &:after {
+      background: var(--col-initial);
+    }
+  }
 }
 
 .file-field__require {
