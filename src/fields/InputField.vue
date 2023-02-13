@@ -5,6 +5,7 @@
     </label>
     <div class="input-field__input-wrapper">
       <input
+        v-bind="$attrs"
         class="input-field__input"
         :class="{ 'input-field__input--with-right-icon': rightIconName }"
         :id="`input-field--${uid}`"

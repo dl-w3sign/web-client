@@ -5,6 +5,7 @@
   >
     <label class="checkbox-field__label">
       <input
+        v-bind="$attrs"
         class="checkbox-field__input"
         type="checkbox"
         :checked="modelValue"
