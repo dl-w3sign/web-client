@@ -100,6 +100,7 @@ $media-breakpoints: (
 }
 
 @mixin text-1 { // text-3
+  font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   font-size: toRem(16);
   line-height: toRem(24);
   font-weight: 500;

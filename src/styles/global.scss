@@ -35,21 +35,11 @@ body, #app {
 input,
 select,
 textarea {
-  background: var(--col-intense);
   color: var(--col-fancy);
-  padding: toRem(13) toRem(15);
-  border: toRem(1) solid var(--col-brittle);
   border-radius: var(--border-radius);
   resize: none;
-
-  &:hover {
-    border-color: var(--col-flexible);
-  }
-
-  &:focus {
-    outline: 0;
-    border-color: var(--col-primary);
-  }
+  transition-property: border-color, background-color;
+  transition-duration: var(--transition-duration);
 
   &::placeholder {
     color: var(--col-fine);
@@ -60,13 +50,44 @@ textarea {
     background: var(--col-great);
     padding: toRem(16) toRem(24);
 
-    @include text-1;
-
     @include respond-to(850px) {
       padding: toRem(12) toRem(16);
 
       @include text-6;
     }
+  }
+
+  &:not(:read-only) {
+    background: var(--col-intense);
+    padding: toRem(13) toRem(15);
+    border: toRem(1) solid var(--col-brittle);
+
+    @include respond-to(850px) {
+      padding: toRem(9) toRem(11);
+
+      @include text-4;
+    }
+  }
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:read-only:hover {
+    background: var(--col-mild);
+  }
+
+  &:not(:read-only):hover {
+    border-color: var(--col-fine);
+  }
+
+  &:not(:read-only):focus {
+    outline: 0;
+    border-color: var(--col-primary);
+  }
+
+  &:not(:read-only):active {
+    border-color: var(--col-initial);
   }
 
   @include text-2;

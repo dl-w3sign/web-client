@@ -21,6 +21,7 @@
           class="doc-creation-form__doc-hash"
           :model-value="fileHash || ''"
           is-copied
+          readonly
         />
         <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}

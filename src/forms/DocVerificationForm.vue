@@ -36,7 +36,7 @@
             </p>
           </div>
         </div>
-        <textarea-field :model-value="fileHash || ''" is-copied />
+        <textarea-field :model-value="fileHash || ''" is-copied readonly />
         <div
           :class="[
             'doc-verification-form__note',
@@ -63,7 +63,7 @@
               class="doc-verification-form__address"
               :model-value="signer.address"
               :right-icon-name="$icons.checkCircle"
-              is-readonly
+              readonly
             />
             <div class="doc-verification-form__timestamp-info">
               <p
