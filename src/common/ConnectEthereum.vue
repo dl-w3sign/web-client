@@ -19,14 +19,9 @@ import { abbrCenter, isMobile } from '@/helpers'
 import { router } from '@/router'
 import { useWeb3ProvidersStore } from '@/store'
 
-withDefaults(
-  defineProps<{
-    buttonPreset?: BUTTON_PRESETS
-  }>(),
-  {
-    buttonPreset: undefined,
-  },
-)
+defineProps<{
+  buttonPreset?: BUTTON_PRESETS
+}>()
 
 const { $t, $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()
