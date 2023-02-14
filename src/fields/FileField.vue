@@ -166,6 +166,11 @@ watch(
   padding: 0 toRem(24);
   gap: toRem(10);
   height: toRem(96);
+  transition: background-color, var(--transition-duration);
+
+  &:hover {
+    background: var(--col-mild);
+  }
 
   @include respond-to(850px) {
     padding: 0 toRem(16);

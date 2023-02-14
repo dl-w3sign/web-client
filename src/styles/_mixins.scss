@@ -49,6 +49,7 @@ $media-breakpoints: (
   border-radius: var(--border-radius-medium);
   padding: toRem(24);
   font-feature-settings: 'tnum' on, 'lnum' on;
+  transition: background-color var(--transition-duration-slow);
 
   @include text-2;
 
@@ -60,19 +61,37 @@ $media-breakpoints: (
   }
 }
 
+@mixin note-info {
+  &:hover {
+    background: var(--col-quantum);
+  }
+}
+
 @mixin note-error {
   background: var(--col-stress);
   border-color: var(--col-accent);
+
+  &:hover {
+    background: var(--col-tensity);
+  }
 }
 
 @mixin note-success {
   background: var(--col-lucky);
   border-color: var(--col-success);
+
+  &:hover {
+    background: var(--col-happy);
+  }
 }
 
 @mixin note-warning {
   background: var(--col-weak);
   border-color: var(--col-wise);
+
+  &:hover {
+    background: var(--col-flabby);
+  }
 }
 
 @mixin h2 {

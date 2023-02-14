@@ -49,6 +49,7 @@ textarea {
     border: none;
     background: var(--col-great);
     padding: toRem(16) toRem(24);
+    cursor: text;
 
     @include respond-to(850px) {
       padding: toRem(12) toRem(16);
