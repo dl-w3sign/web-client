@@ -307,7 +307,6 @@ const signOrExit = async () => {
     isJustSignedByCurrentSigner.value = true
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
-    alert(error)
     if (error.reason === RPC_ERROR_MESSAGES.alreadySigned) {
       Bus.emit(
         Bus.eventList.info,

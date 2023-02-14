@@ -153,7 +153,6 @@ const submit = async () => {
 
     showConfirmation()
   } catch (err) {
-    alert(err)
     err?.error
       ? (errorMessage.value = getErrorMessage(
           err?.error as EthProviderRpcError,
