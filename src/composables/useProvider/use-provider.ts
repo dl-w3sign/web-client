@@ -12,7 +12,6 @@ import { errors } from '@/errors'
 import { ethers } from 'ethers'
 import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
-import { ProviderUserRejectedRequest } from '@/errors/runtime.errors'
 
 export interface UseProvider {
   currentProvider: ComputedRef<ethers.providers.Web3Provider | undefined>
@@ -124,9 +123,8 @@ export const useProvider = (): UseProvider => {
       try {
         await providerWrp.value.connect()
       } catch (error) {
-        error?.constructor === ProviderUserRejectedRequest
-          ? ErrorHandler.processWithoutFeedback(error)
-          : ErrorHandler.process(error)
+        isConnecting.value = false
+        throw error
       }
     }
 

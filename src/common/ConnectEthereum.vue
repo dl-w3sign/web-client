@@ -15,7 +15,8 @@ import { computed } from 'vue'
 import { AppButton, Icon } from '@/common'
 import { useContext } from '@/composables'
 import { BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
-import { abbrCenter, isMobile } from '@/helpers'
+import { errors } from '@/errors'
+import { abbrCenter, isMobile, ErrorHandler } from '@/helpers'
 import { router } from '@/router'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -84,13 +85,16 @@ const connectOrReferToInstallMetamask = async () => {
   }
 
   if (web3Provider?.selectedProvider) {
-    await web3Provider.connect()
+    try {
+      await web3Provider.connect()
 
-    // TODO: discuss
-    setTimeout(() => {
-      if (web3Provider.isConnected && web3Provider.chainId !== $config.CHAIN_ID)
-        web3Provider.switchChain($config.CHAIN_ID)
-    }, 200)
+      if (web3Provider.chainId !== $config.CHAIN_ID)
+        await web3Provider.switchChain($config.CHAIN_ID)
+    } catch (error) {
+      error?.constructor === errors.ProviderUserRejectedRequest
+        ? ErrorHandler.processWithoutFeedback(error)
+        : ErrorHandler.process(error)
+    }
   } else {
     window.open($config.WEB3_PROVIDER_INSTALL_LINK)
   }
