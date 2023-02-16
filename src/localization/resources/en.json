@@ -52,6 +52,7 @@
     "document-hash-title": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
+    "not-signed-yet-message":  "The document has not been signed yet",
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
     "already-signed-message": "You signed this document before",

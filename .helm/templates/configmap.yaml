@@ -10,6 +10,7 @@ data:
                               document.ENV = {
                                 VITE_APP_NAME: 'Time Stamp Service',
                                 VITE_APP_CHAIN_ID: '5',
-                                VITE_APP_CTR_ADDRESS_TIMESTAMP: '0x7De85Ba2D41482c169c95BD074D2cbfcf99A0277'
+                                VITE_APP_CTR_ADDRESS_TIMESTAMP: '0x7De85Ba2D41482c169c95BD074D2cbfcf99A0277',
+                                VITE_APP_CTR_ADDRESS_POSEIDON_HASH='0x4ca0b63a4473d9606b2802577e1fadc58ce369fd'
                               }
 {{- end }}

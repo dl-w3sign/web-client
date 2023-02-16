@@ -6,13 +6,8 @@ declare module '*.vue' {
 }
 
 declare module 'snarkjs' {
-  const groth16 = {
-    fullProve: (
-      _input: any,
-      wasmFile: string,
-      zkeyFileName: string,
-      logger?: any,
-    ) => any,
+  export const groth16 = {
+    // eslint-disable-next-line
+    fullProve: (_input: unknown, wasmFile: string, zkeyFileName: string) => any,
   }
-  export { groth16 }
 }
