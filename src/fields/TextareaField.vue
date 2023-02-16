@@ -288,7 +288,7 @@ const { textarea } = useTextareaAutosize({
     }
 
     & + .textarea-field__copy-button {
-      color: var(--col-brittle);
+      color: var(--col-stylish);
       width: toRem(50);
 
       .textarea-field__icon {
@@ -298,24 +298,6 @@ const { textarea } = useTextareaAutosize({
       @include respond-to(850px) {
         width: toRem(42);
       }
-    }
-  }
-
-  &:not(:read-only):hover {
-    & + .textarea-field__copy-button {
-      color: var(--col-flexible);
-    }
-  }
-
-  &:not(:read-only):focus {
-    & + .textarea-field__copy-button {
-      color: var(--col-primary);
-    }
-  }
-
-  &:not(:read-only):active {
-    & + .textarea-field__copy-button {
-      color: var(--col-initial);
     }
   }
 
