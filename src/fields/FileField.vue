@@ -20,10 +20,8 @@
     </div>
     <div
       v-else-if="!isReadonly"
-      :class="{
-        'file-field__drop-zone': true,
-        'file-field__drop-zone--active': isOverDropZone,
-      }"
+      class="file-field__drop-zone"
+      :class="{ 'file-field__drop-zone--active': isOverDropZone }"
     >
       <label
         ref="dropZone"
@@ -32,10 +30,8 @@
       />
       <div class="file-field__drop-zone-container">
         <icon
-          :class="{
-            'file-field__drop-zone-icon': true,
-            'file-field__drop-zone-icon--large': isOverDropZone,
-          }"
+          class="file-field__drop-zone-icon"
+          :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
           :name="$icons.cloudUpload"
         />
         <h6 class="file-field__title" v-show="!isOverDropZone">
@@ -45,7 +41,6 @@
             @click.prevent="openFileDialog"
           >
             {{ $t('file-field.open-dialog-button-text') }}
-            <span class="file-field__open-dialog-button-underline" />
           </button>
         </h6>
         <p class="file-field__require" v-show="!isOverDropZone">
@@ -171,6 +166,11 @@ watch(
   padding: 0 toRem(24);
   gap: toRem(10);
   height: toRem(96);
+  transition: background-color, var(--transition-duration);
+
+  &:hover {
+    background: var(--col-mild);
+  }
 
   @include respond-to(850px) {
     padding: 0 toRem(16);
@@ -301,22 +301,31 @@ watch(
   line-height: inherit;
   color: var(--col-primary);
 
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: toRem(1.7);
+    display: block;
+    height: toRem(0.8);
+    width: 100%;
+    background: var(--col-primary);
+  }
+
   &:hover {
     color: var(--col-basic);
+
+    &:after {
+      background: var(--col-basic);
+    }
   }
 
   &:active {
     color: var(--col-initial);
-  }
-}
 
-.file-field__open-dialog-button-underline {
-  position: absolute;
-  bottom: toRem(1.7);
-  display: block;
-  height: toRem(0.8);
-  width: 100%;
-  background: var(--col-primary);
+    &:after {
+      background: var(--col-initial);
+    }
+  }
 }
 
 .file-field__require {

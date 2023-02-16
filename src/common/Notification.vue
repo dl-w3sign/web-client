@@ -32,6 +32,8 @@ withDefaults(
   &--default,
   &--info {
     color: var(--col-primary);
+
+    @include note-info;
   }
 
   &--success {

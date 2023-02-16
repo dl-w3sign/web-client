@@ -3,7 +3,7 @@
     <animation
       class="spinner__inner"
       :animation-data="LoaderJSON"
-      :is-infinite="true"
+      is-infinite
     />
   </div>
 </template>
