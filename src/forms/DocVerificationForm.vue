@@ -346,6 +346,14 @@ const signOrExit = async () => {
       )
       isJustSignedByCurrentSigner.value = true
     }
+
+    if (error?.reason === RPC_ERROR_MESSAGES.isNotAdmitted) {
+      Bus.emit(
+        Bus.eventList.error,
+        $t('doc-verification-form.is-not-admitted-message'),
+      )
+    }
+
     ErrorHandler.processWithoutFeedback(error)
   }
   isSubmitting.value = false

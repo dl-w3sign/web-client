@@ -56,6 +56,7 @@
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
     "already-signed-message": "You signed this document before",
+    "is-not-admitted-message": "Your address wasn't specified when creating a document, you cannot sign it",
     "error-default": "Something went wrong",
     "error-doc-not-found": "This document has not been uploaded yet"
   },
