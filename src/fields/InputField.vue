@@ -5,9 +5,11 @@
     </label>
     <div class="input-field__input-wrapper">
       <input
+        v-bind="$attrs"
         class="input-field__input"
         :class="{
-          'input-field__input--with-left-icon': leftIcon,
+          'input-field__input--with-left-icon': leftIconName,
+          'input-field__input--with-right-icon': rightIconName,
         }"
         :id="`input-field--${uid}`"
         :placeholder="placeholder"
@@ -15,9 +17,12 @@
         @input="updateModelValue"
       />
       <icon
-        class="input-field__icon input-field__icon--left"
-        v-if="leftIcon"
-        :name="leftIcon"
+        v-if="leftIconName || rightIconName"
+        class="input-field__icon"
+        :class="
+          leftIconName ? 'input-field__icon--left' : 'input-field__icon--right'
+        "
+        :name="leftIconName ? leftIconName : (rightIconName as ICON_NAMES)"
       />
     </div>
   </div>
@@ -43,13 +48,15 @@ withDefaults(
     modelValue?: string
     label?: string
     placeholder?: string
-    leftIcon?: ICON_NAMES
+    leftIconName?: ICON_NAMES
+    rightIconName?: ICON_NAMES
   }>(),
   {
     modelValue: '',
     label: '',
     placeholder: '',
-    leftIcon: undefined,
+    leftIconName: undefined,
+    rightIconName: undefined,
   },
 )
 </script>
@@ -96,14 +103,23 @@ withDefaults(
   }
 
   & ~ .input-field__icon {
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+
     &--left {
-      top: 0;
       left: toRem(16);
-      bottom: 0;
-      margin: auto 0;
 
       @include respond-to(850px) {
         left: toRem(12);
+      }
+    }
+
+    &--right {
+      right: toRem(16);
+
+      @include respond-to(850px) {
+        right: toRem(12);
       }
     }
   }

@@ -21,6 +21,7 @@
           class="doc-creation-form__doc-hash"
           :model-value="publicFileHash || ''"
           is-copied
+          readonly
         />
         <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
@@ -71,13 +72,16 @@
               :key="address"
               :model-value="address"
               @remove="removeIndicatedAddress(address)"
-              is-readonly
               is-removable
+              readonly
             />
           </div>
         </transition>
         <div class="doc-creation-form__buttons">
-          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click="emit('cancel')"
+          >
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -124,14 +128,9 @@ import {
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
-withDefaults(
-  defineProps<{
-    cancel?: () => void
-  }>(),
-  {
-    cancel: undefined,
-  },
-)
+const emit = defineEmits<{
+  (event: 'cancel'): void
+}>()
 
 const { $t, $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()

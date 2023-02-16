@@ -1,7 +1,7 @@
 <template>
   <form
+    class="doc-verification-form"
     :class="{
-      'doc-verification-form': true,
       'doc-verification-form--confirmation-hidden': !isConfirmationShown,
     }"
     @submit.prevent
@@ -28,11 +28,15 @@
               {{ $t('doc-verification-form.doc-timestamp-title') }}
             </p>
             <p class="doc-verification-form__timestamp">
-              {{ formatTimestamp(stampInfo?.docTimestamp) }}
+              {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
             </p>
           </div>
         </div>
-        <textarea-field :model-value="publicFileHash || ''" is-copied />
+        <textarea-field
+          :model-value="publicFileHash || ''"
+          is-copied
+          readonly
+        />
         <div
           :class="[
             'doc-verification-form__note',
@@ -56,17 +60,17 @@
             @update:model-value="searchAddress"
             class="doc-verification-form__search-input"
             :placeholder="$t('doc-verification-form.search-placeholder')"
-            :left-icon="$icons.search"
+            :left-icon-name="$icons.search"
           />
           <div v-if="stampInfo?.signers">
             <div v-for="signer in stampInfo.signers" :key="signer.address">
               <textarea-field
                 class="doc-verification-form__address"
                 :model-value="signer.address"
-                :is-readonly="true"
-                :right-icon="
+                :right-icon-name="
                   signer.signatureTimestamp ? $icons.checkCircle : undefined
                 "
+                readonly
               />
               <div class="doc-verification-form__timestamp-info">
                 <p
@@ -119,7 +123,10 @@
       <div v-else>
         <file-field v-model="form.file" />
         <div class="doc-verification-form__buttons">
-          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click="emit('cancel')"
+          >
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -175,14 +182,9 @@ import { Time } from '@/utils'
 import { ref, reactive, computed } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
 
-const props = withDefaults(
-  defineProps<{
-    cancel?: () => void
-  }>(),
-  {
-    cancel: undefined,
-  },
-)
+const emit = defineEmits<{
+  (event: 'cancel'): void
+}>()
 
 const form = reactive({
   file: null as File | null,
@@ -323,7 +325,7 @@ const signOrExit = async () => {
     isAlreadySignedByCurrentSigner.value ||
     isJustSignedByCurrentSigner.value
   ) {
-    if (props.cancel) props.cancel()
+    emit('cancel')
     return
   }
 
@@ -435,7 +437,7 @@ const reset = () => {
   fill: var(--col-success);
   stroke: var(--col-success);
   stroke-width: toRem(0);
-  transition: var(--transition-duration-slow);
+  transition: var(--transition-duration);
 
   &:hover,
   &:active {

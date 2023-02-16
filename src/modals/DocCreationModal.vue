@@ -5,7 +5,7 @@
         <icon class="doc-creation-modal__title-icon" :name="$icons.note" />
         {{ $t('doc-creation-modal.title') }}
       </h3>
-      <doc-creation-form :cancel="close" />
+      <doc-creation-form @cancel="close" />
     </div>
   </modal>
 </template>
