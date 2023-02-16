@@ -49,7 +49,6 @@ const init = async () => {
 }
 
 init()
-//
 </script>
 
 <style lang="scss" scoped>
