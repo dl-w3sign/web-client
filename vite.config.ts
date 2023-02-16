@@ -24,6 +24,17 @@ export default defineConfig(({ command, mode }) => {
     server: {
       port: Number(env.VITE_PORT),
     },
+    build: {
+      target: 'esnext',
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+        define: {
+          global: 'globalThis',
+        },
+      },
+    },
     publicDir: 'static',
     plugins: [
       vue(),

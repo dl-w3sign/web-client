@@ -2,7 +2,9 @@ import { ref } from 'vue'
 import {
   TimestampContract,
   TimestampContract__factory,
-  Keccak256Hash,
+  PromiseOrValue,
+  BytesLike,
+  ZKPPointsStructType,
 } from '@/types'
 import { BN } from '@/utils'
 import { useWeb3ProvidersStore } from '@/store'
@@ -14,6 +16,7 @@ export type SignerInfo = {
 }
 
 export type StampInfo = {
+  isPublic: boolean
   docTimestamp: number
   signers: SignerInfo[]
   signersTotalCount: number
@@ -21,19 +24,23 @@ export type StampInfo = {
 
 export type UseTimestampContract = {
   getStampInfoWithPagination: (
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
     offset: number,
     limit: number,
   ) => Promise<StampInfo | null>
   getSignerInfo: (
     address: string,
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
   ) => Promise<SignerInfo | null>
   createStamp: (
-    fileHash: Keccak256Hash,
-    isSign: boolean,
+    publicHash: PromiseOrValue<BytesLike>,
+    isSign: PromiseOrValue<boolean>,
+    indicatedAddresses: PromiseOrValue<string>[],
+    ZKPPointsStruct: ZKPPointsStructType,
   ) => Promise<ContractTransaction | null>
-  sign: (fileHash: Keccak256Hash) => Promise<ContractTransaction | null>
+  sign: (
+    publicHash: PromiseOrValue<BytesLike>,
+  ) => Promise<ContractTransaction | null>
 }
 
 export const useTimestampContract = (address: string): UseTimestampContract => {
@@ -53,18 +60,20 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   }
 
   const getStampInfoWithPagination = async (
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
     offset: number,
     limit: number,
   ): Promise<StampInfo | null> => {
     const receipt = await _instance.value?.getStampInfoWithPagination(
-      fileHash,
+      publicHash,
       offset,
       limit,
     )
 
     if (receipt) {
       return {
+        isPublic: receipt.isPublic,
+
         docTimestamp: new BN(receipt.timestamp._hex).toNumber(),
 
         signers: receipt.signersInfo.map(signerInfo => ({
@@ -74,7 +83,9 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
           ).toNumber(),
         })),
 
-        signersTotalCount: new BN(receipt.signersCount._hex).toNumber(),
+        signersTotalCount: receipt.isPublic
+          ? new BN(receipt.usersSigned._hex).toNumber()
+          : new BN(receipt.usersToSign._hex).toNumber(),
       }
     } else {
       return null
@@ -83,9 +94,9 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
 
   const getSignerInfo = async (
     address: string,
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
   ): Promise<SignerInfo | null> => {
-    const receipt = await _instance.value?.getUserInfo(address, fileHash)
+    const receipt = await _instance.value?.getUserInfo(address, publicHash)
 
     if (receipt) {
       return {
@@ -98,17 +109,24 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   }
 
   const createStamp = async (
-    fileHash: Keccak256Hash,
-    isSign: boolean,
+    publicHash: PromiseOrValue<BytesLike>,
+    isSign: PromiseOrValue<boolean>,
+    indicatedAddresses: PromiseOrValue<string>[],
+    ZKPPointsStruct: ZKPPointsStructType,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.createStamp(fileHash, isSign)
+    const tx = await _instance_rw.value?.createStamp(
+      publicHash,
+      isSign,
+      indicatedAddresses,
+      ZKPPointsStruct,
+    )
     return tx ? tx : null
   }
 
   const sign = async (
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.sign(fileHash)
+    const tx = await _instance_rw.value?.sign(publicHash)
     return tx ? tx : null
   }
 

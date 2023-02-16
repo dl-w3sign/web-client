@@ -19,7 +19,7 @@
         </div>
         <textarea-field
           class="doc-creation-form__doc-hash"
-          :model-value="fileHash || ''"
+          :model-value="publicFileHash || ''"
           is-copied
         />
         <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
@@ -105,12 +105,23 @@ import {
   useForm,
   useFormValidation,
   useTimestampContract,
+  usePoseidonHashContract,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash, isAddress } from '@/helpers'
+import {
+  ErrorHandler,
+  getKeccak256FileHash,
+  isAddress,
+  generateZKPPointsStructAndPublicHash,
+} from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
-import { EthProviderRpcError, Keccak256Hash } from '@/types'
+import {
+  EthProviderRpcError,
+  Keccak256Hash,
+  PoseidonHash,
+  BytesLike,
+} from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
 withDefaults(
@@ -128,6 +139,9 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
 const timestampContractInstance = useTimestampContract(
   $config.CTR_ADDRESS_TIMESTAMP,
 )
+const poseidonHashContractInstance = usePoseidonHashContract(
+  $config.CTR_ADDRESS_POSEIDON_HASH,
+)
 
 const {
   isFormDisabled,
@@ -140,7 +154,7 @@ const {
   enableForm,
 } = useForm()
 
-const fileHash = ref<Keccak256Hash | null>(null)
+const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
 const errorMessage = ref('')
 
@@ -167,7 +181,7 @@ const { isFieldsValid } = useFormValidation(form, {
 
 const addIndicatedAddress = (address: string) => {
   if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
-    form.indicatedAddresses.push(address)
+    form.indicatedAddresses.unshift(address)
     setTimeout(() => (walletAddress.value = '')) // TODO: to discuss
   }
 
@@ -193,20 +207,33 @@ const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
-
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.createStamp(fileHash.value, form.isSign)
+    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
+      (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+    )) as PoseidonHash
+
+    const { ZKPPointsStruct, publicHash } =
+      await generateZKPPointsStructAndPublicHash(
+        secretFileHash,
+        web3Provider.selectedAddress as string,
+      )
+
+    publicFileHash.value = publicHash
+
+    await timestampContractInstance.createStamp(
+      publicFileHash.value,
+      form.isSign,
+      form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
+      ZKPPointsStruct,
+    )
 
     showConfirmation()
   } catch (err) {
-    err?.error
-      ? (errorMessage.value = getErrorMessage(
-          err?.error as EthProviderRpcError,
-        ))
-      : (errorMessage.value = $t('doc-creation-form.error-default'))
+    if (err?.error)
+      errorMessage.value = getErrorMessage(err.error as EthProviderRpcError)
+    else errorMessage.value = $t('doc-creation-form.error-default')
 
     showFailure()
     ErrorHandler.processWithoutFeedback(err)
@@ -217,7 +244,7 @@ const submit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  fileHash.value = null
+  publicFileHash.value = null
 
   form.file = null
   form.isSign = true

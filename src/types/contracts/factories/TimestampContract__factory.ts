@@ -89,6 +89,12 @@ const _abi = [
         name: "timestamp",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "address[]",
+        name: "signers",
+        type: "address[]",
+      },
     ],
     name: "StampCreated",
     type: "event",
@@ -126,7 +132,18 @@ const _abi = [
     type: "event",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "verifier_",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "poseidonHash_",
+        type: "address",
+      },
+    ],
     name: "__TimeStamping_init",
     outputs: [],
     stateMutability: "nonpayable",
@@ -141,8 +158,35 @@ const _abi = [
       },
       {
         internalType: "bool",
-        name: "isSign_",
+        name: "isSigned_",
         type: "bool",
+      },
+      {
+        internalType: "address[]",
+        name: "signers_",
+        type: "address[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256[2]",
+            name: "a",
+            type: "uint256[2]",
+          },
+          {
+            internalType: "uint256[2][2]",
+            name: "b",
+            type: "uint256[2][2]",
+          },
+          {
+            internalType: "uint256[2]",
+            name: "c",
+            type: "uint256[2]",
+          },
+        ],
+        internalType: "struct ITimeStamping.ZKPPoints",
+        name: "zkpPoints_",
+        type: "tuple",
       },
     ],
     name: "createStamp",
@@ -172,6 +216,25 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes",
+        name: "bytes_",
+        type: "bytes",
+      },
+    ],
+    name: "getStampHashByBytes",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "stampHash_",
         type: "bytes32",
@@ -182,13 +245,23 @@ const _abi = [
       {
         components: [
           {
+            internalType: "bool",
+            name: "isPublic",
+            type: "bool",
+          },
+          {
             internalType: "uint256",
             name: "timestamp",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "signersCount",
+            name: "usersToSign",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "usersSigned",
             type: "uint256",
           },
           {
@@ -245,13 +318,23 @@ const _abi = [
       {
         components: [
           {
+            internalType: "bool",
+            name: "isPublic",
+            type: "bool",
+          },
+          {
             internalType: "uint256",
             name: "timestamp",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "signersCount",
+            name: "usersToSign",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "usersSigned",
             type: "uint256",
           },
           {
@@ -369,6 +452,19 @@ const _abi = [
   {
     inputs: [],
     name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "verifier_",
+        type: "address",
+      },
+    ],
+    name: "setVerifier",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
