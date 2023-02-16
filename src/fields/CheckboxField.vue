@@ -1,10 +1,11 @@
 <template>
   <div
     class="checkbox-field"
-    :class="modelValue ? 'checkbox-field--checked' : ''"
+    :class="{ 'checkbox-field--checked': modelValue }"
   >
-    <label v-if="label" class="checkbox-field__label">
+    <label class="checkbox-field__label">
       <input
+        v-bind="$attrs"
         class="checkbox-field__input"
         type="checkbox"
         :checked="modelValue"
@@ -14,7 +15,7 @@
         class="checkbox-field__icon"
         :name="modelValue ? $icons.checkboxChecked : $icons.checkbox"
       />
-      <span class="checkbox-field__label-message">
+      <span v-if="label" class="checkbox-field__label-message">
         {{ label }}
       </span>
     </label>
@@ -74,7 +75,6 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field__label {
   display: flex;
   align-items: center;
-  gap: toRem(8);
   cursor: pointer;
   user-select: none;
 }
@@ -96,6 +96,8 @@ const updateModelValue = (event: InputEvent) => {
 }
 
 .checkbox-field__label-message {
+  margin-left: toRem(8);
+
   @include text-2;
 
   @include respond-to(850px) {

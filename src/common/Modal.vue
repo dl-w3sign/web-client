@@ -7,7 +7,7 @@
         ref="modalWrapper"
         @click="onWrapperClick"
       >
-        <div class="modal__pane">
+        <div class="modal__pane" v-bind="$attrs">
           <slot :close="closeModal" />
         </div>
       </div>

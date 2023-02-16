@@ -21,6 +21,7 @@
           class="doc-creation-form__doc-hash"
           :model-value="fileHash || ''"
           is-copied
+          readonly
         />
         <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
@@ -50,7 +51,10 @@
           :label="$t('doc-creation-form.checkbox-is-sign')"
         />
         <div class="doc-creation-form__buttons">
-          <app-button :preset="BUTTON_PRESETS.outlineBrittle" @click="cancel">
+          <app-button
+            :preset="BUTTON_PRESETS.outlineBrittle"
+            @click="emit('cancel')"
+          >
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
@@ -86,14 +90,9 @@ import { required, maxValue } from '@/validators'
 import { EthProviderRpcError, Keccak256Hash } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
-withDefaults(
-  defineProps<{
-    cancel?: () => void
-  }>(),
-  {
-    cancel: undefined,
-  },
-)
+const emit = defineEmits<{
+  (event: 'cancel'): void
+}>()
 
 const { $t, $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()
