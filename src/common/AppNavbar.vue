@@ -42,6 +42,12 @@ import { BUTTON_PRESETS } from '@/enums'
 .app-navbar__logo {
   height: toRem(48);
   width: toRem(48);
+  color: var(--col-intense);
+  transition: var(--transition-duration-slow);
+
+  &:hover {
+    color: var(--col-basic);
+  }
 }
 
 .app-navbar__connect-ethereum {
