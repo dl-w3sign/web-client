@@ -438,6 +438,7 @@ const reset = () => {
   stroke: var(--col-success);
   stroke-width: toRem(0);
   transition: var(--transition-duration);
+  color: var(--col-intense);
 
   &:hover,
   &:active {
