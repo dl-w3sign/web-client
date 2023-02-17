@@ -49,6 +49,7 @@ init()
 
 <style lang="scss" scoped>
 .app__wrapper {
+  position: relative;
   min-width: toRem(380);
 }
 

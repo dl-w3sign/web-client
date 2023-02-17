@@ -7,6 +7,12 @@
     "connect-button-text-install-provider": "Install MetaMask",
     "connect-button-text-go-to-metamask-app": "Go To MetaMask"
   },
+  "switch-ethereum": {
+    "ethereum-chain-title": "Ethereum",
+    "polygon-chain-title": "Polygon",
+    "q-chain-title": "Q",
+    "unknown-chain-title": "Unknown"
+  },
   "main-page": {
     "welcome-beginning": "Welcome to",
     "welcome-continuing": "Documents Timestamping Service",

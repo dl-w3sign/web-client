@@ -4,6 +4,12 @@
       <svg class="app-navbar__logo">
         <use href="/branding/logo.svg#logo" />
       </svg>
+      <transition name="fade">
+        <switch-ethereum
+          v-if="web3Provider?.isConnected"
+          class="app-navbar__switch-ethereum"
+        />
+      </transition>
       <connect-ethereum
         class="app-navbar__connect-ethereum"
         :button-preset="BUTTON_PRESETS.outlineBrittle"
@@ -13,8 +19,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ConnectEthereum } from '@/common'
+import { ConnectEthereum, SwitchEthereum } from '@/common'
 import { BUTTON_PRESETS } from '@/enums'
+import { useWeb3ProvidersStore } from '@/store'
+
+const { provider: web3Provider } = useWeb3ProvidersStore()
 </script>
 
 <style lang="scss" scoped>
@@ -30,11 +39,13 @@ import { BUTTON_PRESETS } from '@/enums'
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: toRem(16);
   padding: 0 6.7%;
   width: 100%;
   max-width: toRem(1440);
 
   @include respond-to(850px) {
+    gap: toRem(8);
     padding: 0 4.5%;
   }
 }
@@ -48,16 +59,50 @@ import { BUTTON_PRESETS } from '@/enums'
   &:hover {
     color: var(--col-basic);
   }
+
+  @include respond-to(850px) {
+    height: toRem(44);
+    width: toRem(44);
+  }
 }
 
 .app-navbar__connect-ethereum {
   height: toRem(48);
-  width: toRem(226);
+  width: toRem(218);
 
   @include text-5;
 
   @include respond-to(850px) {
-    width: toRem(216);
+    width: toRem(208);
+  }
+}
+
+.app-navbar__switch-ethereum {
+  z-index: var(--z-switch-ethereum);
+  height: toRem(48);
+  width: toRem(180);
+  margin-left: auto;
+
+  @include respond-to(580px) {
+    width: toRem(64);
+  }
+}
+
+.fade-enter-active {
+  animation: fade-in var(--transition-duration-slow);
+}
+
+.fade-leave-active {
+  animation: fade-in var(--transition-duration-slow) reverse;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 </style>

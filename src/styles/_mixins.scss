@@ -94,6 +94,32 @@ $media-breakpoints: (
   }
 }
 
+@mixin outline-brittle-dropdown {
+  background: var(--col-intense);
+  border: toRem(1) solid var(--col-brittle);
+  border-radius: var(--border-radius);
+  padding: toRem(4) 0;
+  transition-property: transform, border-color;
+  transition-duration: var(--transition-duration);
+
+  &:hover {
+    border-color: var(--col-flexible);
+  }
+}
+
+@mixin outline-brittle-dropdown-item {
+  width: 100%;
+  transition: background-color var(--transition-duration);
+
+  &:hover {
+    background: var(--col-grand);
+  }
+
+  &:active {
+    background: var(--col-brittle);
+  }
+}
+
 @mixin h2 {
   font-weight: 600;
   font-size: toRem(48);
