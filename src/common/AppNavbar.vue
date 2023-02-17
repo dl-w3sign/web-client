@@ -43,10 +43,12 @@ import { BUTTON_PRESETS } from '@/enums'
   height: toRem(48);
   width: toRem(48);
   color: var(--col-intense);
-  transition: var(--transition-duration-slow);
+  fill: var(--col-trendy);
+  transition: var(--transition-duration);
 
   &:hover {
-    color: var(--col-basic);
+    color: var(--col-quiet);
+    fill: var(--col-primary);
   }
 }
 
