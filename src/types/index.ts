@@ -6,3 +6,4 @@ export * from './time'
 
 export * from '@/utils'
 export type { BytesLike } from 'ethers'
+export type { AddEthereumChainParameter } from '@/const'

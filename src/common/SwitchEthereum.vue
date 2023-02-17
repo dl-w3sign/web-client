@@ -14,10 +14,18 @@
       <div class="switch-ethereum__select-head">
         <icon
           class="switch-ethereum__button-icon"
-          :name="getChainIconNameById(web3Provider?.chainId)"
+          :name="
+            getChainIconNameById(
+              isSwitching ? chainIdOnSwitching : web3Provider?.chainId,
+            )
+          "
         />
         <p class="switch-ethereum__chain-title">
-          {{ getChainTitleById(web3Provider?.chainId) }}
+          {{
+            getChainTitleById(
+              isSwitching ? chainIdOnSwitching : web3Provider?.chainId,
+            )
+          }}
         </p>
       </div>
     </template>
@@ -43,10 +51,14 @@
 <script lang="ts" setup>
 import { Icon } from '@/common'
 import { useContext } from '@/composables'
+import {
+  POLYGON_MAINNET_NETWORK_CONFIG,
+  Q_MAINNET_NETWORK_CONFIG,
+} from '@/const'
 import { ETHEREUM_CHAINS, ICON_NAMES, BUTTON_STATES } from '@/enums'
 import { errors } from '@/errors'
 import { SelectField } from '@/fields'
-import { ErrorHandler, Bus } from '@/helpers'
+import { ErrorHandler, Bus, sleep } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { ChainId } from '@/types'
 import { computed, ref } from 'vue'
@@ -60,8 +72,6 @@ const hasCurrentChainIdInListOfAvailable = computed(() =>
 )
 
 const getChainTitleById = (chainId: ChainId): string => {
-  if (isSwitching.value) chainId = chainIdOnSwitching.value as ChainId
-
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.ethereum:
       return $t('switch-ethereum.ethereum-chain-title')
@@ -75,8 +85,6 @@ const getChainTitleById = (chainId: ChainId): string => {
 }
 
 const getChainIconNameById = (chainId: ChainId): ICON_NAMES => {
-  if (isSwitching.value) chainId = chainIdOnSwitching.value as ChainId
-
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.ethereum:
       return ICON_NAMES.ethereum
@@ -89,6 +97,17 @@ const getChainIconNameById = (chainId: ChainId): ICON_NAMES => {
   }
 }
 
+const getNetworkConfigByChainId = (chainId: ChainId) => {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.polygon:
+      return POLYGON_MAINNET_NETWORK_CONFIG
+    case ETHEREUM_CHAINS.q:
+      return Q_MAINNET_NETWORK_CONFIG
+    default:
+      return undefined
+  }
+}
+
 const isSwitching = ref(false)
 const chainIdOnSwitching = ref<ChainId>()
 const switchChain = async (chainId: ChainId) => {
@@ -98,10 +117,29 @@ const switchChain = async (chainId: ChainId) => {
 
     try {
       await web3Provider?.switchChain(chainId)
+      await sleep(1000)
     } catch (error) {
-      if (error?.constructor !== errors.ProviderUserRejectedRequest) {
-        Bus.emit(Bus.eventList.error)
-        ErrorHandler.processWithoutFeedback(error)
+      switch (true) {
+        case error?.constructor === errors.ProviderUserRejectedRequest:
+          ErrorHandler.processWithoutFeedback(error)
+          break
+
+        case error?.code === 4902:
+          try {
+            const networkConfig = getNetworkConfigByChainId(chainId)
+            if (networkConfig) await web3Provider.addChain(networkConfig)
+            await sleep(1000)
+          } catch (error) {
+            if (error?.constructor === errors.ProviderUserRejectedRequest) {
+              ErrorHandler.processWithoutFeedback(error)
+              break
+            }
+            Bus.emit(Bus.eventList.error)
+          }
+          break
+
+        default:
+          Bus.emit(Bus.eventList.error)
       }
     }
 

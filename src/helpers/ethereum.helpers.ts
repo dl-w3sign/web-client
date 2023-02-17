@@ -1,4 +1,4 @@
-import { EthProviderRpcError } from '@/types'
+import { EthProviderRpcError, AddEthereumChainParameter } from '@/types'
 import { errors } from '@/errors'
 import { ethers } from 'ethers'
 import { EIP1193, EIP1474 } from '@/enums'
@@ -20,17 +20,9 @@ export async function requestSwitchEthChain(
 
 export async function requestAddEthChain(
   provider: ethers.providers.Web3Provider,
-  chainId: number,
-  chainName: string,
-  chainRpcUrl: string,
+  networkConfig: AddEthereumChainParameter,
 ) {
-  await provider.send('wallet_addEthereumChain', [
-    {
-      chainId: ethers.utils.hexValue(chainId),
-      chainName,
-      rpcUrls: [chainRpcUrl],
-    },
-  ])
+  await provider.send('wallet_addEthereumChain', [networkConfig])
 }
 
 export function handleEthError(error: EthProviderRpcError) {

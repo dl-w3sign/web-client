@@ -7,6 +7,7 @@ import {
   ProviderWrapper,
   TransactionResponse,
   TxRequestBody,
+  AddEthereumChainParameter,
 } from '@/types'
 import { errors } from '@/errors'
 import { ethers } from 'ethers'
@@ -30,11 +31,7 @@ export interface UseProvider {
   connect: () => Promise<void>
   disconnect: () => Promise<void>
   switchChain: (chainId: ChainId) => Promise<void>
-  addChain: (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => Promise<void>
+  addChain: (networkConfig: AddEthereumChainParameter) => Promise<void>
   signAndSendTx: (txRequestBody: TxRequestBody) => Promise<TransactionResponse>
   getHashFromTxResponse: (txResponse: TransactionResponse) => string
   getTxUrl: (explorerUrl: string, txHash: string) => string
@@ -146,15 +143,11 @@ export const useProvider = (): UseProvider => {
     await providerWrp.value.switchChain(chainId)
   }
 
-  const addChain = async (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => {
+  const addChain = async (networkConfig: AddEthereumChainParameter) => {
     if (!providerWrp.value || !providerWrp.value?.addChain)
       throw new errors.ProviderWrapperMethodNotFoundError()
 
-    await providerWrp.value.addChain(chainId, chainName, chainRpcUrl)
+    await providerWrp.value.addChain(networkConfig)
   }
 
   const signAndSendTx = async (

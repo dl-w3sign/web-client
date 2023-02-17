@@ -9,6 +9,7 @@ import { ethers } from 'ethers'
 
 import { PROVIDERS } from '@/enums'
 import { EthereumProvider } from '@/types/ethereum.types'
+import { AddEthereumChainParameter } from '@/types'
 
 /**
  * Non defined provider from browser
@@ -61,11 +62,7 @@ export interface ProviderWrapper {
   init: () => Promise<void>
   connect: () => Promise<void>
   switchChain: (chainId: ChainId) => Promise<void>
-  addChain?: (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => Promise<void>
+  addChain?: (networkConfig: AddEthereumChainParameter) => Promise<void>
   signAndSendTransaction: (
     txRequestBody: TxRequestBody,
   ) => Promise<TransactionResponse>
