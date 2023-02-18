@@ -50,11 +50,13 @@ export declare namespace ITimeStamping {
 
   export type SignerInfoStruct = {
     signer: PromiseOrValue<string>;
+    isAddmitted: PromiseOrValue<boolean>;
     signatureTimestamp: PromiseOrValue<BigNumberish>;
   };
 
-  export type SignerInfoStructOutput = [string, BigNumber] & {
+  export type SignerInfoStructOutput = [string, boolean, BigNumber] & {
     signer: string;
+    isAddmitted: boolean;
     signatureTimestamp: BigNumber;
   };
 

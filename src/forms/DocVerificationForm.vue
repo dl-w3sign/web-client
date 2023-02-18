@@ -51,7 +51,7 @@
             {{ $t('doc-verification-form.success-msg') }}
           </p>
         </div>
-        <div v-if="isSignedBySomeone">
+        <div v-if="stampInfo.signers.length || addressToSearch">
           <h4 class="doc-verification-form__list-title">
             {{ $t('doc-verification-form.list-title') }}
           </h4>
@@ -99,9 +99,9 @@
         </div>
         <app-button :preset="BUTTON_PRESETS.primary" @click="signOrExit">
           {{
-            isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
-              ? $t('doc-verification-form.exit-button-text')
-              : $t('doc-verification-form.sign-button-text')
+            infoOfCurrentSigner?.isAdmittedToSigning
+              ? $t('doc-verification-form.sign-button-text')
+              : $t('doc-verification-form.exit-button-text')
           }}
         </app-button>
       </div>
@@ -173,6 +173,7 @@ import {
   Keccak256Hash,
   UsePaginationCallbackArg,
   StampInfo,
+  SignerInfo,
   BytesLike,
   PoseidonHash,
 } from '@/types'
@@ -225,9 +226,7 @@ const errorMessage = ref('')
 
 const addressToSearch = ref('')
 const searchAddress = async (newAddress: string) => {
-  addressToSearch.value = newAddress
-
-  if (addressToSearch.value) {
+  if (newAddress) {
     if (stampInfo.value) stampInfo.value.signers.length = 0
 
     if (isAddress(addressToSearch.value)) {
@@ -246,12 +245,12 @@ const searchAddress = async (newAddress: string) => {
         pageLimit.value,
       )
   }
+
+  addressToSearch.value = newAddress
 }
 
 const stampInfo = ref<StampInfo | null>()
-const isSignedBySomeone = ref(false)
-const isAlreadySignedByCurrentSigner = ref(false)
-const isJustSignedByCurrentSigner = ref(false)
+const infoOfCurrentSigner = ref<SignerInfo | null>()
 
 const { width: windowWidth } = useWindowSize()
 const pageLimit = computed(() => (windowWidth.value < 850 ? 2 : 3))
@@ -298,13 +297,14 @@ const submitVerification = async () => {
       throw new Error('Document not found')
 
     if (stampInfo.value?.signers.length) {
-      isSignedBySomeone.value = true
-      const signerInfo = await timestampContractInstance.getSignerInfo(
+      infoOfCurrentSigner.value = await timestampContractInstance.getSignerInfo(
         web3Provider?.selectedAddress as string,
         publicFileHash.value,
       )
-      if (signerInfo?.signatureTimestamp)
-        isAlreadySignedByCurrentSigner.value = true
+
+      if (infoOfCurrentSigner.value?.signatureTimestamp) {
+        infoOfCurrentSigner.value.isAdmittedToSigning = false
+      }
     }
 
     showConfirmation()
@@ -321,45 +321,32 @@ const submitVerification = async () => {
 }
 
 const signOrExit = async () => {
-  if (
-    isAlreadySignedByCurrentSigner.value ||
-    isJustSignedByCurrentSigner.value
-  ) {
+  if (!infoOfCurrentSigner.value?.isAdmittedToSigning) {
     emit('cancel')
     return
   }
 
   disableForm()
   isSubmitting.value = true
-  isConfirmationShown.value = false
   try {
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
 
     await timestampContractInstance.sign(publicFileHash.value as BytesLike)
 
-    isJustSignedByCurrentSigner.value = true
+    infoOfCurrentSigner.value.isAdmittedToSigning = false
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
     if (error?.reason === RPC_ERROR_MESSAGES.alreadySigned) {
-      Bus.emit(
-        Bus.eventList.info,
-        $t('doc-verification-form.already-signed-message'),
-      )
-      isJustSignedByCurrentSigner.value = true
+      Bus.info($t('doc-verification-form.already-signed-message'))
+      infoOfCurrentSigner.value.isAdmittedToSigning = false
+      ErrorHandler.processWithoutFeedback(error)
+    } else {
+      ErrorHandler.process(error)
     }
-
-    if (error?.reason === RPC_ERROR_MESSAGES.isNotAdmitted) {
-      Bus.emit(
-        Bus.eventList.error,
-        $t('doc-verification-form.is-not-admitted-message'),
-      )
-    }
-
-    ErrorHandler.processWithoutFeedback(error)
   }
+
   isSubmitting.value = false
-  showConfirmation()
   enableForm()
 }
 
@@ -367,9 +354,8 @@ const reset = () => {
   errorMessage.value = ''
   form.file = null
   publicFileHash.value = null
-  isSignedBySomeone.value = false
-  isAlreadySignedByCurrentSigner.value = false
-  isJustSignedByCurrentSigner.value = false
+  stampInfo.value = undefined
+  infoOfCurrentSigner.value = undefined
   addressToSearch.value = ''
   resetState()
 }
