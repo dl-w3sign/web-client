@@ -13,6 +13,7 @@ import { ContractTransaction } from 'ethers'
 export type SignerInfo = {
   address: string
   signatureTimestamp: number
+  isAdmittedToSigning: boolean
 }
 
 export type StampInfo = {
@@ -25,11 +26,11 @@ export type StampInfo = {
 export type UseTimestampContract = {
   getStampInfoWithPagination: (
     publicHash: PromiseOrValue<BytesLike>,
-    offset: number,
-    limit: number,
+    offset: PromiseOrValue<number>,
+    limit: PromiseOrValue<number>,
   ) => Promise<StampInfo | null>
   getSignerInfo: (
-    address: string,
+    address: PromiseOrValue<string>,
     publicHash: PromiseOrValue<BytesLike>,
   ) => Promise<SignerInfo | null>
   createStamp: (
@@ -61,8 +62,8 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
 
   const getStampInfoWithPagination = async (
     publicHash: PromiseOrValue<BytesLike>,
-    offset: number,
-    limit: number,
+    offset: PromiseOrValue<number>,
+    limit: PromiseOrValue<number>,
   ): Promise<StampInfo | null> => {
     const receipt = await _instance.value?.getStampInfoWithPagination(
       publicHash,
@@ -81,6 +82,7 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
           signatureTimestamp: new BN(
             signerInfo.signatureTimestamp._hex,
           ).toNumber(),
+          isAdmittedToSigning: signerInfo.isAddmitted,
         })),
 
         signersTotalCount: receipt.isPublic
@@ -93,7 +95,7 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   }
 
   const getSignerInfo = async (
-    address: string,
+    address: PromiseOrValue<string>,
     publicHash: PromiseOrValue<BytesLike>,
   ): Promise<SignerInfo | null> => {
     const receipt = await _instance.value?.getUserInfo(address, publicHash)
@@ -102,6 +104,7 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
       return {
         address: receipt.signer,
         signatureTimestamp: new BN(receipt.signatureTimestamp._hex).toNumber(),
+        isAdmittedToSigning: (await receipt).isAddmitted,
       }
     } else {
       return null
