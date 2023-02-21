@@ -20,6 +20,8 @@ interface ImportMetaEnv {
   VITE_APP_NAME: string
   VITE_APP_CHAIN_ID: string
   VITE_APP_CTR_ADDRESS_TIMESTAMP: string
+  VITE_APP_CTR_ADDRESS_POSEIDON_HASH: string
+  VITE_APP_IS_MAINNET: string
 }
 
 declare global {

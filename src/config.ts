@@ -10,6 +10,7 @@ export const config = {
   CHAIN_ID: import.meta.env.VITE_APP_CHAIN_ID,
   CTR_ADDRESS_TIMESTAMP: import.meta.env.VITE_APP_CTR_ADDRESS_TIMESTAMP,
   CTR_ADDRESS_POSEIDON_HASH: import.meta.env.VITE_APP_CTR_ADDRESS_POSEIDON_HASH,
+  IS_MAINNET: import.meta.env.VITE_APP_IS_MAINNET,
   WEB3_PROVIDER_INSTALL_LINK: 'https://metamask.io/download/',
   FILE_MIME_TYPES: [...Object.values(FILE_TYPES)],
 } as const
