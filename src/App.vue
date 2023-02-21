@@ -7,6 +7,10 @@
           <component class="app__main" :is="Component" />
         </transition>
       </router-view>
+      <invalid-network-modal
+        :is-shown="web3Store.isInvalidNetworkModalShown"
+        @update:is-shown="web3Store.isInvalidNetworkModalShown = false"
+      />
     </div>
     <div v-else class="app__init">
       <animation class="app__loader" :animation-data="LoaderJSON" is-infinite />
@@ -18,13 +22,12 @@
 import { AppNavbar, Animation } from '@/common'
 import { useNotifications, useContext } from '@/composables'
 import { ErrorHandler } from '@/helpers'
+import { InvalidNetworkModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
-import { DesignatedProvider } from '@/types'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
-const { provider: web3Provider } = useWeb3ProvidersStore()
 const { $config } = useContext()
 
 const isAppInitialized = ref(false)
@@ -34,17 +37,27 @@ const init = async () => {
 
     await web3Store.detectProviders()
 
-    if (web3Store.metamask)
-      web3Provider.init(web3Store.metamask as DesignatedProvider)
+    if (web3Store.metamask) await web3Store.provider.init(web3Store.metamask)
 
     document.title = $config.APP_NAME
   } catch (error) {
     ErrorHandler.process(error)
   }
+
   isAppInitialized.value = true
+
+  if (web3Store.provider.isConnected && !web3Store.hasValidCurrentChain)
+    web3Store.showInvalidNetworkModal()
 }
 
 init()
+
+watch(
+  () => web3Store.hasValidCurrentChain,
+  newValue => {
+    if (!newValue) web3Store.showInvalidNetworkModal()
+  },
+)
 </script>
 
 <style lang="scss" scoped>

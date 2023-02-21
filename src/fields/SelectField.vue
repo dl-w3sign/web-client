@@ -1,25 +1,40 @@
 <template>
   <div class="select-field">
     <div ref="selectElement" class="select-field__select-wrp">
+      <template v-if="$slots.dropup && !$slots.dropdown">
+        <transition name="dropup">
+          <slot
+            name="dropup"
+            :select-field="{
+              select,
+              isOpen: isDropMenuOpen,
+              close: closeDropMenu,
+              open: openDropMenu,
+              toggle: toggleDropMenu,
+            }"
+          />
+        </transition>
+      </template>
       <button
         class="select-field__select-head"
         :class="{
-          'select-field__select-head--with-opened-dropdown': isDropdownOpen,
+          'select-field__select-head--with-opened-drop-menu': isDropMenuOpen,
           [`select-field__select-head--${state}`]: state,
           [`select-field__select-head--${preset}`]: preset,
         }"
         :disabled="state === 'waiting'"
-        @click="toggleDropdown"
+        v-bind="$attrs"
+        @click="toggleDropMenu"
       >
         <template v-if="$slots.head && !!modelValue">
           <slot
             name="head"
             :select-field="{
               select,
-              isOpen: isDropdownOpen,
-              close: closeDropdown,
-              open: openDropdown,
-              toggle: toggleDropdown,
+              isOpen: isDropMenuOpen,
+              close: closeDropMenu,
+              open: openDropMenu,
+              toggle: toggleDropMenu,
             }"
           />
         </template>
@@ -31,23 +46,28 @@
         <icon
           class="select-field__select-head-indicator"
           :class="{
-            'select-field__select-head-indicator--open': isDropdownOpen,
+            'select-field__select-head-indicator--upward':
+              ($slots.dropup && !isDropMenuOpen) ||
+              ($slots.dropdown && isDropMenuOpen),
             [`select-field__select-head-indicator--${state}`]: state,
           }"
           :name="$icons.chevronDown"
         />
       </button>
-      <transition name="dropdown">
-        <slot
-          :select-field="{
-            select,
-            isOpen: isDropdownOpen,
-            close: closeDropdown,
-            open: openDropdown,
-            toggle: toggleDropdown,
-          }"
-        />
-      </transition>
+      <template v-if="$slots.dropdown">
+        <transition name="dropdown">
+          <slot
+            name="dropdown"
+            :select-field="{
+              select,
+              isOpen: isDropMenuOpen,
+              close: closeDropMenu,
+              open: openDropMenu,
+              toggle: toggleDropMenu,
+            }"
+          />
+        </transition>
+      </template>
     </div>
   </div>
 </template>
@@ -79,12 +99,12 @@ const attrs = useAttrs()
 
 const selectElement = ref<HTMLDivElement>()
 
-const isDropdownOpen = ref(false)
+const isDropMenuOpen = ref(false)
 
 const router = useRouter()
 
 router.afterEach(() => {
-  closeDropdown()
+  closeDropMenu()
 })
 
 const isDisabled = computed(() =>
@@ -95,31 +115,31 @@ const isReadonly = computed(() =>
   ['', 'readonly', true].includes(attrs.readonly as string | boolean),
 )
 
-const toggleDropdown = () => {
-  isDropdownOpen.value ? closeDropdown() : openDropdown()
+const toggleDropMenu = () => {
+  isDropMenuOpen.value ? closeDropMenu() : openDropMenu()
 }
 
-const openDropdown = () => {
+const openDropMenu = () => {
   if (isDisabled.value || isReadonly.value) return
 
-  isDropdownOpen.value = true
+  isDropMenuOpen.value = true
 }
 
-const closeDropdown = () => {
-  isDropdownOpen.value = false
+const closeDropMenu = () => {
+  isDropMenuOpen.value = false
 }
 
 const select = (value: string | number) => {
   if (isDisabled.value || isReadonly.value) return
 
   emit('update:modelValue', value)
-  closeDropdown()
+  closeDropMenu()
 }
 
 onMounted(() => {
   if (selectElement.value) {
     onClickOutside(selectElement, () => {
-      closeDropdown()
+      closeDropMenu()
     })
   }
 })
@@ -127,23 +147,23 @@ onMounted(() => {
 watch(
   () => props.modelValue,
   () => {
-    closeDropdown()
+    closeDropMenu()
   },
 )
 </script>
 
 <style lang="scss" scoped>
 .select-field__select-wrp {
-  height: 100%;
-  width: 100%;
+  height: inherit;
+  width: inherit;
 }
 
 .select-field__select-head {
   position: relative;
   height: inherit;
   width: inherit;
-  transition: var(--transition-duration);
-  padding-right: toRem(39);
+  transition-property: background-color, border, color;
+  transition-duration: var(--transition-duration);
   border-radius: var(--border-radius);
   color: var(--col-trendy);
 
@@ -164,7 +184,7 @@ watch(
     border: toRem(1) solid var(--col-wise);
   }
 
-  &--with-opened-dropdown {
+  &--with-opened-drop-menu {
     &.select-field__select-head--outline-brittle {
       border-color: var(--col-primary);
 
@@ -197,7 +217,7 @@ watch(
   width: toRem(24);
   transition: transform var(--transition-duration);
 
-  &--open {
+  &--upward {
     transform: rotate(-180deg);
   }
 
@@ -213,11 +233,19 @@ watch(
 }
 
 .dropdown-enter-active {
-  animation: dropdown var(--transition-duration);
+  animation: dropdown ease-out var(--transition-duration);
 }
 
 .dropdown-leave-active {
-  animation: dropdown var(--transition-duration) reverse;
+  animation: dropdown ease-out var(--transition-duration) reverse;
+}
+
+.dropup-enter-active {
+  animation: dropup ease-out var(--transition-duration);
+}
+
+.dropup-leave-active {
+  animation: dropup ease-out var(--transition-duration) reverse;
 }
 
 @keyframes dropdown {
@@ -230,7 +258,19 @@ watch(
   to {
     opacity: 1;
     transform-origin: top;
-    transition: scaleY(1);
+  }
+}
+
+@keyframes dropup {
+  from {
+    opacity: 0;
+    transform-origin: bottom;
+    transform: scaleY(0);
+  }
+
+  to {
+    opacity: 1;
+    transform-origin: bottom;
   }
 }
 </style>

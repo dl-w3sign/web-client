@@ -98,9 +98,10 @@ $media-breakpoints: (
   background: var(--col-intense);
   border: toRem(1) solid var(--col-brittle);
   border-radius: var(--border-radius);
-  padding: toRem(4) 0;
+  padding: toRem(3) 0;
   transition-property: transform, border-color;
   transition-duration: var(--transition-duration);
+  overflow: hidden;
 
   &:hover {
     border-color: var(--col-flexible);

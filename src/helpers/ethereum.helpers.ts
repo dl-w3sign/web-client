@@ -1,7 +1,18 @@
-import { EthProviderRpcError, AddEthereumChainParameter } from '@/types'
+import {
+  POLYGON_MAINNET_NETWORK_CONFIG,
+  Q_MAINNET_NETWORK_CONFIG,
+} from '@/const'
+import { EIP1193, EIP1474, ETHEREUM_CHAINS, ICON_NAMES } from '@/enums'
 import { errors } from '@/errors'
+import { i18n } from '@/localization'
+import {
+  EthProviderRpcError,
+  AddEthereumChainParameter,
+  ChainId,
+} from '@/types'
 import { ethers } from 'ethers'
-import { EIP1193, EIP1474 } from '@/enums'
+
+const { t } = i18n.global
 
 export const connectEthAccounts = async (
   provider: ethers.providers.Web3Provider,
@@ -76,4 +87,43 @@ export function getEthExplorerAddressUrl(explorerUrl: string, address: string) {
 
 export function isAddress(address: string) {
   return ethers.utils.isAddress(address)
+}
+
+export function getNetworkConfigByChainId(
+  chainId: ChainId,
+): Readonly<AddEthereumChainParameter> | undefined {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.polygon:
+      return POLYGON_MAINNET_NETWORK_CONFIG
+    case ETHEREUM_CHAINS.q:
+      return Q_MAINNET_NETWORK_CONFIG
+    default:
+      return undefined
+  }
+}
+
+export function getChainTitleById(chainId: ChainId): string {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.ethereum:
+      return t('switch-ethereum.ethereum-chain-title')
+    case ETHEREUM_CHAINS.polygon:
+      return t('switch-ethereum.polygon-chain-title')
+    case ETHEREUM_CHAINS.q:
+      return t('switch-ethereum.q-chain-title')
+    default:
+      return t('switch-ethereum.unknown-chain-title')
+  }
+}
+
+export function getChainIconNameById(chainId: ChainId): ICON_NAMES {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.ethereum:
+      return ICON_NAMES.ethereum
+    case ETHEREUM_CHAINS.polygon:
+      return ICON_NAMES.polygon
+    case ETHEREUM_CHAINS.q:
+      return ICON_NAMES.q
+    default:
+      return ICON_NAMES.exclamation
+  }
 }

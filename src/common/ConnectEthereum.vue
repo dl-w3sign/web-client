@@ -25,7 +25,11 @@ defineProps<{
 }>()
 
 const { $t, $config } = useContext()
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const {
+  provider: web3Provider,
+  hasValidCurrentChain,
+  showInvalidNetworkModal,
+} = useWeb3ProvidersStore()
 
 const buttonState = computed<BUTTON_STATES | undefined>(() => {
   switch (true) {
@@ -87,9 +91,7 @@ const connectOrReferToInstallMetamask = async () => {
   if (web3Provider?.selectedProvider) {
     try {
       await web3Provider.connect()
-
-      if (web3Provider.chainId !== $config.CHAIN_ID)
-        await web3Provider.switchChain($config.CHAIN_ID)
+      if (!hasValidCurrentChain) showInvalidNetworkModal()
     } catch (error) {
       error?.constructor === errors.ProviderUserRejectedRequest
         ? ErrorHandler.processWithoutFeedback(error)

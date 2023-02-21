@@ -82,8 +82,25 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
 .app-navbar__switch-ethereum {
   z-index: var(--z-switch-ethereum);
   height: toRem(48);
-  width: toRem(180);
+  width: toRem(179);
   margin-left: auto;
+
+  // stylelint-disable-next-line
+  :deep(#dropdown) {
+    margin-top: toRem(24);
+    width: toRem(179);
+
+    @include respond-to(850px) {
+      margin-top: toRem(16);
+    }
+
+    @include respond-to(580px) {
+      position: absolute;
+      top: toRem(80);
+      right: toRem(16);
+      margin-top: 0;
+    }
+  }
 
   @include respond-to(580px) {
     width: toRem(64);

@@ -37,6 +37,12 @@
   "doc-verification-modal": {
     "title": "Document Verification"
   },
+  "invalid-network-modal": {
+    "title": "Invalid network",
+    "message": "Your MetaMask is connected to an unsupported chain.\nPlease, switch to another network:",
+    "button-text": "Switch network",
+    "please-wait-msg": "Please, wait a moment..."
+  },
   "doc-creation-form": {
     "checkbox-is-sign": "Sign a document",
     "checkbox-is-indicating-addresses": "Indicate the wallet address",
@@ -93,7 +99,7 @@
     "provider-internal-error": "Internal JSON-RPC error standard",
     "provider-invalid-input": "Missing or invalid parameters non-standard",
     "provider-resource-not-found": "equested resource not found non-standard",
-    "provider-resource-unavailable": "Requested resource not available non-standard",
+    "provider-resource-unavailable": "MetaMask is busy",
     "provider-transaction-rejected": "Transaction creation failed non-standard",
     "provider-method-not-supported": "Method is not implemented non-standard",
     "provider-limit-exceeded": "Request exceeds defined limit non-standard",

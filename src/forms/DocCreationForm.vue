@@ -133,7 +133,7 @@ const emit = defineEmits<{
 }>()
 
 const { $t, $config } = useContext()
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
 
 const timestampContractInstance = useTimestampContract(
   $config.CTR_ADDRESS_TIMESTAMP,
@@ -203,12 +203,15 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
 }
 
 const submit = async () => {
+  try {
+    await web3Store.checkConnection()
+  } catch {
+    return
+  }
+
   disableForm()
   isSubmitting.value = true
   try {
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
-
     const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
       (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
     )) as PoseidonHash
@@ -216,7 +219,7 @@ const submit = async () => {
     const { ZKPPointsStruct, publicHash } =
       await generateZKPPointsStructAndPublicHash(
         secretFileHash,
-        web3Provider.selectedAddress as string,
+        web3Store.provider.selectedAddress as string,
       )
 
     publicFileHash.value = publicHash
