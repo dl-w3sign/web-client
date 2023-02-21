@@ -19,7 +19,7 @@
         </div>
         <textarea-field
           class="doc-creation-form__doc-hash"
-          :model-value="publicFileHash || ''"
+          :model-value="publicFileHash as string || ''"
           is-copied
           readonly
         />
@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
@@ -110,6 +110,8 @@ import {
   useFormValidation,
   useTimestampContract,
   usePoseidonHashContract,
+  UseTimestampContract,
+  UsePoseidonHashContract,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
@@ -118,6 +120,8 @@ import {
   getKeccak256FileHash,
   isAddress,
   generateZKPPointsStructAndPublicHash,
+  getTimestampContractAddressByChainId,
+  getPoseidonHashContractAddressByChainId,
 } from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
 import {
@@ -125,6 +129,7 @@ import {
   Keccak256Hash,
   PoseidonHash,
   BytesLike,
+  ChainId,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -132,14 +137,20 @@ const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
-const { $t, $config } = useContext()
+const { $t } = useContext()
 const web3Store = useWeb3ProvidersStore()
 
-const timestampContractInstance = useTimestampContract(
-  $config.CTR_ADDRESS_TIMESTAMP,
+const timestampContractInstance = computed<UseTimestampContract>(() =>
+  useTimestampContract(
+    getTimestampContractAddressByChainId(web3Store.provider.chainId as ChainId),
+  ),
 )
-const poseidonHashContractInstance = usePoseidonHashContract(
-  $config.CTR_ADDRESS_POSEIDON_HASH,
+const poseidonHashContractInstance = computed<UsePoseidonHashContract>(() =>
+  usePoseidonHashContract(
+    getPoseidonHashContractAddressByChainId(
+      web3Store.provider.chainId as ChainId,
+    ),
+  ),
 )
 
 const {
@@ -212,9 +223,10 @@ const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
-      (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
-    )) as PoseidonHash
+    const secretFileHash =
+      (await poseidonHashContractInstance.value.getPoseidonHash(
+        (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+      )) as PoseidonHash
 
     const { ZKPPointsStruct, publicHash } =
       await generateZKPPointsStructAndPublicHash(
@@ -224,7 +236,7 @@ const submit = async () => {
 
     publicFileHash.value = publicHash
 
-    await timestampContractInstance.createStamp(
+    await timestampContractInstance.value.createStamp(
       publicFileHash.value,
       form.isSign,
       form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],

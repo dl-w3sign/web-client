@@ -33,7 +33,7 @@
           </div>
         </div>
         <textarea-field
-          :model-value="publicFileHash || ''"
+          :model-value="publicFileHash as string || ''"
           is-copied
           readonly
         />
@@ -154,6 +154,8 @@ import {
   useTimestampContract,
   usePoseidonHashContract,
   useContext,
+  UseTimestampContract,
+  UsePoseidonHashContract,
 } from '@/composables'
 import {
   BUTTON_PRESETS,
@@ -168,6 +170,8 @@ import {
   ErrorHandler,
   isAddress,
   generateZKPPointsStructAndPublicHash,
+  getTimestampContractAddressByChainId,
+  getPoseidonHashContractAddressByChainId,
 } from '@/helpers'
 import {
   Keccak256Hash,
@@ -176,6 +180,7 @@ import {
   SignerInfo,
   BytesLike,
   PoseidonHash,
+  ChainId,
 } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
@@ -191,7 +196,7 @@ const form = reactive({
   file: null as File | null,
 })
 
-const { $t, $config } = useContext()
+const { $t } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
   file: {
     required,
@@ -202,11 +207,17 @@ const { isFieldsValid } = useFormValidation(form, {
   },
 })
 const web3Store = useWeb3ProvidersStore()
-const timestampContractInstance = useTimestampContract(
-  $config.CTR_ADDRESS_TIMESTAMP,
+const timestampContractInstance = computed<UseTimestampContract>(() =>
+  useTimestampContract(
+    getTimestampContractAddressByChainId(web3Store.provider.chainId as ChainId),
+  ),
 )
-const poseidonHashContractInstance = usePoseidonHashContract(
-  $config.CTR_ADDRESS_POSEIDON_HASH,
+const poseidonHashContractInstance = computed<UsePoseidonHashContract>(() =>
+  usePoseidonHashContract(
+    getPoseidonHashContractAddressByChainId(
+      web3Store.provider.chainId as ChainId,
+    ),
+  ),
 )
 
 const {
@@ -230,7 +241,7 @@ const searchAddress = async (newAddress: string) => {
     if (stampInfo.value) stampInfo.value.signers.length = 0
 
     if (isAddress(addressToSearch.value)) {
-      const signer = await timestampContractInstance.getSignerInfo(
+      const signer = await timestampContractInstance.value.getSignerInfo(
         addressToSearch.value,
         publicFileHash.value as BytesLike,
       )
@@ -239,7 +250,7 @@ const searchAddress = async (newAddress: string) => {
     }
   } else {
     stampInfo.value =
-      await timestampContractInstance.getStampInfoWithPagination(
+      await timestampContractInstance.value.getStampInfoWithPagination(
         publicFileHash.value as BytesLike,
         0,
         pageLimit.value,
@@ -258,11 +269,12 @@ const onPageChange = async ({
   newItemsOffset,
   pageLimit,
 }: UsePaginationCallbackArg) => {
-  stampInfo.value = await timestampContractInstance.getStampInfoWithPagination(
-    publicFileHash.value as BytesLike,
-    newItemsOffset,
-    pageLimit,
-  )
+  stampInfo.value =
+    await timestampContractInstance.value.getStampInfoWithPagination(
+      publicFileHash.value as BytesLike,
+      newItemsOffset,
+      pageLimit,
+    )
 }
 
 const formatTimestamp = (timestamp: number): string => {
@@ -279,9 +291,10 @@ const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
-      (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
-    )) as PoseidonHash
+    const secretFileHash =
+      (await poseidonHashContractInstance.value.getPoseidonHash(
+        (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+      )) as PoseidonHash
 
     const { publicHash } = await generateZKPPointsStructAndPublicHash(
       secretFileHash,
@@ -291,7 +304,7 @@ const submitVerification = async () => {
     publicFileHash.value = publicHash
 
     stampInfo.value =
-      await timestampContractInstance.getStampInfoWithPagination(
+      await timestampContractInstance.value.getStampInfoWithPagination(
         publicFileHash.value,
         0,
         pageLimit.value,
@@ -300,10 +313,11 @@ const submitVerification = async () => {
       throw new Error('Document not found')
 
     if (stampInfo.value?.signers.length) {
-      infoOfCurrentSigner.value = await timestampContractInstance.getSignerInfo(
-        web3Store.provider.selectedAddress as string,
-        publicFileHash.value,
-      )
+      infoOfCurrentSigner.value =
+        await timestampContractInstance.value.getSignerInfo(
+          web3Store.provider.selectedAddress as string,
+          publicFileHash.value,
+        )
 
       if (infoOfCurrentSigner.value?.signatureTimestamp) {
         infoOfCurrentSigner.value.isAdmittedToSigning = false
@@ -338,7 +352,9 @@ const signOrExit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    await timestampContractInstance.sign(publicFileHash.value as BytesLike)
+    await timestampContractInstance.value.sign(
+      publicFileHash.value as BytesLike,
+    )
 
     infoOfCurrentSigner.value.isAdmittedToSigning = false
     Bus.success($t('doc-verification-form.sign-success-message'))

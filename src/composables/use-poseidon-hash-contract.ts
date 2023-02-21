@@ -9,15 +9,15 @@ import {
 
 export type PoseidonHash = string // 0x...
 
-export interface IUsePoseidonHashContract {
+export interface UsePoseidonHashContract {
   getPoseidonHash: (
     bytesLike: PromiseOrValue<BytesLike>,
   ) => Promise<PoseidonHash | undefined>
 }
 
 export const usePoseidonHashContract = (
-  address: string,
-): IUsePoseidonHashContract => {
+  address?: string,
+): UsePoseidonHashContract => {
   const _instance = ref<PoseidonHashContract | undefined>()
   const _instance_rw = ref<PoseidonHashContract | undefined>()
   const { provider } = useWeb3ProvidersStore()
@@ -36,7 +36,8 @@ export const usePoseidonHashContract = (
   const getPoseidonHash = async (
     bytesLike: PromiseOrValue<BytesLike>,
   ): Promise<PoseidonHash | undefined> => {
-    return _instance.value?.['poseidon(bytes32[1])']([bytesLike])
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    return _instance.value['poseidon(bytes32[1])']([bytesLike])
   }
 
   return { getPoseidonHash }

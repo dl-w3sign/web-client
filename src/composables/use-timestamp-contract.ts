@@ -44,7 +44,9 @@ export type UseTimestampContract = {
   ) => Promise<ContractTransaction | null>
 }
 
-export const useTimestampContract = (address: string): UseTimestampContract => {
+export const useTimestampContract = (
+  address?: string,
+): UseTimestampContract => {
   const _instance = ref<TimestampContract | undefined>()
   const _instance_rw = ref<TimestampContract | undefined>()
   const { provider } = useWeb3ProvidersStore()
@@ -65,7 +67,8 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     offset: PromiseOrValue<number>,
     limit: PromiseOrValue<number>,
   ): Promise<StampInfo | null> => {
-    const receipt = await _instance.value?.getStampInfoWithPagination(
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    const receipt = await _instance.value.getStampInfoWithPagination(
       publicHash,
       offset,
       limit,
@@ -98,7 +101,8 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     address: PromiseOrValue<string>,
     publicHash: PromiseOrValue<BytesLike>,
   ): Promise<SignerInfo | null> => {
-    const receipt = await _instance.value?.getUserInfo(address, publicHash)
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    const receipt = await _instance.value.getUserInfo(address, publicHash)
 
     if (receipt) {
       return {
@@ -117,7 +121,8 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     indicatedAddresses: PromiseOrValue<string>[],
     ZKPPointsStruct: ZKPPointsStructType,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.createStamp(
+    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    const tx = await _instance_rw.value.createStamp(
       publicHash,
       isSign,
       indicatedAddresses,
@@ -129,7 +134,8 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   const sign = async (
     publicHash: PromiseOrValue<BytesLike>,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.sign(publicHash)
+    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    const tx = await _instance_rw.value.sign(publicHash)
     return tx ? tx : null
   }
 

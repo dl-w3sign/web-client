@@ -1,3 +1,4 @@
+import { config } from '@/config'
 import {
   MUMBAI_TESTNET_NETWORK_CONFIG,
   POLYGON_MAINNET_NETWORK_CONFIG,
@@ -140,15 +141,34 @@ export function getIconNameByChainId(chainId: ChainId): ICON_NAMES {
   }
 }
 
-export function getTestnetByMainnetChainId(
+export function getTimestampContractAddressByChainId(
   chainId: ChainId,
-): ChainId | undefined {
+): string | undefined {
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.ethereum:
-      return ETHEREUM_CHAINS.goerli
+    case ETHEREUM_CHAINS.goerli:
+      return config.CTR_ADDRESS_TIMESTAMP_ETHEREUM
     case ETHEREUM_CHAINS.polygon:
-      return ETHEREUM_CHAINS.mumbai
+    case ETHEREUM_CHAINS.mumbai:
+      return config.CTR_ADDRESS_TIMESTAMP_POLYGON
     case ETHEREUM_CHAINS.qMainnet:
-      return ETHEREUM_CHAINS.qTestnet
+    case ETHEREUM_CHAINS.qTestnet:
+      return config.CTR_ADDRESS_TIMESTAMP_Q
+  }
+}
+
+export function getPoseidonHashContractAddressByChainId(
+  chainId: ChainId,
+): string | undefined {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.ethereum:
+    case ETHEREUM_CHAINS.goerli:
+      return config.CTR_ADDRESS_POSEIDON_HASH_ETHEREUM
+    case ETHEREUM_CHAINS.polygon:
+    case ETHEREUM_CHAINS.mumbai:
+      return config.CTR_ADDRESS_POSEIDON_HASH_POLYGON
+    case ETHEREUM_CHAINS.qMainnet:
+    case ETHEREUM_CHAINS.qTestnet:
+      return config.CTR_ADDRESS_POSEIDON_HASH_Q
   }
 }
