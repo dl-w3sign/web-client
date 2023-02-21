@@ -36,9 +36,9 @@
               <div class="invalid-network-modal__chain-select-field-head">
                 <icon
                   class="invalid-network-modal__chain-select-field-icon"
-                  :name="getChainIconNameById(chainId)"
+                  :name="getIconNameByChainId(chainId)"
                 />
-                {{ getChainTitleById(chainId) }}
+                {{ getTitleByChainId(chainId) }}
               </div>
             </template>
             <template #dropup="{ selectField }">
@@ -54,9 +54,9 @@
                 >
                   <icon
                     class="invalid-network-modal__chain-select-field-icon"
-                    :name="getChainIconNameById(admittedChainId)"
+                    :name="getIconNameByChainId(admittedChainId)"
                   />
-                  {{ getChainTitleById(admittedChainId) }}
+                  {{ getTitleByChainId(admittedChainId) }}
                 </button>
               </div>
             </template>
@@ -75,7 +75,7 @@
 <script lang="ts" setup>
 import { Modal, Icon, Spinner, AppButton } from '@/common'
 import { SelectField } from '@/fields'
-import { getChainIconNameById, getChainTitleById } from '@/helpers'
+import { getIconNameByChainId, getTitleByChainId } from '@/helpers'
 import { InvalidNetworkIllustration } from '@/illustrations'
 import { useWeb3ProvidersStore } from '@/store'
 import { ChainId } from '@/types'

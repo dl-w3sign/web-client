@@ -1,15 +1,26 @@
 import { useProvider, useWeb3 } from '@/composables'
-import { PROVIDERS, ETHEREUM_CHAINS } from '@/enums'
+import { config } from '@/config'
+import { ETHEREUM_CHAINS, PROVIDERS } from '@/enums'
 import { errors } from '@/errors'
-import { ErrorHandler, sleep, getNetworkConfigByChainId } from '@/helpers'
-import { DesignatedProvider, ChainId } from '@/types'
+import { ErrorHandler, getNetworkConfigByChainId, sleep } from '@/helpers'
+import { ChainId, DesignatedProvider } from '@/types'
 import { defineStore } from 'pinia'
 
 export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
   state: () => ({
     providers: [] as DesignatedProvider[],
     provider: useProvider(),
-    admittedChainIds: Object.values(ETHEREUM_CHAINS) as ChainId[],
+    admittedChainIds: config.IS_MAINNET
+      ? ([
+          ETHEREUM_CHAINS.ethereum,
+          ETHEREUM_CHAINS.polygon,
+          ETHEREUM_CHAINS.qMainnet,
+        ] as ChainId[])
+      : ([
+          ETHEREUM_CHAINS.goerli,
+          ETHEREUM_CHAINS.mumbai,
+          ETHEREUM_CHAINS.qTestnet,
+        ] as ChainId[]),
     isInvalidNetworkModalShown: false,
     isChainSwitching: false,
     chainIdOnSwitching: undefined as ChainId | undefined,

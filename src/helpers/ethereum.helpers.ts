@@ -1,14 +1,16 @@
 import {
+  MUMBAI_TESTNET_NETWORK_CONFIG,
   POLYGON_MAINNET_NETWORK_CONFIG,
   Q_MAINNET_NETWORK_CONFIG,
+  Q_TESTNET_NETWORK_CONFIG,
 } from '@/const'
 import { EIP1193, EIP1474, ETHEREUM_CHAINS, ICON_NAMES } from '@/enums'
 import { errors } from '@/errors'
 import { i18n } from '@/localization'
 import {
-  EthProviderRpcError,
   AddEthereumChainParameter,
   ChainId,
+  EthProviderRpcError,
 } from '@/types'
 import { ethers } from 'ethers'
 
@@ -95,35 +97,58 @@ export function getNetworkConfigByChainId(
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.polygon:
       return POLYGON_MAINNET_NETWORK_CONFIG
-    case ETHEREUM_CHAINS.q:
+    case ETHEREUM_CHAINS.mumbai:
+      return MUMBAI_TESTNET_NETWORK_CONFIG
+    case ETHEREUM_CHAINS.qMainnet:
       return Q_MAINNET_NETWORK_CONFIG
+    case ETHEREUM_CHAINS.qTestnet:
+      return Q_TESTNET_NETWORK_CONFIG
     default:
       return undefined
   }
 }
 
-export function getChainTitleById(chainId: ChainId): string {
+export function getTitleByChainId(chainId: ChainId): string {
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.ethereum:
+    case ETHEREUM_CHAINS.goerli:
       return t('switch-ethereum.ethereum-chain-title')
     case ETHEREUM_CHAINS.polygon:
+    case ETHEREUM_CHAINS.mumbai:
       return t('switch-ethereum.polygon-chain-title')
-    case ETHEREUM_CHAINS.q:
+    case ETHEREUM_CHAINS.qMainnet:
+    case ETHEREUM_CHAINS.qTestnet:
       return t('switch-ethereum.q-chain-title')
     default:
       return t('switch-ethereum.unknown-chain-title')
   }
 }
 
-export function getChainIconNameById(chainId: ChainId): ICON_NAMES {
+export function getIconNameByChainId(chainId: ChainId): ICON_NAMES {
   switch (chainId.toString()) {
     case ETHEREUM_CHAINS.ethereum:
+    case ETHEREUM_CHAINS.goerli:
       return ICON_NAMES.ethereum
     case ETHEREUM_CHAINS.polygon:
+    case ETHEREUM_CHAINS.mumbai:
       return ICON_NAMES.polygon
-    case ETHEREUM_CHAINS.q:
+    case ETHEREUM_CHAINS.qMainnet:
+    case ETHEREUM_CHAINS.qTestnet:
       return ICON_NAMES.q
     default:
       return ICON_NAMES.exclamation
+  }
+}
+
+export function getTestnetByMainnetChainId(
+  chainId: ChainId,
+): ChainId | undefined {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.ethereum:
+      return ETHEREUM_CHAINS.goerli
+    case ETHEREUM_CHAINS.polygon:
+      return ETHEREUM_CHAINS.mumbai
+    case ETHEREUM_CHAINS.qMainnet:
+      return ETHEREUM_CHAINS.qTestnet
   }
 }

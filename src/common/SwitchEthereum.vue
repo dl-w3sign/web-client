@@ -15,7 +15,7 @@
         <icon
           class="switch-ethereum__button-icon"
           :name="
-            getChainIconNameById(
+            getIconNameByChainId(
               web3Store.isChainSwitching
                 ? (web3Store.chainIdOnSwitching as ChainId)
                 : (web3Store.provider.chainId as ChainId),
@@ -24,7 +24,7 @@
         />
         <p class="switch-ethereum__chain-title">
           {{
-            getChainTitleById(
+            getTitleByChainId(
               web3Store.isChainSwitching
                 ? (web3Store.chainIdOnSwitching as ChainId)
                 : (web3Store.provider.chainId as ChainId),
@@ -47,9 +47,9 @@
         >
           <icon
             class="switch-ethereum__button-icon"
-            :name="getChainIconNameById(admittedChainId)"
+            :name="getIconNameByChainId(admittedChainId)"
           />
-          {{ getChainTitleById(admittedChainId) }}
+          {{ getTitleByChainId(admittedChainId) }}
         </button>
       </div>
     </template>
@@ -60,7 +60,7 @@
 import { Icon } from '@/common'
 import { BUTTON_STATES } from '@/enums'
 import { SelectField } from '@/fields'
-import { getChainIconNameById, getChainTitleById } from '@/helpers'
+import { getIconNameByChainId, getTitleByChainId } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { ChainId } from '@/types'
 
