@@ -19,11 +19,11 @@
     </div>
     <div
       class="main-page__container"
-      :class="{ 'main-page__container--lifted': !isConnectEthereumShown }"
+      :class="{ 'main-page__container--lifted': web3Provider.isConnected }"
     >
       <transition name="fade">
         <div
-          v-if="isConnectEthereumShown"
+          v-show="!web3Provider.isConnected"
           class="main-page__connect-ethereum"
           :class="{
             'main-page__connect-ethereum--connected': web3Provider?.isConnected,
@@ -66,11 +66,11 @@
           :state="
             web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
-          @click="showDocCreationModal"
+          @click="isDocCreationModalShown = true"
         />
         <doc-creation-modal
           :is-shown="isDocCreationModalShown"
-          @update:is-shown="hideDocCreationModal"
+          @update:is-shown="isDocCreationModalShown = false"
         />
       </div>
       <div class="main-page__card">
@@ -90,11 +90,11 @@
           :state="
             web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
           "
-          @click="showDocVerificationModal"
+          @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
           :is-shown="isDocVerificationModalShown"
-          @update:is-shown="hideDocVerificationModal"
+          @update:is-shown="isDocVerificationModalShown = false"
         />
       </div>
     </div>
@@ -110,42 +110,12 @@ import {
 } from '@/illustrations'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const { provider: web3Provider } = useWeb3ProvidersStore()
 
 const isDocCreationModalShown = ref(false)
-const showDocCreationModal = () => {
-  isDocCreationModalShown.value = true
-}
-const hideDocCreationModal = () => {
-  isDocCreationModalShown.value = false
-}
-
 const isDocVerificationModalShown = ref(false)
-const showDocVerificationModal = () => {
-  isDocVerificationModalShown.value = true
-}
-const hideDocVerificationModal = () => {
-  isDocVerificationModalShown.value = false
-}
-
-const isConnectEthereumShown = ref(true)
-const hideConnectEthereum = () => {
-  isConnectEthereumShown.value = false
-}
-const showConnectEthereum = () => {
-  isConnectEthereumShown.value = true
-}
-
-watch(
-  () => web3Provider?.isConnected,
-  newValue => {
-    setTimeout(() => {
-      newValue ? hideConnectEthereum() : showConnectEthereum()
-    })
-  },
-)
 </script>
 
 <style lang="scss" scoped>
