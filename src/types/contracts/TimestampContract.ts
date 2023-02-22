@@ -88,8 +88,9 @@ export declare namespace ITimeStamping {
 
 export interface TimestampContractInterface extends utils.Interface {
   functions: {
-    "__TimeStamping_init(address,address)": FunctionFragment;
+    "__TimeStamping_init(uint256,address,address)": FunctionFragment;
     "createStamp(bytes32,bool,address[],(uint256[2],uint256[2][2],uint256[2]))": FunctionFragment;
+    "fee()": FunctionFragment;
     "getHashesByUserAddress(address)": FunctionFragment;
     "getStampHashByBytes(bytes)": FunctionFragment;
     "getStampInfo(bytes32)": FunctionFragment;
@@ -99,17 +100,20 @@ export interface TimestampContractInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setFee(uint256)": FunctionFragment;
     "setVerifier(address)": FunctionFragment;
     "sign(bytes32)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
+    "withdrawFee(address)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "__TimeStamping_init"
       | "createStamp"
+      | "fee"
       | "getHashesByUserAddress"
       | "getStampHashByBytes"
       | "getStampInfo"
@@ -119,16 +123,22 @@ export interface TimestampContractInterface extends utils.Interface {
       | "owner"
       | "proxiableUUID"
       | "renounceOwnership"
+      | "setFee"
       | "setVerifier"
       | "sign"
       | "transferOwnership"
       | "upgradeTo"
       | "upgradeToAndCall"
+      | "withdrawFee"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "__TimeStamping_init",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "createStamp",
@@ -139,6 +149,7 @@ export interface TimestampContractInterface extends utils.Interface {
       ITimeStamping.ZKPPointsStruct
     ]
   ): string;
+  encodeFunctionData(functionFragment: "fee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getHashesByUserAddress",
     values: [PromiseOrValue<string>]
@@ -177,6 +188,10 @@ export interface TimestampContractInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setFee",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setVerifier",
     values: [PromiseOrValue<string>]
   ): string;
@@ -196,6 +211,10 @@ export interface TimestampContractInterface extends utils.Interface {
     functionFragment: "upgradeToAndCall",
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawFee",
+    values: [PromiseOrValue<string>]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "__TimeStamping_init",
@@ -205,6 +224,7 @@ export interface TimestampContractInterface extends utils.Interface {
     functionFragment: "createStamp",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "fee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getHashesByUserAddress",
     data: BytesLike
@@ -238,6 +258,7 @@ export interface TimestampContractInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setVerifier",
     data: BytesLike
@@ -250,6 +271,10 @@ export interface TimestampContractInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "upgradeToAndCall",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawFee",
     data: BytesLike
   ): Result;
 
@@ -370,6 +395,7 @@ export interface TimestampContract extends BaseContract {
 
   functions: {
     __TimeStamping_init(
+      fee_: PromiseOrValue<BigNumberish>,
       verifier_: PromiseOrValue<string>,
       poseidonHash_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -380,8 +406,10 @@ export interface TimestampContract extends BaseContract {
       isSigned_: PromiseOrValue<boolean>,
       signers_: PromiseOrValue<string>[],
       zkpPoints_: ITimeStamping.ZKPPointsStruct,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    fee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
@@ -428,6 +456,11 @@ export interface TimestampContract extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setFee(
+      fee_: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setVerifier(
       verifier_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -453,9 +486,15 @@ export interface TimestampContract extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    withdrawFee(
+      recipient: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
   };
 
   __TimeStamping_init(
+    fee_: PromiseOrValue<BigNumberish>,
     verifier_: PromiseOrValue<string>,
     poseidonHash_: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -466,8 +505,10 @@ export interface TimestampContract extends BaseContract {
     isSigned_: PromiseOrValue<boolean>,
     signers_: PromiseOrValue<string>[],
     zkpPoints_: ITimeStamping.ZKPPointsStruct,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  fee(overrides?: CallOverrides): Promise<BigNumber>;
 
   getHashesByUserAddress(
     user_: PromiseOrValue<string>,
@@ -510,6 +551,11 @@ export interface TimestampContract extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setFee(
+    fee_: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setVerifier(
     verifier_: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -536,8 +582,14 @@ export interface TimestampContract extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  withdrawFee(
+    recipient: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     __TimeStamping_init(
+      fee_: PromiseOrValue<BigNumberish>,
       verifier_: PromiseOrValue<string>,
       poseidonHash_: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -550,6 +602,8 @@ export interface TimestampContract extends BaseContract {
       zkpPoints_: ITimeStamping.ZKPPointsStruct,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    fee(overrides?: CallOverrides): Promise<BigNumber>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
@@ -590,6 +644,11 @@ export interface TimestampContract extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    setFee(
+      fee_: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setVerifier(
       verifier_: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -613,6 +672,11 @@ export interface TimestampContract extends BaseContract {
     upgradeToAndCall(
       newImplementation: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    withdrawFee(
+      recipient: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -676,6 +740,7 @@ export interface TimestampContract extends BaseContract {
 
   estimateGas: {
     __TimeStamping_init(
+      fee_: PromiseOrValue<BigNumberish>,
       verifier_: PromiseOrValue<string>,
       poseidonHash_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -686,8 +751,10 @@ export interface TimestampContract extends BaseContract {
       isSigned_: PromiseOrValue<boolean>,
       signers_: PromiseOrValue<string>[],
       zkpPoints_: ITimeStamping.ZKPPointsStruct,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    fee(overrides?: CallOverrides): Promise<BigNumber>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
@@ -730,6 +797,11 @@ export interface TimestampContract extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setFee(
+      fee_: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setVerifier(
       verifier_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -755,10 +827,16 @@ export interface TimestampContract extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    withdrawFee(
+      recipient: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     __TimeStamping_init(
+      fee_: PromiseOrValue<BigNumberish>,
       verifier_: PromiseOrValue<string>,
       poseidonHash_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -769,8 +847,10 @@ export interface TimestampContract extends BaseContract {
       isSigned_: PromiseOrValue<boolean>,
       signers_: PromiseOrValue<string>[],
       zkpPoints_: ITimeStamping.ZKPPointsStruct,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getHashesByUserAddress(
       user_: PromiseOrValue<string>,
@@ -813,6 +893,11 @@ export interface TimestampContract extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setFee(
+      fee_: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setVerifier(
       verifier_: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -837,6 +922,11 @@ export interface TimestampContract extends BaseContract {
       newImplementation: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawFee(
+      recipient: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

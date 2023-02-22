@@ -1,13 +1,13 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
-    <transition name="fade">
-      <div v-if="isSubmitting">
-        <spinner class="doc-creation-form__loader" />
+    <transition name="fade" mode="out-in">
+      <div v-if="isSubmitting" class="doc-creation-form__container">
+        <spinner />
         <p class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
         </p>
       </div>
-      <div v-else-if="isConfirmationShown">
+      <div v-else-if="isConfirmationShown" class="doc-creation-form__container">
         <div class="doc-creation-form__note doc-creation-form__note--success">
           <icon
             class="doc-creation-form__note-icon"
@@ -18,7 +18,6 @@
           </p>
         </div>
         <textarea-field
-          class="doc-creation-form__doc-hash"
           :model-value="publicFileHash as string || ''"
           is-copied
           readonly
@@ -27,7 +26,7 @@
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else-if="isFailureShown">
+      <div v-else-if="isFailureShown" class="doc-creation-form__container">
         <file-field :model-value="form.file" is-readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
@@ -42,32 +41,42 @@
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else>
+      <div v-else class="doc-creation-form__container">
         <file-field v-model="form.file" />
-        <transition name="fade">
+        <transition name="fade" mode="out-in">
           <div v-show="form.file" class="doc-creation-form__container">
-            <checkbox-field
-              v-model="form.isSign"
-              :label="$t('doc-creation-form.checkbox-is-sign')"
-            />
-            <checkbox-field
-              v-model="form.isIndicatingAddresses"
-              :label="$t('doc-creation-form.checkbox-is-indicating-addresses')"
-            />
+            <div class="doc-creation-form__checkboxes">
+              <checkbox-field
+                v-model="form.isSign"
+                :label="$t('doc-creation-form.checkbox-is-sign')"
+              />
+              <checkbox-field
+                v-model="form.isIndicatingAddresses"
+                :label="
+                  $t('doc-creation-form.checkbox-is-indicating-addresses')
+                "
+              />
+            </div>
+            <p class="doc-creation-form__fee">
+              {{ $t('doc-creation-form.fee-title') }}
+              <span class="doc-creation-form__fee-value">
+                {{ formatFee(0) }}
+              </span>
+            </p>
           </div>
         </transition>
-        <transition name="fade">
-          <div v-show="form.file && form.isIndicatingAddresses">
-            <h4 class="doc-creation-form__wallets-addresses-title">
-              {{ $t('doc-creation-form.wallets-addresses-title') }}
-            </h4>
+        <transition name="fade" mode="out-in">
+          <div
+            v-show="form.file && form.isIndicatingAddresses"
+            class="doc-creation-form__container"
+          >
             <input-field
+              :label="$t('doc-creation-form.wallets-addresses-title')"
               :placeholder="$t('doc-creation-form.wallet-address-placeholder')"
               :model-value="walletAddress"
               @update:model-value="addIndicatedAddress"
             />
             <textarea-field
-              class="doc-creation-form__wallet-address"
               v-for="address in form.indicatedAddresses"
               :key="address"
               :model-value="address"
@@ -102,7 +111,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
@@ -130,6 +139,7 @@ import {
   PoseidonHash,
   BytesLike,
   ChainId,
+  BN,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -164,6 +174,7 @@ const {
   enableForm,
 } = useForm()
 
+const fee = ref<BN | null>()
 const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
 const errorMessage = ref('')
@@ -213,6 +224,10 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
   }
 }
 
+const formatFee = (fee: number) => {
+  return `${fee} MATIC`
+}
+
 const submit = async () => {
   try {
     await web3Store.checkConnection()
@@ -241,6 +256,9 @@ const submit = async () => {
       form.isSign,
       form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
       ZKPPointsStruct,
+      {
+        value: 0,
+      },
     )
 
     showConfirmation()
@@ -269,57 +287,69 @@ const reset = () => {
   isFailureShown.value = false
   isFormDisabled.value = false
 }
+
+onMounted(async () => {
+  isSubmitting.value = true
+
+  try {
+    fee.value = await timestampContractInstance.value.getFee()
+  } catch (error) {
+    ErrorHandler.process(error)
+    emit('cancel')
+  }
+
+  isSubmitting.value = false
+})
 </script>
 
 <style lang="scss" scoped>
 .doc-creation-form__container {
   display: flex;
+  flex-direction: column;
   gap: toRem(24);
-  margin-top: toRem(24);
+
+  @include respond-to(850px) {
+    gap: toRem(16);
+  }
+}
+
+.doc-creation-form__checkboxes {
+  display: flex;
+  gap: toRem(24);
 
   @include respond-to(850px) {
     flex-direction: column;
     gap: toRem(16);
-    margin-top: toRem(16);
   }
 }
 
-.doc-creation-form__wallets-addresses-title {
-  margin: toRem(24) 0 toRem(8);
-
-  @include text-2;
+.doc-creation-form__fee {
+  display: flex;
+  gap: toRem(11);
 
   @include respond-to(850px) {
-    margin-top: toRem(16);
+    gap: toRem(4);
 
-    @include text-4;
+    @include text-5;
   }
+
+  @include text-1;
 }
 
-.doc-creation-form__wallet-address {
-  margin-top: toRem(24);
-
-  @include respond-to(850px) {
-    margin-top: toRem(16);
-  }
+.doc-creation-form__fee-value {
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--col-primary);
 }
 
 .doc-creation-form__buttons {
   display: flex;
   gap: toRem(16);
-  margin-top: toRem(24);
 
   @include respond-to(850px) {
     gap: toRem(8);
-    margin-top: toRem(16);
-  }
-}
-
-.doc-creation-form__loader {
-  margin: toRem(24) 0;
-
-  @include respond-to(850px) {
-    margin: toRem(16) 0;
   }
 }
 
@@ -339,13 +369,7 @@ const reset = () => {
   }
 
   &--error {
-    margin: toRem(24) 0;
-
     @include note-error;
-
-    @include respond-to(850px) {
-      margin: toRem(16) 0;
-    }
   }
 
   @include note;
@@ -361,18 +385,6 @@ const reset = () => {
     height: toRem(20);
     width: toRem(20);
   }
-}
-
-.doc-creation-form__doc-hash {
-  margin: toRem(24) 0;
-
-  @include respond-to(850px) {
-    margin: toRem(16) 0;
-  }
-}
-
-.fade-leave-from {
-  display: none;
 }
 
 .fade-enter-active {

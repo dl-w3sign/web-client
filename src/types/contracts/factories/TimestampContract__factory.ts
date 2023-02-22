@@ -11,535 +11,579 @@ import type {
 
 const _abi = [
   {
-    type: "event",
-    name: "AdminChanged",
+    anonymous: false,
     inputs: [
       {
-        type: "address",
+        indexed: false,
+        internalType: "address",
         name: "previousAdmin",
-        internalType: "address",
-        indexed: false,
+        type: "address",
       },
       {
-        type: "address",
+        indexed: false,
+        internalType: "address",
         name: "newAdmin",
-        internalType: "address",
-        indexed: false,
+        type: "address",
       },
     ],
-    anonymous: false,
+    name: "AdminChanged",
+    type: "event",
   },
   {
-    type: "event",
-    name: "BeaconUpgraded",
+    anonymous: false,
     inputs: [
       {
-        type: "address",
+        indexed: true,
+        internalType: "address",
         name: "beacon",
-        internalType: "address",
-        indexed: true,
+        type: "address",
       },
     ],
-    anonymous: false,
+    name: "BeaconUpgraded",
+    type: "event",
   },
   {
-    type: "event",
-    name: "Initialized",
+    anonymous: false,
     inputs: [
       {
-        type: "uint8",
-        name: "version",
+        indexed: false,
         internalType: "uint8",
-        indexed: false,
+        name: "version",
+        type: "uint8",
       },
     ],
-    anonymous: false,
+    name: "Initialized",
+    type: "event",
   },
   {
-    type: "event",
-    name: "OwnershipTransferred",
+    anonymous: false,
     inputs: [
       {
-        type: "address",
+        indexed: true,
+        internalType: "address",
         name: "previousOwner",
-        internalType: "address",
-        indexed: true,
+        type: "address",
       },
       {
-        type: "address",
+        indexed: true,
+        internalType: "address",
         name: "newOwner",
-        internalType: "address",
-        indexed: true,
+        type: "address",
       },
     ],
-    anonymous: false,
+    name: "OwnershipTransferred",
+    type: "event",
   },
   {
-    type: "event",
-    name: "StampCreated",
+    anonymous: false,
     inputs: [
       {
-        type: "bytes32",
-        name: "stampHash",
-        internalType: "bytes32",
         indexed: true,
+        internalType: "bytes32",
+        name: "stampHash",
+        type: "bytes32",
       },
       {
-        type: "uint256",
-        name: "timestamp",
+        indexed: false,
         internalType: "uint256",
-        indexed: false,
+        name: "timestamp",
+        type: "uint256",
       },
       {
-        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
         name: "signers",
-        internalType: "address[]",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "StampSigned",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash",
-        internalType: "bytes32",
-        indexed: true,
-      },
-      {
-        type: "address",
-        name: "signer",
-        internalType: "address",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "Upgraded",
-    inputs: [
-      {
-        type: "address",
-        name: "implementation",
-        internalType: "address",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "__TimeStamping_init",
-    inputs: [
-      {
-        type: "address",
-        name: "verifier_",
-        internalType: "address",
-      },
-      {
-        type: "address",
-        name: "poseidonHash_",
-        internalType: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "createStamp",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash_",
-        internalType: "bytes32",
-      },
-      {
-        type: "bool",
-        name: "isSigned_",
-        internalType: "bool",
-      },
-      {
         type: "address[]",
-        name: "signers_",
-        internalType: "address[]",
+      },
+    ],
+    name: "StampCreated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "stampHash",
+        type: "bytes32",
       },
       {
-        type: "tuple",
-        name: "zkpPoints_",
-        internalType: "struct ITimeStamping.ZKPPoints",
+        indexed: true,
+        internalType: "address",
+        name: "signer",
+        type: "address",
+      },
+    ],
+    name: "StampSigned",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+    ],
+    name: "Upgraded",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "fee_",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "verifier_",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "poseidonHash_",
+        type: "address",
+      },
+    ],
+    name: "__TimeStamping_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+      {
+        internalType: "bool",
+        name: "isSigned_",
+        type: "bool",
+      },
+      {
+        internalType: "address[]",
+        name: "signers_",
+        type: "address[]",
+      },
+      {
         components: [
           {
-            type: "uint256[2]",
+            internalType: "uint256[2]",
             name: "a",
-            internalType: "uint256[2]",
-          },
-          {
-            type: "uint256[2][2]",
-            name: "b",
-            internalType: "uint256[2][2]",
-          },
-          {
             type: "uint256[2]",
-            name: "c",
+          },
+          {
+            internalType: "uint256[2][2]",
+            name: "b",
+            type: "uint256[2][2]",
+          },
+          {
             internalType: "uint256[2]",
+            name: "c",
+            type: "uint256[2]",
           },
         ],
+        internalType: "struct ITimeStamping.ZKPPoints",
+        name: "zkpPoints_",
+        type: "tuple",
       },
     ],
+    name: "createStamp",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
   },
   {
-    type: "function",
-    stateMutability: "view",
+    inputs: [],
+    name: "fee",
     outputs: [
       {
-        type: "bytes32[]",
+        internalType: "uint256",
         name: "",
-        internalType: "bytes32[]",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user_",
+        type: "address",
       },
     ],
     name: "getHashesByUserAddress",
-    inputs: [
-      {
-        type: "address",
-        name: "user_",
-        internalType: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "bytes32",
+        internalType: "bytes32[]",
         name: "",
-        internalType: "bytes32",
+        type: "bytes32[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes",
+        name: "bytes_",
+        type: "bytes",
       },
     ],
     name: "getStampHashByBytes",
-    inputs: [
-      {
-        type: "bytes",
-        name: "bytes_",
-        internalType: "bytes",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "tuple",
+        internalType: "bytes32",
         name: "",
-        internalType: "struct ITimeStamping.DetailedStampInfo",
-        components: [
-          {
-            type: "bool",
-            name: "isPublic",
-            internalType: "bool",
-          },
-          {
-            type: "uint256",
-            name: "timestamp",
-            internalType: "uint256",
-          },
-          {
-            type: "uint256",
-            name: "usersToSign",
-            internalType: "uint256",
-          },
-          {
-            type: "uint256",
-            name: "usersSigned",
-            internalType: "uint256",
-          },
-          {
-            type: "bytes32",
-            name: "stampHash",
-            internalType: "bytes32",
-          },
-          {
-            type: "tuple[]",
-            name: "signersInfo",
-            internalType: "struct ITimeStamping.SignerInfo[]",
-            components: [
-              {
-                type: "address",
-                name: "signer",
-                internalType: "address",
-              },
-              {
-                type: "bool",
-                name: "isAddmitted",
-                internalType: "bool",
-              },
-              {
-                type: "uint256",
-                name: "signatureTimestamp",
-                internalType: "uint256",
-              },
-            ],
-          },
-        ],
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
       },
     ],
     name: "getStampInfo",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash_",
-        internalType: "bytes32",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "tuple",
-        name: "",
-        internalType: "struct ITimeStamping.DetailedStampInfo",
         components: [
           {
-            type: "bool",
-            name: "isPublic",
             internalType: "bool",
+            name: "isPublic",
+            type: "bool",
           },
           {
-            type: "uint256",
+            internalType: "uint256",
             name: "timestamp",
-            internalType: "uint256",
+            type: "uint256",
           },
           {
-            type: "uint256",
+            internalType: "uint256",
             name: "usersToSign",
-            internalType: "uint256",
-          },
-          {
             type: "uint256",
-            name: "usersSigned",
+          },
+          {
             internalType: "uint256",
+            name: "usersSigned",
+            type: "uint256",
           },
           {
-            type: "bytes32",
-            name: "stampHash",
             internalType: "bytes32",
+            name: "stampHash",
+            type: "bytes32",
           },
           {
-            type: "tuple[]",
-            name: "signersInfo",
-            internalType: "struct ITimeStamping.SignerInfo[]",
             components: [
               {
-                type: "address",
-                name: "signer",
                 internalType: "address",
+                name: "signer",
+                type: "address",
               },
               {
-                type: "bool",
-                name: "isAddmitted",
                 internalType: "bool",
+                name: "isAddmitted",
+                type: "bool",
               },
               {
-                type: "uint256",
-                name: "signatureTimestamp",
                 internalType: "uint256",
+                name: "signatureTimestamp",
+                type: "uint256",
               },
             ],
+            internalType: "struct ITimeStamping.SignerInfo[]",
+            name: "signersInfo",
+            type: "tuple[]",
           },
         ],
+        internalType: "struct ITimeStamping.DetailedStampInfo",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "offset_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "limit_",
+        type: "uint256",
       },
     ],
     name: "getStampInfoWithPagination",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash_",
-        internalType: "bytes32",
-      },
-      {
-        type: "uint256",
-        name: "offset_",
-        internalType: "uint256",
-      },
-      {
-        type: "uint256",
-        name: "limit_",
-        internalType: "uint256",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "uint256",
+        components: [
+          {
+            internalType: "bool",
+            name: "isPublic",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "timestamp",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "usersToSign",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "usersSigned",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32",
+            name: "stampHash",
+            type: "bytes32",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "signer",
+                type: "address",
+              },
+              {
+                internalType: "bool",
+                name: "isAddmitted",
+                type: "bool",
+              },
+              {
+                internalType: "uint256",
+                name: "signatureTimestamp",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ITimeStamping.SignerInfo[]",
+            name: "signersInfo",
+            type: "tuple[]",
+          },
+        ],
+        internalType: "struct ITimeStamping.DetailedStampInfo",
         name: "",
-        internalType: "uint256",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
       },
     ],
     name: "getStampSignersCount",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash_",
-        internalType: "bytes32",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "tuple",
-        name: "signerInfo_",
-        internalType: "struct ITimeStamping.SignerInfo",
-        components: [
-          {
-            type: "address",
-            name: "signer",
-            internalType: "address",
-          },
-          {
-            type: "bool",
-            name: "isAddmitted",
-            internalType: "bool",
-          },
-          {
-            type: "uint256",
-            name: "signatureTimestamp",
-            internalType: "uint256",
-          },
-        ],
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user_",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
       },
     ],
     name: "getUserInfo",
-    inputs: [
-      {
-        type: "address",
-        name: "user_",
-        internalType: "address",
-      },
-      {
-        type: "bytes32",
-        name: "stampHash_",
-        internalType: "bytes32",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "address",
-        name: "",
-        internalType: "address",
+        components: [
+          {
+            internalType: "address",
+            name: "signer",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isAddmitted",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "signatureTimestamp",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ITimeStamping.SignerInfo",
+        name: "signerInfo_",
+        type: "tuple",
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "owner",
-    inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [
       {
-        type: "bytes32",
+        internalType: "address",
         name: "",
-        internalType: "bytes32",
+        type: "address",
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "proxiableUUID",
-    inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "renounceOwnership",
-    inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "setVerifier",
-    inputs: [
+    outputs: [
       {
-        type: "address",
-        name: "verifier_",
-        internalType: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "sign",
-    inputs: [
-      {
-        type: "bytes32",
-        name: "stampHash_",
         internalType: "bytes32",
+        name: "",
+        type: "bytes32",
       },
     ],
+    stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "renounceOwnership",
     outputs: [],
-    name: "transferOwnership",
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
+        internalType: "uint256",
+        name: "fee_",
+        type: "uint256",
+      },
+    ],
+    name: "setFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "verifier_",
         type: "address",
+      },
+    ],
+    name: "setVerifier",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "stampHash_",
+        type: "bytes32",
+      },
+    ],
+    name: "sign",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "newOwner",
-        internalType: "address",
+        type: "address",
       },
     ],
-  },
-  {
-    type: "function",
+    name: "transferOwnership",
+    outputs: [],
     stateMutability: "nonpayable",
-    outputs: [],
-    name: "upgradeTo",
-    inputs: [
-      {
-        type: "address",
-        name: "newImplementation",
-        internalType: "address",
-      },
-    ],
+    type: "function",
   },
   {
-    type: "function",
-    stateMutability: "payable",
-    outputs: [],
-    name: "upgradeToAndCall",
     inputs: [
       {
-        type: "address",
-        name: "newImplementation",
         internalType: "address",
-      },
-      {
-        type: "bytes",
-        name: "data",
-        internalType: "bytes",
+        name: "newImplementation",
+        type: "address",
       },
     ],
+    name: "upgradeTo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+    ],
+    name: "withdrawFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
 ];
 

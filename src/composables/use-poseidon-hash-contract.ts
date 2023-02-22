@@ -6,12 +6,14 @@ import {
   PromiseOrValue,
   BytesLike,
 } from '@/types'
+import { CallOverrides } from 'ethers'
 
 export type PoseidonHash = string // 0x...
 
 export interface UsePoseidonHashContract {
   getPoseidonHash: (
     bytesLike: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ) => Promise<PoseidonHash | undefined>
 }
 
@@ -35,9 +37,11 @@ export const usePoseidonHashContract = (
 
   const getPoseidonHash = async (
     bytesLike: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ): Promise<PoseidonHash | undefined> => {
-    if (!_instance.value) throw new Error('contract instance unavailable')
-    return _instance.value['poseidon(bytes32[1])']([bytesLike])
+    return overrides
+      ? _instance.value?.['poseidon(bytes32[1])']([bytesLike], overrides)
+      : _instance.value?.['poseidon(bytes32[1])']([bytesLike])
   }
 
   return { getPoseidonHash }
