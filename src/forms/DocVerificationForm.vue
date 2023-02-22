@@ -167,6 +167,7 @@ import {
   RPC_ERROR_MESSAGES,
   TIMEZONES,
 } from '@/enums'
+import { errors } from '@/errors'
 import { FileField, InputField, TextareaField } from '@/fields'
 import {
   getKeccak256FileHash,
@@ -189,7 +190,7 @@ import {
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { Time } from '@/utils'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
 
 const emit = defineEmits<{
@@ -285,6 +286,15 @@ const formatTimestamp = (timestamp: number): string => {
   return new Time(timestamp, 'X').tz(TIMEZONES.CET).format('hh:mm A YYYY [CET]')
 }
 
+const updateInfoOfCurrentSigner = async () => {
+  if (publicFileHash.value)
+    infoOfCurrentSigner.value =
+      await timestampContractInstance.value.getSignerInfo(
+        web3Store.provider.selectedAddress as string,
+        publicFileHash.value as BytesLike,
+      )
+}
+
 const submitVerification = async () => {
   try {
     await web3Store.checkConnection()
@@ -317,15 +327,7 @@ const submitVerification = async () => {
       throw new Error('Document not found')
 
     if (stampInfo.value?.signers.length) {
-      infoOfCurrentSigner.value =
-        await timestampContractInstance.value.getSignerInfo(
-          web3Store.provider.selectedAddress as string,
-          publicFileHash.value,
-        )
-
-      if (infoOfCurrentSigner.value?.signatureTimestamp) {
-        infoOfCurrentSigner.value.isAdmittedToSigning = false
-      }
+      await updateInfoOfCurrentSigner()
     }
 
     showConfirmation()
@@ -363,12 +365,19 @@ const signOrExit = async () => {
     infoOfCurrentSigner.value.isAdmittedToSigning = false
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
-    if (error?.reason === RPC_ERROR_MESSAGES.alreadySigned) {
-      Bus.info($t('doc-verification-form.already-signed-message'))
-      infoOfCurrentSigner.value.isAdmittedToSigning = false
-      ErrorHandler.processWithoutFeedback(error)
-    } else {
-      ErrorHandler.process(error)
+    switch (true) {
+      case error?.reason === RPC_ERROR_MESSAGES.alreadySigned:
+        Bus.info($t('doc-verification-form.already-signed-message'))
+        infoOfCurrentSigner.value.isAdmittedToSigning = false
+        ErrorHandler.processWithoutFeedback(error)
+        break
+
+      case error?.code === errors.ACTION_REJECTED:
+        ErrorHandler.processWithoutFeedback(error)
+        break
+
+      default:
+        ErrorHandler.process(error)
     }
   }
 
@@ -385,6 +394,20 @@ const reset = () => {
   addressToSearch.value = ''
   resetState()
 }
+
+watch(
+  () => web3Store.provider.selectedAddress,
+  () => updateInfoOfCurrentSigner(),
+)
+
+onMounted(async () => {
+  try {
+    await web3Store.checkConnection()
+  } catch {
+    emit('cancel')
+    return
+  }
+})
 </script>
 
 <style lang="scss" scoped>

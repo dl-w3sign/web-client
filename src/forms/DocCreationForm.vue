@@ -123,6 +123,7 @@ import {
   UsePoseidonHashContract,
 } from '@/composables'
 import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
+import { errors } from '@/errors'
 import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
 import {
   ErrorHandler,
@@ -270,7 +271,7 @@ const submit = async () => {
       errorMessage.value = getErrorMessage(err.error as EthProviderRpcError)
     else errorMessage.value = $t('doc-creation-form.error-default')
 
-    showFailure()
+    if (err?.code !== errors.ACTION_REJECTED) showFailure()
     ErrorHandler.processWithoutFeedback(err)
   }
   isSubmitting.value = false
@@ -292,15 +293,20 @@ const reset = () => {
 }
 
 onMounted(async () => {
-  isSubmitting.value = true
+  try {
+    await web3Store.checkConnection()
+  } catch {
+    emit('cancel')
+    return
+  }
 
+  isSubmitting.value = true
   try {
     fee.value = await timestampContractInstance.value.getFee()
   } catch (error) {
     ErrorHandler.process(error)
     emit('cancel')
   }
-
   isSubmitting.value = false
 })
 </script>
