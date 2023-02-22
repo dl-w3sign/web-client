@@ -66,9 +66,8 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
             ErrorHandler.processWithoutFeedback(error)
             break
 
-          // eslint-disable-next-line
-          // @ts-ignore
-          case error?.code === 4902:
+          // error.code 4902 isn't supported in mobile metamask browser
+          default:
             try {
               const networkConfig = getNetworkConfigByChainId(chainId)
               if (networkConfig) await this.provider.addChain(networkConfig)
@@ -81,9 +80,6 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
               ErrorHandler.process(error)
             }
             break
-
-          default:
-            ErrorHandler.process(error)
         }
       }
 
