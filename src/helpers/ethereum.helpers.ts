@@ -5,7 +5,13 @@ import {
   Q_MAINNET_NETWORK_CONFIG,
   Q_TESTNET_NETWORK_CONFIG,
 } from '@/const'
-import { EIP1193, EIP1474, ETHEREUM_CHAINS, ICON_NAMES } from '@/enums'
+import {
+  EIP1193,
+  EIP1474,
+  ETHEREUM_CHAINS,
+  ETHEREUM_CURRENCY_SYMBOLS,
+  ICON_NAMES,
+} from '@/enums'
 import { errors } from '@/errors'
 import { i18n } from '@/localization'
 import {
@@ -170,5 +176,21 @@ export function getPoseidonHashContractAddressByChainId(
     case ETHEREUM_CHAINS.qMainnet:
     case ETHEREUM_CHAINS.qTestnet:
       return config.CTR_ADDRESS_POSEIDON_HASH_Q
+  }
+}
+
+export function getCurrencySymbolByChainId(
+  chainId: ChainId,
+): string | undefined {
+  switch (chainId.toString()) {
+    case ETHEREUM_CHAINS.ethereum:
+    case ETHEREUM_CHAINS.goerli:
+      return ETHEREUM_CURRENCY_SYMBOLS.ethereum
+    case ETHEREUM_CHAINS.polygon:
+    case ETHEREUM_CHAINS.mumbai:
+      return ETHEREUM_CURRENCY_SYMBOLS.polygon
+    case ETHEREUM_CHAINS.qMainnet:
+    case ETHEREUM_CHAINS.qTestnet:
+      return ETHEREUM_CURRENCY_SYMBOLS.q
   }
 }

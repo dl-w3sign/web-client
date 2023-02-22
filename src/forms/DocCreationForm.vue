@@ -131,6 +131,7 @@ import {
   generateZKPPointsStructAndPublicHash,
   getTimestampContractAddressByChainId,
   getPoseidonHashContractAddressByChainId,
+  getCurrencySymbolByChainId,
 } from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
 import {
@@ -225,7 +226,9 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
 }
 
 const formatFee = (fee: number) => {
-  return `${fee} MATIC`
+  return `${fee} ${getCurrencySymbolByChainId(
+    web3Store.provider.chainId as ChainId,
+  )}`
 }
 
 const submit = async () => {
