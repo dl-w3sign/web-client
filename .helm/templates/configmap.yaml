@@ -9,10 +9,10 @@ data:
   {{ .Values.config.name  }}: |
                               document.ENV = {
                                 VITE_APP_NAME: 'Time Stamping Service',
-                                VITE_APP_CTR_ADDRESS_TIMESTAMP_ETHEREUM: '0xC086319513834040Aa4910E4bdCf2b0e54A9D323',
+                                VITE_APP_CTR_ADDRESS_TIMESTAMP_ETHEREUM: '0x320315E5DC678b3C6ED0A1EBb7B7577d4a518e64',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_POLYGON: '0x79e3D72AD58853957BCF13c104DD872Da5b5687C',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_Q: '0x81c7a9A6AC408394592bD9f714453F8f1Dc2D1F2',
-                                VITE_APP_CTR_ADDRESS_POSEIDON_HASH_ETHEREUM: '0x4ca0b63a4473d9606b2802577e1fadc58ce369fd',
+                                VITE_APP_CTR_ADDRESS_POSEIDON_HASH_ETHEREUM: '0xee1ee75e709969cb2f1fb82c4b1d2db4013ea2d2',
                                 VITE_APP_CTR_ADDRESS_POSEIDON_HASH_POLYGON: '0x00df74062DCFe5D708eA34170319377fD1EDB9Ce',
                                 VITE_APP_CTR_ADDRESS_POSEIDON_HASH_Q: '0x5cdA170e8C0Eb92cf4560d739edDDF8D09D2363A'
                               }
