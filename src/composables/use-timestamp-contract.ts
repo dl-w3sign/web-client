@@ -8,7 +8,12 @@ import {
 } from '@/types'
 import { BN } from '@/utils'
 import { useWeb3ProvidersStore } from '@/store'
-import { ContractTransaction } from 'ethers'
+import {
+  ContractTransaction,
+  CallOverrides,
+  PayableOverrides,
+  Overrides,
+} from 'ethers'
 
 export type SignerInfo = {
   address: string
@@ -28,19 +33,24 @@ export type UseTimestampContract = {
     publicHash: PromiseOrValue<BytesLike>,
     offset: PromiseOrValue<number>,
     limit: PromiseOrValue<number>,
+    overrides?: CallOverrides,
   ) => Promise<StampInfo | null>
   getSignerInfo: (
     address: PromiseOrValue<string>,
     publicHash: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ) => Promise<SignerInfo | null>
+  getFee: (overrides?: CallOverrides) => Promise<BN | null>
   createStamp: (
     publicHash: PromiseOrValue<BytesLike>,
     isSign: PromiseOrValue<boolean>,
     indicatedAddresses: PromiseOrValue<string>[],
     ZKPPointsStruct: ZKPPointsStructType,
+    overrides?: PayableOverrides,
   ) => Promise<ContractTransaction | null>
   sign: (
     publicHash: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> | undefined },
   ) => Promise<ContractTransaction | null>
 }
 
@@ -64,12 +74,21 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     publicHash: PromiseOrValue<BytesLike>,
     offset: PromiseOrValue<number>,
     limit: PromiseOrValue<number>,
+    overrides?: CallOverrides,
   ): Promise<StampInfo | null> => {
-    const receipt = await _instance.value?.getStampInfoWithPagination(
-      publicHash,
-      offset,
-      limit,
-    )
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    const receipt = overrides
+      ? await _instance.value.getStampInfoWithPagination(
+          publicHash,
+          offset,
+          limit,
+          overrides,
+        )
+      : await _instance.value.getStampInfoWithPagination(
+          publicHash,
+          offset,
+          limit,
+        )
 
     if (receipt) {
       return {
@@ -97,8 +116,12 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   const getSignerInfo = async (
     address: PromiseOrValue<string>,
     publicHash: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ): Promise<SignerInfo | null> => {
-    const receipt = await _instance.value?.getUserInfo(address, publicHash)
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    const receipt = overrides
+      ? await _instance.value.getUserInfo(address, publicHash, overrides)
+      : await _instance.value.getUserInfo(address, publicHash)
 
     if (receipt) {
       return {
@@ -111,31 +134,57 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     }
   }
 
+  const getFee = async (overrides?: CallOverrides) => {
+    if (!_instance.value) throw new Error('contract instance unavailable')
+    const receipt = overrides
+      ? await _instance.value.fee(overrides)
+      : await _instance.value.fee()
+
+    return receipt ? new BN(receipt._hex) : null
+  }
+
   const createStamp = async (
     publicHash: PromiseOrValue<BytesLike>,
     isSign: PromiseOrValue<boolean>,
     indicatedAddresses: PromiseOrValue<string>[],
     ZKPPointsStruct: ZKPPointsStructType,
+    overrides?: PayableOverrides,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.createStamp(
-      publicHash,
-      isSign,
-      indicatedAddresses,
-      ZKPPointsStruct,
-    )
+    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    const tx = overrides
+      ? await _instance_rw.value.createStamp(
+          publicHash,
+          isSign,
+          indicatedAddresses,
+          ZKPPointsStruct,
+          overrides,
+        )
+      : await _instance_rw.value.createStamp(
+          publicHash,
+          isSign,
+          indicatedAddresses,
+          ZKPPointsStruct,
+        )
+
     return tx ? tx : null
   }
 
   const sign = async (
     publicHash: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> | undefined },
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.sign(publicHash)
+    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    const tx = overrides
+      ? await _instance_rw.value.sign(publicHash, overrides)
+      : await _instance_rw.value.sign(publicHash)
+
     return tx ? tx : null
   }
 
   return {
     getStampInfoWithPagination,
     getSignerInfo,
+    getFee,
     createStamp,
     sign,
   }

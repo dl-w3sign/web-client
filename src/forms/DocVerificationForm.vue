@@ -33,7 +33,7 @@
           </div>
         </div>
         <textarea-field
-          :model-value="publicFileHash || ''"
+          :model-value="publicFileHash as string || ''"
           is-copied
           readonly
         />
@@ -48,10 +48,14 @@
             :name="$icons.checkCircle"
           />
           <p>
-            {{ $t('doc-verification-form.success-msg') }}
+            {{
+              stampInfo.isPublic
+                ? $t('doc-verification-form.success-msg-public')
+                : $t('doc-verification-form.success-msg-not-public')
+            }}
           </p>
         </div>
-        <div v-if="stampInfo.signers.length || addressToSearch">
+        <div v-if="stampInfo?.signers.length || addressToSearch">
           <h4 class="doc-verification-form__list-title">
             {{ $t('doc-verification-form.list-title') }}
           </h4>
@@ -515,6 +519,7 @@ const reset = () => {
 
     @include respond-to(850px) {
       margin: toRem(12) 0;
+      white-space: pre-line;
     }
   }
 

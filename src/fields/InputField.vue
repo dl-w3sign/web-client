@@ -67,9 +67,6 @@ withDefaults(
 }
 
 .input-field__label {
-  display: block;
-  margin-bottom: toRem(8);
-
   @include field-label;
 }
 

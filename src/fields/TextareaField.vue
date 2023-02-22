@@ -62,7 +62,6 @@ import { useTextareaAutosize } from '@/composables'
 import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
 import { getCurrentInstance, computed, useAttrs } from 'vue'
-import { useWindowSize } from '@vueuse/core'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
@@ -71,7 +70,10 @@ const emit = defineEmits<{
 
 const updateModelValue = (event: InputEvent) => {
   const eventTarget = event.target as HTMLInputElement
+  if (props.isWithoutLineBreaks)
+    eventTarget.value = eventTarget.value.replace(/(\r\n|\n|\r)/gm, '')
   emit('update:modelValue', eventTarget.value)
+  resize()
 }
 
 const uid = getCurrentInstance()?.uid
@@ -82,6 +84,7 @@ const props = withDefaults(
     placeholder?: string
     isRemovable?: boolean
     isCopied?: boolean
+    isWithoutLineBreaks?: boolean
     leftIconName?: ICON_NAMES
     rightIconName?: ICON_NAMES
   }>(),
@@ -90,6 +93,7 @@ const props = withDefaults(
     placeholder: '',
     isRemovable: false,
     isCopied: false,
+    isWithoutLineBreaks: true,
     leftIconName: undefined,
     rightIconName: undefined,
   },
@@ -110,17 +114,11 @@ const { copy, copied } = useClipboard({
   copiedDuring: 5000,
 })
 
-const { width: windowWidth } = useWindowSize()
-const { textarea } = useTextareaAutosize({
-  watch: windowWidth,
-})
+const { textarea, resize } = useTextareaAutosize()
 </script>
 
 <style lang="scss" scoped>
 .textarea-field__label {
-  display: block;
-  margin-bottom: toRem(8);
-
   @include field-label;
 }
 

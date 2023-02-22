@@ -34,6 +34,7 @@
   "doc-creation-form": {
     "checkbox-is-sign": "Sign a document",
     "checkbox-is-indicating-addresses": "Indicate the wallet address",
+    "fee-title": "Platform fee",
     "wallets-addresses-title": "Wallet Address",
     "wallet-address-placeholder": "Enter Wallet Address",
     "cancel-button-text": "Cancel",
@@ -51,7 +52,8 @@
     "sign-button-text": "Sign",
     "exit-button-text": "Ok",
     "please-wait-msg": "Please, wait a moment...",
-    "success-msg": "The document was found",
+    "success-msg-public": "The document was found",
+    "success-msg-not-public": "The document was found\n(with indicated wallet addresses)",
     "search-placeholder": "Search by address",
     "document-hash-title": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",

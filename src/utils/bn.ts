@@ -9,7 +9,7 @@ export class BN {
     this.#bn = this._bn(bigLike)
   }
 
-  toNumber(): number {
+  public toNumber(): number {
     return this.#bn.toNumber()
   }
 
