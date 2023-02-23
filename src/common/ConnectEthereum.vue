@@ -33,10 +33,6 @@ const {
 
 const buttonState = computed<BUTTON_STATES | undefined>(() => {
   switch (true) {
-    case web3Provider.isInitFailed:
-      return BUTTON_STATES.notAllowed
-    case web3Provider.isIniting:
-      return BUTTON_STATES.waiting
     case web3Provider.isConnecting:
       return BUTTON_STATES.waiting
     case web3Provider.isConnected:
@@ -51,10 +47,6 @@ const buttonText = computed<string>(() => {
       return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
     case !web3Provider?.selectedProvider:
       return $t('connect-ethereum.connect-button-text-install-provider')
-    case web3Provider?.isInitFailed:
-      return $t('connect-ethereum.connect-button-text-failed-load')
-    case web3Provider?.isIniting:
-      return $t('connect-ethereum.connect-button-text-loading')
     case web3Provider?.isConnecting:
       return $t('connect-ethereum.connect-button-text-connecting')
     case !!web3Provider?.selectedAddress:
