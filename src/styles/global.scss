@@ -19,7 +19,7 @@ body, #app {
   flex-direction: column;
   flex: 1;
   color: var(--col-trendy);
-  max-height: 100vh;
+  max-height: vh(100);
   background: var(--col-rich);
 
   &::-webkit-scrollbar-track,

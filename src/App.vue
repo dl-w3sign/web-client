@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { AppNavbar, Animation } from '@/common'
-import { useNotifications, useContext } from '@/composables'
+import { useViewportSize, useNotifications, useContext } from '@/composables'
 import { ErrorHandler } from '@/helpers'
 import { InvalidNetworkModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
@@ -29,10 +29,12 @@ import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
 const { $config } = useContext()
+const { assignVhCssVariable } = useViewportSize()
 
 const isAppInitialized = ref(false)
 const init = async () => {
   try {
+    assignVhCssVariable()
     useNotifications()
 
     await web3Store.detectProviders()
@@ -76,10 +78,10 @@ watch(
 
 .app__main {
   overflow-y: scroll;
-  height: calc(100vh - toRem(80));
+  height: calc(vh(100) - toRem(80));
 
   @include respond-to(850px) {
-    height: calc(100vh - toRem(72));
+    height: calc(vh(100) - toRem(72));
   }
 
   @include respond-to(380px) {

@@ -57,7 +57,7 @@ const onWrapperClick = (event: PointerEvent) => {
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: vh(100);
   background: var(--col-pesky);
   overflow-y: scroll;
   padding: 4%;

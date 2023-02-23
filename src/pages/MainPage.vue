@@ -369,7 +369,6 @@ const isDocVerificationModalShown = ref(false)
   background: var(--col-great);
   border-radius: var(--border-radius-large);
   width: toRem(395);
-  height: toRem(395);
   padding: toRem(27) toRem(81);
   transition: background-color var(--transition-duration-slow);
 
@@ -382,7 +381,6 @@ const isDocVerificationModalShown = ref(false)
   }
 
   @include respond-to(460px) {
-    height: toRem(343);
     width: toRem(343);
     padding: toRem(38) toRem(90);
   }
