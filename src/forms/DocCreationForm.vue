@@ -218,8 +218,8 @@ const removeIndicatedAddress = (address: string) => {
 }
 
 const getErrorMessage = (error: EthProviderRpcError): string => {
-  switch (error.message) {
-    case RPC_ERROR_MESSAGES.hashCollision:
+  switch (true) {
+    case error.data?.message === RPC_ERROR_MESSAGES.hashCollision:
       return $t('doc-creation-form.error-hash-collision')
     default:
       return $t('doc-creation-form.error-default')
