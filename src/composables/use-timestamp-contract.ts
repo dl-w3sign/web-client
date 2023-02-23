@@ -5,6 +5,7 @@ import {
   PromiseOrValue,
   BytesLike,
   ZKPPointsStructType,
+  BigNumberish,
 } from '@/types'
 import { BN } from '@/utils'
 import { useWeb3ProvidersStore } from '@/store'
@@ -13,6 +14,7 @@ import {
   CallOverrides,
   PayableOverrides,
   Overrides,
+  BigNumber,
 } from 'ethers'
 
 export type SignerInfo = {
@@ -40,7 +42,7 @@ export type UseTimestampContract = {
     publicHash: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides,
   ) => Promise<SignerInfo | null>
-  getFee: (overrides?: CallOverrides) => Promise<BN | null>
+  getFee: (overrides?: CallOverrides) => Promise<BigNumberish | null>
   createStamp: (
     publicHash: PromiseOrValue<BytesLike>,
     isSign: PromiseOrValue<boolean>,
@@ -142,7 +144,7 @@ export const useTimestampContract = (
       ? await _instance.value.fee(overrides)
       : await _instance.value.fee()
 
-    return receipt ? new BN(receipt._hex) : null
+    return receipt ? BigNumber.from(receipt._hex) : null
   }
 
   const createStamp = async (

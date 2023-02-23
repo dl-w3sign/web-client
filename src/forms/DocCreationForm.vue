@@ -60,7 +60,7 @@
             <p class="doc-creation-form__fee">
               {{ $t('doc-creation-form.fee-title') }}
               <span class="doc-creation-form__fee-value">
-                {{ formatFee(0) }}
+                {{ formatFee(fee as BigNumberish) }}
               </span>
             </p>
           </div>
@@ -132,6 +132,7 @@ import {
   generateZKPPointsStructAndPublicHash,
   getTimestampContractAddressByChainId,
   getPoseidonHashContractAddressByChainId,
+  formatEther,
   getCurrencySymbolByChainId,
 } from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
@@ -141,7 +142,7 @@ import {
   PoseidonHash,
   BytesLike,
   ChainId,
-  BN,
+  BigNumberish,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -175,8 +176,9 @@ const {
   disableForm,
   enableForm,
 } = useForm()
+isSubmitting.value = true
 
-const fee = ref<BN | null>()
+const fee = ref<BigNumberish | null>()
 const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
 const errorMessage = ref('')
@@ -226,10 +228,10 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
   }
 }
 
-const formatFee = (fee: number) => {
-  return `${fee} ${getCurrencySymbolByChainId(
+const formatFee = (fee: BigNumberish) => {
+  return `${formatEther(fee)} ${getCurrencySymbolByChainId(
     web3Store.provider.chainId as ChainId,
-  )}`
+  )}`.replace('.', ',')
 }
 
 const submit = async () => {
@@ -300,13 +302,13 @@ onMounted(async () => {
     return
   }
 
-  isSubmitting.value = true
   try {
     fee.value = await timestampContractInstance.value.getFee()
   } catch (error) {
     ErrorHandler.process(error)
     emit('cancel')
   }
+
   isSubmitting.value = false
 })
 </script>

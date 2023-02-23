@@ -19,7 +19,7 @@ import {
   ChainId,
   EthProviderRpcError,
 } from '@/types'
-import { ethers } from 'ethers'
+import { ethers, BigNumberish } from 'ethers'
 
 const { t } = i18n.global
 
@@ -96,6 +96,10 @@ export function getEthExplorerAddressUrl(explorerUrl: string, address: string) {
 
 export function isAddress(address: string) {
   return ethers.utils.isAddress(address)
+}
+
+export function formatEther(wei: BigNumberish) {
+  return ethers.utils.formatEther(wei)
 }
 
 export function getNetworkConfigByChainId(
