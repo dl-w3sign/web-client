@@ -18,8 +18,9 @@ import {
   AddEthereumChainParameter,
   ChainId,
   EthProviderRpcError,
+  BigNumberish,
 } from '@/types'
-import { ethers, BigNumberish } from 'ethers'
+import { ethers } from 'ethers'
 
 const { t } = i18n.global
 
@@ -121,14 +122,13 @@ export function getNetworkConfigByChainId(
 
 export function getTitleByChainId(chainId: ChainId): string {
   switch (chainId.toString()) {
-    case ETHEREUM_CHAINS.ethereum:
-    case ETHEREUM_CHAINS.goerli:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.ethereum : ETHEREUM_CHAINS.goerli:
       return t('switch-ethereum.ethereum-chain-title')
-    case ETHEREUM_CHAINS.polygon:
-    case ETHEREUM_CHAINS.mumbai:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.polygon : ETHEREUM_CHAINS.mumbai:
       return t('switch-ethereum.polygon-chain-title')
-    case ETHEREUM_CHAINS.qMainnet:
-    case ETHEREUM_CHAINS.qTestnet:
+    case config.IS_MAINNET
+      ? ETHEREUM_CHAINS.qMainnet
+      : ETHEREUM_CHAINS.qTestnet:
       return t('switch-ethereum.q-chain-title')
     default:
       return t('switch-ethereum.unknown-chain-title')
@@ -137,14 +137,13 @@ export function getTitleByChainId(chainId: ChainId): string {
 
 export function getIconNameByChainId(chainId: ChainId): ICON_NAMES {
   switch (chainId.toString()) {
-    case ETHEREUM_CHAINS.ethereum:
-    case ETHEREUM_CHAINS.goerli:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.ethereum : ETHEREUM_CHAINS.goerli:
       return ICON_NAMES.ethereum
-    case ETHEREUM_CHAINS.polygon:
-    case ETHEREUM_CHAINS.mumbai:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.polygon : ETHEREUM_CHAINS.mumbai:
       return ICON_NAMES.polygon
-    case ETHEREUM_CHAINS.qMainnet:
-    case ETHEREUM_CHAINS.qTestnet:
+    case config.IS_MAINNET
+      ? ETHEREUM_CHAINS.qMainnet
+      : ETHEREUM_CHAINS.qTestnet:
       return ICON_NAMES.q
     default:
       return ICON_NAMES.exclamation
@@ -155,14 +154,13 @@ export function getTimestampContractAddressByChainId(
   chainId: ChainId,
 ): string | undefined {
   switch (chainId.toString()) {
-    case ETHEREUM_CHAINS.ethereum:
-    case ETHEREUM_CHAINS.goerli:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.ethereum : ETHEREUM_CHAINS.goerli:
       return config.CTR_ADDRESS_TIMESTAMP_ETHEREUM
-    case ETHEREUM_CHAINS.polygon:
-    case ETHEREUM_CHAINS.mumbai:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.polygon : ETHEREUM_CHAINS.mumbai:
       return config.CTR_ADDRESS_TIMESTAMP_POLYGON
-    case ETHEREUM_CHAINS.qMainnet:
-    case ETHEREUM_CHAINS.qTestnet:
+    case config.IS_MAINNET
+      ? ETHEREUM_CHAINS.qMainnet
+      : ETHEREUM_CHAINS.qTestnet:
       return config.CTR_ADDRESS_TIMESTAMP_Q
   }
 }
@@ -171,14 +169,13 @@ export function getPoseidonHashContractAddressByChainId(
   chainId: ChainId,
 ): string | undefined {
   switch (chainId.toString()) {
-    case ETHEREUM_CHAINS.ethereum:
-    case ETHEREUM_CHAINS.goerli:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.ethereum : ETHEREUM_CHAINS.goerli:
       return config.CTR_ADDRESS_POSEIDON_HASH_ETHEREUM
-    case ETHEREUM_CHAINS.polygon:
-    case ETHEREUM_CHAINS.mumbai:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.polygon : ETHEREUM_CHAINS.mumbai:
       return config.CTR_ADDRESS_POSEIDON_HASH_POLYGON
-    case ETHEREUM_CHAINS.qMainnet:
-    case ETHEREUM_CHAINS.qTestnet:
+    case config.IS_MAINNET
+      ? ETHEREUM_CHAINS.qMainnet
+      : ETHEREUM_CHAINS.qTestnet:
       return config.CTR_ADDRESS_POSEIDON_HASH_Q
   }
 }
@@ -187,14 +184,13 @@ export function getCurrencySymbolByChainId(
   chainId: ChainId,
 ): string | undefined {
   switch (chainId.toString()) {
-    case ETHEREUM_CHAINS.ethereum:
-    case ETHEREUM_CHAINS.goerli:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.ethereum : ETHEREUM_CHAINS.goerli:
       return ETHEREUM_CURRENCY_SYMBOLS.ethereum
-    case ETHEREUM_CHAINS.polygon:
-    case ETHEREUM_CHAINS.mumbai:
+    case config.IS_MAINNET ? ETHEREUM_CHAINS.polygon : ETHEREUM_CHAINS.mumbai:
       return ETHEREUM_CURRENCY_SYMBOLS.polygon
-    case ETHEREUM_CHAINS.qMainnet:
-    case ETHEREUM_CHAINS.qTestnet:
+    case config.IS_MAINNET
+      ? ETHEREUM_CHAINS.qMainnet
+      : ETHEREUM_CHAINS.qTestnet:
       return ETHEREUM_CURRENCY_SYMBOLS.q
   }
 }
