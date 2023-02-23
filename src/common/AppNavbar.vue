@@ -53,13 +53,18 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
 .app-navbar__logo {
   height: toRem(48);
   width: toRem(48);
-  color: var(--col-intense);
-  fill: var(--col-trendy);
-  transition: var(--transition-duration);
+  color: var(--col-peaceful);
+  fill: var(--col-primary);
+  transition-property: color, fill;
+  transition-duration: var(--transition-duration);
 
   &:hover {
     color: var(--col-quiet);
-    fill: var(--col-primary);
+    fill: var(--col-basic);
+  }
+
+  &:active {
+    fill: var(--col-initial);
   }
 
   @include respond-to(850px) {
