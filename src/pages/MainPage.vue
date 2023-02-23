@@ -123,7 +123,7 @@ const isDocVerificationModalShown = ref(false)
   margin: 0 auto;
   padding: toRem(44) toRem(44) toRem(28);
   fill: var(--col-peaceful);
-  transition: var(--transition-duration-slow);
+  transition: fill var(--transition-duration-slow);
   max-width: max-content;
   text-align: center;
 
@@ -150,7 +150,7 @@ const isDocVerificationModalShown = ref(false)
   padding: 0 toRem(28) toRem(23);
 
   @include respond-to(1100px) {
-    padding-bottom: toRem(18);
+    padding-bottom: toRem(19);
   }
 }
 
@@ -224,6 +224,14 @@ const isDocVerificationModalShown = ref(false)
 
   @include respond-to(1100px) {
     height: toRem(44);
+  }
+
+  @include respond-to(956px) {
+    height: toRem(40);
+  }
+
+  @include respond-to(850px) {
+    height: toRem(38);
   }
 }
 
@@ -314,8 +322,7 @@ const isDocVerificationModalShown = ref(false)
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
   max-width: max-content;
-  margin: auto;
-  margin-bottom: toRem(44);
+  margin: auto auto toRem(44);
 
   &--lifted {
     transition-delay: 3.7s;

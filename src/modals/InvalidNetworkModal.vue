@@ -214,11 +214,15 @@ const switchAndClose = async () => {
   width: toRem(24);
 }
 
-.fade-enter-active {
-  animation: fade var(--transition-duration);
+.fade-leave-active {
+  animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
-@keyframes fade {
+.fade-enter-active {
+  animation: fade-in var(--transition-duration);
+}
+
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
