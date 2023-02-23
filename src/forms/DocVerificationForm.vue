@@ -2,22 +2,28 @@
   <form
     class="doc-verification-form"
     :class="{
-      'doc-verification-form--confirmation-hidden': !isConfirmationShown,
+      'doc-verification-form--confirmation-shown': isConfirmationShown,
     }"
     @submit.prevent
   >
-    <transition name="fade">
-      <div v-if="isSubmitting">
-        <spinner class="doc-verification-form__loader" />
+    <transition name="fade" mode="out-in">
+      <div v-if="isSubmitting" class="doc-verification-form__container">
+        <spinner />
         <p class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
         </p>
       </div>
-      <div v-else-if="isConfirmationShown">
+      <div
+        v-else-if="isConfirmationShown"
+        class="doc-verification-form__container"
+      >
         <div class="doc-verification-form__doc-info">
-          <h5 class="doc-verification-form__doc-hash-title">
-            {{ $t('doc-verification-form.document-hash-title') }}
-          </h5>
+          <label
+            class="doc-verification-form__doc-hash-label"
+            :for="`doc-hash--${uid}`"
+          >
+            {{ $t('doc-verification-form.document-hash-label') }}
+          </label>
           <div
             :class="[
               'doc-verification-form__timestamp-info',
@@ -31,12 +37,14 @@
               {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
             </p>
           </div>
+          <textarea-field
+            :id-prop="`doc-hash--${uid}`"
+            class="doc-verification-form__doc-hash"
+            :model-value="publicFileHash as string || ''"
+            is-copied
+            readonly
+          />
         </div>
-        <textarea-field
-          :model-value="publicFileHash as string || ''"
-          is-copied
-          readonly
-        />
         <div
           :class="[
             'doc-verification-form__note',
@@ -55,46 +63,55 @@
             }}
           </p>
         </div>
-        <div v-if="stampInfo?.signers.length || addressToSearch">
-          <h4 class="doc-verification-form__list-title">
-            {{ $t('doc-verification-form.list-title') }}
-          </h4>
-          <input-field
-            :model-value="addressToSearch"
-            @update:model-value="searchAddress"
-            class="doc-verification-form__search-input"
-            :placeholder="$t('doc-verification-form.search-placeholder')"
-            :left-icon-name="$icons.search"
-          />
-          <div v-if="stampInfo?.signers">
-            <div v-for="signer in stampInfo.signers" :key="signer.address">
-              <textarea-field
-                class="doc-verification-form__address"
-                :model-value="signer.address"
-                :right-icon-name="
-                  signer.signatureTimestamp ? $icons.checkCircle : undefined
-                "
-                readonly
-              />
-              <div class="doc-verification-form__timestamp-info">
-                <p
-                  class="doc-verification-form__timestamp-title"
-                  v-if="signer.signatureTimestamp"
-                >
-                  {{ $t('doc-verification-form.signature-timestamp-title') }}
-                </p>
-                <p class="doc-verification-form__timestamp">
-                  {{
-                    signer.signatureTimestamp
-                      ? formatTimestamp(signer.signatureTimestamp)
-                      : $t('doc-verification-form.not-signed-yet-message')
-                  }}
-                </p>
+        <div
+          v-if="stampInfo?.signers.length || addressToSearch"
+          class="doc-verification-form__container"
+        >
+          <div>
+            <h4 class="doc-verification-form__list-title">
+              {{ $t('doc-verification-form.list-title') }}
+            </h4>
+            <input-field
+              :model-value="addressToSearch"
+              @update:model-value="searchAddress"
+              class="doc-verification-form__search-input"
+              :placeholder="$t('doc-verification-form.search-placeholder')"
+              :left-icon-name="$icons.search"
+            />
+          </div>
+          <div
+            v-if="stampInfo?.signers"
+            class="doc-verification-form__container"
+          >
+            <transition-group name="fade-group">
+              <div v-for="signer in stampInfo.signers" :key="signer.address">
+                <textarea-field
+                  class="doc-verification-form__address"
+                  :model-value="signer.address"
+                  :right-icon-name="
+                    signer.signatureTimestamp ? $icons.checkCircle : undefined
+                  "
+                  readonly
+                />
+                <div class="doc-verification-form__timestamp-info">
+                  <p
+                    class="doc-verification-form__timestamp-title"
+                    v-if="signer.signatureTimestamp"
+                  >
+                    {{ $t('doc-verification-form.signature-timestamp-title') }}
+                  </p>
+                  <p class="doc-verification-form__timestamp">
+                    {{
+                      signer.signatureTimestamp
+                        ? formatTimestamp(signer.signatureTimestamp)
+                        : $t('doc-verification-form.not-signed-yet-message')
+                    }}
+                  </p>
+                </div>
               </div>
-            </div>
+            </transition-group>
             <pagination-control
               v-if="!addressToSearch && stampInfo.signers.length"
-              class="doc-verification-form__pagination-control"
               :items-count="stampInfo.signersTotalCount"
               :page-limit="pageLimit"
               :on-page-change="onPageChange"
@@ -109,7 +126,7 @@
           }}
         </app-button>
       </div>
-      <div v-else-if="isFailureShown">
+      <div v-else-if="isFailureShown" class="doc-verification-form__container">
         <file-field :model-value="form.file" is-readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
@@ -124,7 +141,7 @@
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else>
+      <div v-else class="doc-verification-form__container">
         <file-field v-model="form.file" />
         <div class="doc-verification-form__buttons">
           <app-button
@@ -190,8 +207,17 @@ import {
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { Time } from '@/utils'
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  onMounted,
+  getCurrentInstance,
+} from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
+
+const uid = getCurrentInstance()?.uid
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -412,9 +438,27 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .doc-verification-form {
-  &--confirmation-hidden {
-    @include respond-to(850px) {
-      margin-top: toRem(16);
+  margin-top: toRem(24);
+
+  @include respond-to(850px) {
+    margin-top: toRem(16);
+
+    &--confirmation-shown {
+      margin-top: toRem(12);
+    }
+  }
+}
+
+.doc-verification-form__container {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+
+  @include respond-to(850px) {
+    gap: toRem(16);
+
+    .doc-verification-form--confirmation-shown & {
+      gap: toRem(12);
     }
   }
 }
@@ -422,19 +466,9 @@ onMounted(async () => {
 .doc-verification-form__buttons {
   display: flex;
   gap: toRem(16);
-  margin-top: toRem(24);
 
   @include respond-to(850px) {
     gap: toRem(8);
-    margin-top: toRem(16);
-  }
-}
-
-.doc-verification-form__loader {
-  margin: toRem(24) 0;
-
-  @include respond-to(850px) {
-    margin: toRem(16) 0;
   }
 }
 
@@ -451,20 +485,30 @@ onMounted(async () => {
 .doc-verification-form__doc-info {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: toRem(8);
-
-  @include respond-to(850px) {
-    margin-bottom: toRem(4);
-  }
 }
 
-.doc-verification-form__doc-hash-title {
+.doc-verification-form__doc-hash-label {
   @include text-1;
 
   @include respond-to(850px) {
     margin-bottom: toRem(8);
 
     @include text-5;
+  }
+}
+
+.doc-verification-form__doc-hash {
+  width: 100%;
+  margin-top: toRem(8);
+
+  @include respond-to(850px) {
+    margin-top: toRem(4);
+  }
+}
+
+.doc-verification-form__list-title {
+  @include respond-to(850px) {
+    @include text-1;
   }
 }
 
@@ -482,98 +526,50 @@ onMounted(async () => {
 }
 
 .doc-verification-form__search-input {
-  margin: toRem(8) 0 toRem(24);
-  stroke: var(--col-brittle);
-
-  &:hover {
-    stroke: var(--col-flexible);
-  }
-
-  &:focus-within {
-    stroke: var(--col-primary);
-  }
-
-  @include respond-to(850px) {
-    margin: toRem(8) 0 toRem(12);
-  }
+  margin-top: toRem(8);
+  stroke: var(--col-fine);
+  stroke-width: toRem(1.5);
 }
 
 .doc-verification-form__timestamp-info {
   display: flex;
   justify-content: end;
   gap: toRem(11);
-  margin: toRem(8) auto toRem(24);
-  font-size: toRem(14);
-  line-height: 1.2;
+  margin-top: toRem(8);
 
   &--top {
     margin: 0 0 0 auto;
     align-self: flex-end;
   }
 
+  @include text-4;
+
   @include respond-to(850px) {
     gap: toRem(4);
 
-    &:not(.doc-verification-form__timestamp-info--top) {
-      margin-bottom: toRem(12);
-    }
+    @include text-6;
   }
 }
 
 .doc-verification-form__timestamp-title {
   color: var(--col-fine);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__timestamp {
   color: var(--col-primary);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
-}
-
-.doc-verification-form__pagination-control {
-  margin: toRem(24) 0;
-
-  @include respond-to(850px) {
-    margin: toRem(12) 0;
-  }
-}
-
-.doc-verification-form__list-title {
-  margin-bottom: toRem(8);
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-verification-form__note {
-  margin: toRem(24) 0;
-
   &--success {
     @include note-success;
 
     @include respond-to(850px) {
-      margin: toRem(12) 0;
       white-space: pre-line;
     }
   }
 
   &--error {
     @include note-error;
-
-    @include respond-to(850px) {
-      margin: toRem(16) 0;
-    }
   }
 
   @include note;
@@ -591,23 +587,23 @@ onMounted(async () => {
   }
 }
 
-.fade-leave-from {
-  display: none;
+.fade-leave-active {
+  animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
 .fade-enter-active {
-  animation: fade ease-out var(--transition-duration-fast);
+  animation: fade-in ease-out var(--transition-duration);
 }
 
-.fade-list-leave-active {
-  // TODO: to discuss
+.fade-group-leave-active {
+  display: none;
 }
 
-.fade-list-enter-active {
-  animation: fade ease var(--transition-duration-fast);
+.fade-group-enter-active {
+  animation: fade-in ease-out var(--transition-duration-slow);
 }
 
-@keyframes fade {
+@keyframes fade-in {
   0% {
     opacity: 0;
   }

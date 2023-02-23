@@ -36,7 +36,7 @@ $media-breakpoints: (
 
 @mixin field-label {
   display: inline-block;
-  margin-bottom: toRem(8);
+  padding-bottom: toRem(8);
 
   @include text-2;
 

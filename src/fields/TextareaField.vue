@@ -18,7 +18,7 @@
           'textarea-field__textarea--with-left-icon': leftIconName,
           'textarea-field__textarea--with-right-icon': rightIconName,
         }"
-        :id="`textarea-field--${uid}`"
+        :id="idProp ? idProp : `textarea-field--${uid}`"
         :placeholder="placeholder"
         :value="modelValue"
         :tabindex="isDisabled || isReadonly ? -1 : $attrs.tabindex"
@@ -81,6 +81,7 @@ const props = withDefaults(
   defineProps<{
     modelValue: string
     label?: string
+    idProp?: string
     placeholder?: string
     isRemovable?: boolean
     isCopied?: boolean
@@ -90,6 +91,7 @@ const props = withDefaults(
   }>(),
   {
     label: '',
+    idProp: '',
     placeholder: '',
     isRemovable: false,
     isCopied: false,

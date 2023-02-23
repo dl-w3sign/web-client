@@ -67,7 +67,7 @@
     "success-msg-public": "The document was found",
     "success-msg-not-public": "The document was found\n(with indicated wallet addresses)",
     "search-placeholder": "Search by address",
-    "document-hash-title": "Document Hash",
+    "document-hash-label": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
     "not-signed-yet-message":  "The document has not been signed yet",
