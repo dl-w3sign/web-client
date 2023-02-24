@@ -43,7 +43,7 @@
       </div>
       <div v-else class="doc-creation-form__container">
         <file-field v-model="form.file" />
-        <transition name="fade" mode="out-in">
+        <transition name="fade-in">
           <div v-show="form.file" class="doc-creation-form__container">
             <div class="doc-creation-form__checkboxes">
               <checkbox-field
@@ -63,27 +63,31 @@
                 {{ formatFee(fee as BigNumberish) }}
               </span>
             </p>
-          </div>
-        </transition>
-        <transition name="fade" mode="out-in">
-          <div
-            v-show="form.file && form.isIndicatingAddresses"
-            class="doc-creation-form__container"
-          >
-            <input-field
-              :label="$t('doc-creation-form.wallets-addresses-title')"
-              :placeholder="$t('doc-creation-form.wallet-address-placeholder')"
-              :model-value="walletAddress"
-              @update:model-value="addIndicatedAddress"
-            />
-            <textarea-field
-              v-for="address in form.indicatedAddresses"
-              :key="address"
-              :model-value="address"
-              @remove="removeIndicatedAddress(address)"
-              is-removable
-              readonly
-            />
+            <transition name="fade" mode="out-in">
+              <div
+                v-show="form.isIndicatingAddresses"
+                class="doc-creation-form__container"
+              >
+                <input-field
+                  :label="$t('doc-creation-form.wallets-addresses-title')"
+                  :placeholder="
+                    $t('doc-creation-form.wallet-address-placeholder')
+                  "
+                  :model-value="walletAddress"
+                  @update:model-value="addIndicatedAddress"
+                />
+                <transition-group name="fade">
+                  <textarea-field
+                    v-for="address in form.indicatedAddresses"
+                    :key="address"
+                    :model-value="address"
+                    @remove="removeIndicatedAddress(address)"
+                    is-removable
+                    readonly
+                  />
+                </transition-group>
+              </div>
+            </transition>
           </div>
         </transition>
         <div class="doc-creation-form__buttons">
@@ -398,10 +402,15 @@ onMounted(async () => {
   }
 }
 
+.fade-in-leave-active {
+  display: none;
+}
+
 .fade-leave-active {
   animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
+.fade-in-enter-active,
 .fade-enter-active {
   animation: fade-in ease-out var(--transition-duration);
 }
