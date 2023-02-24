@@ -55,6 +55,10 @@ withDefaults(
   }
 
   @include note;
+
+  @include respond-to(601px) {
+    border-radius: 0;
+  }
 }
 
 .Vue-Toastification__close-button {
