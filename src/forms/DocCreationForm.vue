@@ -267,7 +267,7 @@ const submit = async () => {
       form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
       ZKPPointsStruct,
       {
-        value: 0,
+        value: fee.value as BigNumberish,
       },
     )
 
