@@ -63,7 +63,7 @@
                 {{ formatFee(fee as BigNumberish) }}
               </span>
             </p>
-            <transition name="fade" mode="out-in">
+            <transition name="fade-in">
               <div
                 v-show="form.isIndicatingAddresses"
                 class="doc-creation-form__container"
