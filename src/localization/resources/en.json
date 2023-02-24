@@ -53,7 +53,8 @@
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "Your document was successfully created",
     "error-default": "Something went wrong",
-    "error-hash-collision": "This document has already been uploaded and sent for signatures before"
+    "error-hash-collision": "This document has already been uploaded and sent for signatures before",
+    "error-failed-to-fetch": "Network error, it may have happened due to an ad blocker, try disabling it and try again"
   },
   "doc-verification-form": {
     "cancel-button-text": "Cancel",

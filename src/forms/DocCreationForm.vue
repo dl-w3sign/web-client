@@ -141,7 +141,6 @@ import {
 } from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
 import {
-  EthProviderRpcError,
   Keccak256Hash,
   PoseidonHash,
   BytesLike,
@@ -223,10 +222,12 @@ const removeIndicatedAddress = (address: string) => {
   )
 }
 
-const getErrorMessage = (error: EthProviderRpcError): string => {
+const getErrorMessage = (err: unknown): string => {
   switch (true) {
-    case error.data?.message === RPC_ERROR_MESSAGES.hashCollision:
+    case err?.error?.data?.message === RPC_ERROR_MESSAGES.hashCollision:
       return $t('doc-creation-form.error-hash-collision')
+    case err?.constructor === TypeError:
+      return $t('doc-creation-form.error-failed-to-fetch')
     default:
       return $t('doc-creation-form.error-default')
   }
@@ -273,9 +274,7 @@ const submit = async () => {
 
     showConfirmation()
   } catch (err) {
-    if (err?.error)
-      errorMessage.value = getErrorMessage(err.error as EthProviderRpcError)
-    else errorMessage.value = $t('doc-creation-form.error-default')
+    errorMessage.value = getErrorMessage(err)
 
     if (err?.code !== errors.ACTION_REJECTED) showFailure()
     ErrorHandler.processWithoutFeedback(err)
