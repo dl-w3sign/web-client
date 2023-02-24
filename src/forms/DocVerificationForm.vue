@@ -57,7 +57,7 @@
           />
           <p>
             {{
-              stampInfo.isPublic
+              stampInfo?.isPublic
                 ? $t('doc-verification-form.success-msg-public')
                 : $t('doc-verification-form.success-msg-not-public')
             }}
@@ -358,9 +358,16 @@ const submitVerification = async () => {
 
     showConfirmation()
   } catch (err) {
-    stampInfo.value?.docTimestamp === 0
-      ? (errorMessage.value = $t('doc-verification-form.error-doc-not-found'))
-      : (errorMessage.value = $t('doc-verification-form.error-default'))
+    switch (true) {
+      case stampInfo.value?.docTimestamp === 0:
+        errorMessage.value = $t('doc-verification-form.error-doc-not-found')
+        break
+      case err?.constructor === TypeError:
+        errorMessage.value = $t('doc-verification-form.error-failed-to-fetch')
+        break
+      default:
+        errorMessage.value = $t('doc-verification-form.error-default')
+    }
 
     ErrorHandler.processWithoutFeedback(err)
     showFailure()
