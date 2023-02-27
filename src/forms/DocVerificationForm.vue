@@ -321,6 +321,17 @@ const updateInfoOfCurrentSigner = async () => {
       )
 }
 
+const getErrorMessage = (err: unknown) => {
+  switch (true) {
+    case stampInfo.value?.docTimestamp === 0:
+      return $t('doc-verification-form.error-doc-not-found')
+    case err?.constructor === TypeError:
+      return $t('doc-verification-form.error-failed-to-fetch')
+    default:
+      return $t('doc-verification-form.error-default')
+  }
+}
+
 const submitVerification = async () => {
   try {
     await web3Store.checkConnection()
@@ -358,17 +369,7 @@ const submitVerification = async () => {
 
     showConfirmation()
   } catch (err) {
-    switch (true) {
-      case stampInfo.value?.docTimestamp === 0:
-        errorMessage.value = $t('doc-verification-form.error-doc-not-found')
-        break
-      case err?.constructor === TypeError:
-        errorMessage.value = $t('doc-verification-form.error-failed-to-fetch')
-        break
-      default:
-        errorMessage.value = $t('doc-verification-form.error-default')
-    }
-
+    errorMessage.value = getErrorMessage(err)
     ErrorHandler.processWithoutFeedback(err)
     showFailure()
   }

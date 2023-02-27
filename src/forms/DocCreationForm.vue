@@ -224,7 +224,7 @@ const removeIndicatedAddress = (address: string) => {
 
 const getErrorMessage = (err: unknown): string => {
   switch (true) {
-    case err?.error?.data?.message === RPC_ERROR_MESSAGES.hashCollision:
+    case err?.reason === RPC_ERROR_MESSAGES.hashCollision:
       return $t('doc-creation-form.error-hash-collision')
     case err?.constructor === TypeError:
       return $t('doc-creation-form.error-failed-to-fetch')

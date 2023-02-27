@@ -81,7 +81,7 @@ const checkType = (files: FileList | File[]) => {
 }
 
 const checkSize = (files: FileList | File[]) => {
-  if (files[0].size > 1 * 1000 * 1000) throw new errors.FileSizeError()
+  if (files[0].size > 2 * 1000 * 1000) throw new errors.FileSizeError()
 }
 
 const { $t, $config } = useContext()

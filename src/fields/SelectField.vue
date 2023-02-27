@@ -182,6 +182,14 @@ watch(
   &--outline-wise {
     background: var(--col-weak);
     border: toRem(1) solid var(--col-wise);
+
+    &:not([disabled]):hover {
+      background: var(--col-flabby);
+    }
+
+    &:not([disabled]):active {
+      background: var(--col-elusive);
+    }
   }
 
   &--with-opened-drop-menu {
@@ -190,6 +198,22 @@ watch(
 
       &:not([disabled]):hover {
         border-color: var(--col-primary);
+      }
+
+      &:not([disabled]):active {
+        border-color: var(--col-initial);
+      }
+    }
+
+    &.select-field__select-head--outline-wise {
+      background: var(--col-vague);
+
+      &:not([disabled]):hover {
+        background: var(--col-vague);
+      }
+
+      &:not([disabled]):active {
+        background: var(--col-elusive);
       }
     }
   }
