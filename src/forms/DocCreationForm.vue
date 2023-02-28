@@ -20,7 +20,7 @@
         <textarea-field
           class="doc-creation-form__doc-hash"
           :model-value="fileHash || ''"
-          is-copied
+          is-copyable
           readonly
         />
         <app-button :preset="BUTTON_PRESETS.primary" @click="reset">

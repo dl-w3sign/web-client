@@ -36,7 +36,7 @@
             </p>
           </div>
         </div>
-        <textarea-field :model-value="fileHash || ''" is-copied readonly />
+        <textarea-field :model-value="fileHash || ''" is-copyable readonly />
         <div
           :class="[
             'doc-verification-form__note',

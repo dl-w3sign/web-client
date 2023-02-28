@@ -13,7 +13,7 @@
         v-bind="$attrs"
         class="textarea-field__textarea"
         :class="{
-          'textarea-field__textarea--copied': isCopied,
+          'textarea-field__textarea--copied': isCopyable,
           'textarea-field__textarea--with-left-icon': leftIconName,
           'textarea-field__textarea--with-right-icon': rightIconName,
         }"
@@ -25,7 +25,7 @@
         @input="updateModelValue"
       />
       <button
-        v-if="isCopied"
+        v-if="isCopyable"
         class="textarea-field__copy-button"
         @click.prevent="copy()"
       >
@@ -71,14 +71,14 @@ const props = withDefaults(
     modelValue: string
     label?: string
     placeholder?: string
-    isCopied?: boolean
+    isCopyable?: boolean
     leftIconName?: ICON_NAMES
     rightIconName?: ICON_NAMES
   }>(),
   {
     label: '',
     placeholder: '',
-    isCopied: false,
+    isCopyable: false,
     leftIconName: undefined,
     rightIconName: undefined,
   },
