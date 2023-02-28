@@ -115,7 +115,7 @@ const connectOrReferToInstallMetamask = async () => {
     width: toRem(20);
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(20);
     width: toRem(20);
   }

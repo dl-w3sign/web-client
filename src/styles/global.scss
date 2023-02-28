@@ -27,7 +27,7 @@ body, #app {
     background: var(--col-rarest);
   }
 
-  @include respond-to(380px) {
+  @include respond-to(375px) {
     overflow: auto;
   }
 }
@@ -51,7 +51,7 @@ textarea {
     padding: toRem(16) toRem(24);
     cursor: text;
 
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       padding: toRem(12) toRem(16);
 
       @include text-6;
@@ -63,7 +63,7 @@ textarea {
     padding: toRem(13) toRem(15);
     border: toRem(1) solid var(--col-brittle);
 
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       padding: toRem(9) toRem(11);
 
       @include text-4;
@@ -175,12 +175,12 @@ a {
   height: toRem(8);
   width: toRem(8);
 
-  @include respond-to(956px) {
+  @include respond-to('xmedium') {
     height: toRem(6);
     width: toRem(6);
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(4);
     width: toRem(4);
   }

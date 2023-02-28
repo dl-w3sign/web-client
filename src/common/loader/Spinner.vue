@@ -25,7 +25,7 @@ import LoaderJSON from '@/../loader.json'
   width: toRem(121);
   height: toRem(121);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     width: toRem(81);
     height: toRem(81);
   }

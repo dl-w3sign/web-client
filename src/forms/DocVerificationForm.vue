@@ -266,7 +266,7 @@ const reset = () => {
 <style lang="scss" scoped>
 .doc-verification-form {
   &--confirmation-hidden {
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       margin-top: toRem(16);
     }
   }
@@ -277,7 +277,7 @@ const reset = () => {
   gap: toRem(16);
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     gap: toRem(8);
     margin-top: toRem(16);
   }
@@ -286,7 +286,7 @@ const reset = () => {
 .doc-verification-form__loader {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     margin: toRem(16) 0;
   }
 }
@@ -296,7 +296,7 @@ const reset = () => {
 
   @include h5;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-1;
   }
 }
@@ -306,7 +306,7 @@ const reset = () => {
   flex-wrap: wrap;
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     margin-bottom: toRem(4);
   }
 }
@@ -314,7 +314,7 @@ const reset = () => {
 .doc-verification-form__doc-hash-title {
   @include text-1;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     margin-bottom: toRem(8);
 
     @include text-5;
@@ -338,7 +338,7 @@ const reset = () => {
     align-self: flex-end;
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     gap: toRem(4);
 
     &:not(.doc-verification-form__timestamp-info--top) {
@@ -352,7 +352,7 @@ const reset = () => {
 
   @include text-4;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-6;
   }
 }
@@ -362,7 +362,7 @@ const reset = () => {
 
   @include text-4;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-6;
   }
 }
@@ -370,7 +370,7 @@ const reset = () => {
 .doc-verification-form__list-title {
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-1;
   }
 }
@@ -381,7 +381,7 @@ const reset = () => {
   &--success {
     @include note-success;
 
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       margin: toRem(12) 0;
     }
   }
@@ -389,7 +389,7 @@ const reset = () => {
   &--error {
     @include note-error;
 
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       margin: toRem(16) 0;
     }
   }
@@ -403,7 +403,7 @@ const reset = () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(20);
     width: toRem(20);
   }

@@ -34,7 +34,7 @@ import { BUTTON_PRESETS } from '@/enums'
   width: 100%;
   max-width: toRem(1440);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     padding: 0 4.5%;
   }
 }
@@ -50,7 +50,7 @@ import { BUTTON_PRESETS } from '@/enums'
 
   @include text-5;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     width: toRem(216);
   }
 }

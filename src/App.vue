@@ -49,13 +49,13 @@ init()
 
 <style lang="scss" scoped>
 .app__wrapper {
-  min-width: toRem(380);
+  min-width: toRem(375);
 }
 
 .app__navbar {
   height: toRem(80);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(72);
   }
 }
@@ -64,11 +64,11 @@ init()
   overflow-y: scroll;
   height: calc(100vh - toRem(80));
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: calc(100vh - toRem(72));
   }
 
-  @include respond-to(380px) {
+  @include respond-to(375px) {
     height: max-content;
   }
 }

@@ -68,24 +68,24 @@ const onWrapperClick = (event: PointerEvent) => {
     &:hover {
       background: var(--col-brittle);
 
-      @include respond-to(380px) {
+      @include respond-to(375px) {
         background: var(--col-flexible);
       }
     }
 
-    @include respond-to(380px) {
+    @include respond-to(375px) {
       background: var(--col-brittle);
     }
   }
 
   &::-webkit-scrollbar-track,
   &::-webkit-scrollbar-corner {
-    @include respond-to(380px) {
+    @include respond-to(375px) {
       background: var(--col-rich);
     }
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     padding: 2%;
   }
 }
@@ -98,7 +98,7 @@ const onWrapperClick = (event: PointerEvent) => {
   width: toRem(608);
   flex-shrink: 0;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     padding: toRem(16);
     width: toRem(343);
   }

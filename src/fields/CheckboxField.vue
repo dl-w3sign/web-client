@@ -88,7 +88,7 @@ const updateModelValue = (event: InputEvent) => {
   height: toRem(18);
   margin: toRem(3);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     width: toRem(15);
     height: toRem(15);
     margin: toRem(2.5);
@@ -100,7 +100,7 @@ const updateModelValue = (event: InputEvent) => {
 
   @include text-2;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-4;
   }
 }

@@ -53,7 +53,7 @@ $media-breakpoints: (
 
   @include text-2;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     gap: toRem(8);
     padding: toRem(12);
 

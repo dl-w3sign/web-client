@@ -123,7 +123,7 @@ const { textarea } = useTextareaAutosize({
   color: var(--col-intense);
   flex-shrink: 0;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(20);
     width: toRem(20);
   }
@@ -157,7 +157,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(24) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         padding-right: toRem(40);
 
         & ~ .textarea-field__icon--right {
@@ -174,7 +174,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(16) auto toRem(10);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         padding-right: toRem(41);
 
         & ~ .textarea-field__icon--right {
@@ -193,7 +193,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(16) auto toRem(24);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         padding-left: toRem(40);
 
         & ~ .textarea-field__icon--left {
@@ -210,7 +210,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(10) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         padding-left: toRem(41);
 
         & ~ .textarea-field__icon--left {
@@ -229,7 +229,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(24) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         width: toRem(40);
 
         .textarea-field__icon {
@@ -248,7 +248,7 @@ const { textarea } = useTextareaAutosize({
         margin: auto toRem(16) auto toRem(10);
       }
 
-      @include respond-to(850px) {
+      @include respond-to('tablet') {
         width: toRem(42);
       }
     }

@@ -94,7 +94,7 @@ withDefaults(
 
   @include text-1;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(48);
 
     @include text-5;

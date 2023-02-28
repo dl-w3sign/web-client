@@ -166,7 +166,7 @@ const cancelFileByName = (fileName: string) => {
   flex-direction: column;
   gap: toRem(12);
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     gap: toRem(8);
   }
 }
@@ -185,7 +185,7 @@ const cancelFileByName = (fileName: string) => {
     background: var(--col-mild);
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     padding: 0 toRem(16);
     height: toRem(76);
   }
@@ -204,7 +204,7 @@ const cancelFileByName = (fileName: string) => {
 .file-field__file-name {
   @include text-ellipsis;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-5;
   }
 }
@@ -214,7 +214,7 @@ const cancelFileByName = (fileName: string) => {
 
   @include text-4;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     margin-top: toRem(4);
   }
 }
@@ -236,7 +236,7 @@ const cancelFileByName = (fileName: string) => {
     fill: var(--col-spot);
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(20);
     width: toRem(20);
   }
@@ -248,7 +248,7 @@ const cancelFileByName = (fileName: string) => {
   &--offset {
     margin-top: toRem(12);
 
-    @include respond-to(850px) {
+    @include respond-to('tablet') {
       margin-top: toRem(8);
     }
   }
@@ -270,7 +270,7 @@ const cancelFileByName = (fileName: string) => {
     background-color: var(--col-grand);
   }
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     height: toRem(184);
     width: toRem(311);
     background-image: url('/branding/border-file-field-drop-zone-small.png');
@@ -312,7 +312,7 @@ const cancelFileByName = (fileName: string) => {
 
   @include h4;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     margin-top: toRem(8);
 
     @include h5;
@@ -362,7 +362,7 @@ const cancelFileByName = (fileName: string) => {
 
   @include text-2;
 
-  @include respond-to(850px) {
+  @include respond-to('tablet') {
     @include text-4;
   }
 }
