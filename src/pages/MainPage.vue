@@ -314,8 +314,7 @@ const isDocVerificationModalShown = ref(false)
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
   max-width: max-content;
-  margin: auto;
-  margin-bottom: toRem(44);
+  margin: auto auto toRem(44);
 
   &--lifted {
     transition-delay: 3.7s;

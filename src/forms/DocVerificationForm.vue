@@ -94,7 +94,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
         >
@@ -109,7 +109,7 @@
         </app-button>
       </div>
       <div v-else>
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
           <app-button
             :preset="BUTTON_PRESETS.outlineBrittle"
@@ -156,16 +156,18 @@ const emit = defineEmits<{
 }>()
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
 })
 
 const { $t, $config } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -205,7 +207,7 @@ const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
+    fileHash.value = await getKeccak256FileHash(form.files?.[0] as File)
 
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
@@ -254,7 +256,7 @@ const signOrExit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  form.file = null
+  form.files = null
   fileHash.value = null
   isSigned.value = false
   resetState()

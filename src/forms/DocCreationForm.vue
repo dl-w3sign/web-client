@@ -28,7 +28,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
             class="doc-creation-form__note-icon"
@@ -43,9 +43,9 @@
         </app-button>
       </div>
       <div v-else>
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <checkbox-field
-          v-show="form.file"
+          v-show="form.files"
           class="doc-creation-form__checkbox"
           v-model="form.isSign"
           :label="$t('doc-creation-form.checkbox-is-sign')"
@@ -116,16 +116,18 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
   isSign: true,
 })
 
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -143,7 +145,7 @@ const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
+    fileHash.value = await getKeccak256FileHash(form.files?.[0] as File)
 
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
@@ -169,7 +171,7 @@ const reset = () => {
   errorMessage.value = ''
   fileHash.value = null
 
-  form.file = null
+  form.files = null
   form.isSign = true
 
   isConfirmationShown.value = false

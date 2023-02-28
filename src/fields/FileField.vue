@@ -1,51 +1,71 @@
 <template>
   <div class="file-field">
-    <div v-if="modelValue" class="file-field__file-info">
-      <icon class="file-field__file-icon" :name="getFileIconName(modelValue)" />
-      <div class="file-field__file-meta">
-        <h4 class="file-field__file-name">
-          {{ modelValue.name }}
-        </h4>
-        <p class="file-field__file-size">
-          {{ formatFileSize(modelValue.size) }}
-        </p>
-      </div>
-      <button
-        v-if="!isReadonly"
-        class="file-field__cancel-button"
-        @click="cancelFile"
+    <div v-if="modelValue" class="file-field__container">
+      <div
+        v-for="file in props.modelValue"
+        :key="file.name"
+        class="file-field__file-info"
       >
-        <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
-      </button>
+        <icon class="file-field__file-icon" :name="getFileIconName(file)" />
+        <div class="file-field__file-meta">
+          <h4 class="file-field__file-name">
+            {{ file.name }}
+          </h4>
+          <p class="file-field__file-size">
+            {{ formatFileSize(file.size) }}
+          </p>
+        </div>
+        <button
+          v-if="!isReadonly"
+          class="file-field__cancel-button"
+          @click="cancelFileByName(file.name)"
+        >
+          <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
+        </button>
+      </div>
     </div>
     <div
-      v-else-if="!isReadonly"
-      class="file-field__drop-zone"
-      :class="{ 'file-field__drop-zone--active': isOverDropZone }"
+      class="file-field__drop-zone-wrp"
+      :class="{
+        'file-field__drop-zone-wrp--offset':
+          !isReadonly && props.modelValue && isMultiple,
+      }"
     >
-      <label
-        ref="dropZone"
-        class="file-field__drop-zone-label"
-        @click="openFileDialog"
+      <input
+        :id="`file-field--${uid}`"
+        :accept="$config.FILE_MIME_TYPES.join(', ')"
+        ref="inputElement"
+        type="file"
+        class="file-field__input"
+        v-bind="$attrs"
+        @change="onChange"
       />
-      <div class="file-field__drop-zone-container">
-        <icon
-          class="file-field__drop-zone-icon"
-          :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
-          :name="$icons.cloudUpload"
+      <div
+        v-if="!isReadonly && (isMultiple ? true : !modelValue)"
+        class="file-field__drop-zone"
+        :class="{ 'file-field__drop-zone--active': isOverDropZone }"
+      >
+        <label
+          :for="`file-field--${uid}`"
+          ref="dropZoneLabelElement"
+          class="file-field__drop-zone-label"
         />
-        <h6 class="file-field__title" v-show="!isOverDropZone">
-          {{ $t('file-field.title') }}
-          <button
-            class="file-field__open-dialog-button"
-            @click.prevent="openFileDialog"
-          >
-            {{ $t('file-field.open-dialog-button-text') }}
-          </button>
-        </h6>
-        <p class="file-field__require" v-show="!isOverDropZone">
-          {{ $t('file-field.require') }}
-        </p>
+        <div class="file-field__drop-zone-container">
+          <icon
+            class="file-field__drop-zone-icon"
+            :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
+            :name="$icons.cloudUpload"
+          />
+          <h6 class="file-field__title" v-show="!isOverDropZone">
+            {{ $t('file-field.title') }}
+            <label :for="`file-field--${uid}`" class="file-field__browse-label">
+              {{ $t('file-field.open-dialog-button-text') }}
+            </label>
+          </h6>
+          <p class="file-field__require" v-show="!isOverDropZone">
+            {{ $t('file-field.require') }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -54,110 +74,103 @@
 <script lang="ts" setup>
 import { Icon } from '@/common'
 import { useContext } from '@/composables'
+import { FILE_TYPES } from '@/enums'
 import { errors } from '@/errors'
 import { ErrorHandler, getFileIconName, formatFileSize } from '@/helpers'
-import { ref, watch } from 'vue'
-import { useDropZone, useFileDialog } from '@vueuse/core'
+import { ref, computed, getCurrentInstance, useAttrs } from 'vue'
+import { unionBy } from 'lodash-es'
+import { useDropZone } from '@vueuse/core'
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: File | null): void
+  (e: 'update:modelValue', value: File[] | null): void
 }>()
 
-const props = withDefaults(
-  defineProps<{
-    modelValue: File | null
-    isReadonly?: boolean
-  }>(),
-  {
-    isReadonly: false,
-  },
+const props = defineProps<{
+  modelValue: File[] | null
+}>()
+
+const attrs = useAttrs()
+const isMultiple = computed(() =>
+  ['', 'multiple', true].includes(attrs.multiple as string | boolean),
+)
+const isReadonly = computed(() =>
+  ['', 'readonly', true].includes(attrs.readonly as string | boolean),
 )
 
-const checkType = (files: FileList | File[]) => {
-  const fileMIMEType = files[0].type
-  if (!$config.FILE_MIME_TYPES.find(type => type === fileMIMEType)) {
-    throw new errors.FileTypeError()
-  }
-}
-
-const checkSize = (files: FileList | File[]) => {
-  if (files[0].size > 1 * 1000 * 1000) throw new errors.FileSizeError()
-}
-
+const uid = getCurrentInstance()?.uid
+const inputElement = ref<HTMLInputElement>()
+const dropZoneLabelElement = ref<HTMLLabelElement>()
 const { $t, $config } = useContext()
 
-const dropZone = ref<HTMLLabelElement>()
-const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
+const emitUpdateModelValue = (files: File[] | null) => {
   if (files) {
     try {
-      checkType(files)
-      checkSize(files)
+      files.forEach(file => {
+        if (file.size > 2 * 1000 * 1000) throw new errors.FileSizeError()
+        if (!$config.FILE_MIME_TYPES.includes(file.type as FILE_TYPES))
+          throw new errors.FileTypeError()
+      })
     } catch (err) {
       switch (err?.constructor) {
-        case errors.FileTypeError:
-          ErrorHandler.process(err, $t('file-field.error-uncorrect-file-type'))
-          break
         case errors.FileSizeError:
           ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
-          break
+          return
+        case errors.FileTypeError:
+          ErrorHandler.process(
+            err,
+            $t('file-field.error-uncorrected-file-type'),
+          )
+          return
       }
-
-      return
     }
+
+    if (props.modelValue)
+      emit(
+        'update:modelValue',
+        unionBy(props.modelValue, files, file => file.name),
+      )
+    else emit('update:modelValue', files)
   }
-  props.modelValue
-    ? emit('update:modelValue', files?.length ? files[0] : props.modelValue)
-    : emit('update:modelValue', files?.length ? files[0] : null)
-})
-
-const fileDialog = useFileDialog({
-  multiple: false,
-  accept: $config.FILE_MIME_TYPES.join(', '),
-})
-
-const openFileDialog = () => {
-  fileDialog.reset()
-  fileDialog.open()
 }
 
-const cancelFile = () => {
-  emit('update:modelValue', null)
+const onChange = (event: Event) => {
+  const eventTarget = event.target as HTMLInputElement
+  const files = eventTarget.files?.length
+    ? ([...eventTarget.files] as File[])
+    : null
+
+  emitUpdateModelValue(files)
 }
 
-const emitFileFromFileDialog = (fileList: FileList | null) => {
-  emit('update:modelValue', fileList?.length ? fileList[0] : null)
-}
-
-watch(
-  () => fileDialog.files,
-  newValue => {
-    if (newValue.value) {
-      try {
-        checkType(newValue.value)
-        checkSize(newValue.value)
-      } catch (err) {
-        switch (err?.constructor) {
-          case errors.FileTypeError:
-            ErrorHandler.process(
-              err,
-              $t('file-field.error-uncorrect-file-type'),
-            )
-            break
-          case errors.FileSizeError:
-            ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
-            break
-        }
-
-        return
-      }
-    }
-    emitFileFromFileDialog(newValue.value)
-  },
-  { deep: true },
+const { isOverDropZone } = useDropZone(
+  dropZoneLabelElement,
+  emitUpdateModelValue,
 )
+
+const cancelFileByName = (fileName: string) => {
+  if (props.modelValue?.length && props.modelValue.length > 1) {
+    emit(
+      'update:modelValue',
+      props.modelValue.filter(file => file.name !== fileName),
+    )
+  } else {
+    if (inputElement.value) inputElement.value.value = ''
+    emit('update:modelValue', null)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.file-field__container {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(12);
+
+  @include respond-to(850px) {
+    gap: toRem(8);
+  }
+}
+
 .file-field__file-info {
   background: var(--col-great);
   border-radius: var(--border-radius-medium);
@@ -229,6 +242,18 @@ watch(
   }
 }
 
+.file-field__drop-zone-wrp {
+  position: relative;
+
+  &--offset {
+    margin-top: toRem(12);
+
+    @include respond-to(850px) {
+      margin-top: toRem(8);
+    }
+  }
+}
+
 .file-field__drop-zone {
   position: relative;
   background-image: url('/branding/border-file-field-drop-zone.png');
@@ -294,12 +319,15 @@ watch(
   }
 }
 
-.file-field__open-dialog-button {
+.file-field__browse-label {
+  display: inline-block;
   position: relative;
   z-index: var(--z-file-field-open-dialog-button);
+  font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
   color: var(--col-primary);
+  cursor: pointer;
 
   &:after {
     content: '';
@@ -337,5 +365,18 @@ watch(
   @include respond-to(850px) {
     @include text-4;
   }
+}
+
+.file-field__input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  display: block;
+  height: 0;
+  width: 0;
+  padding: 0;
 }
 </style>
