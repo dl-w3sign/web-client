@@ -147,9 +147,9 @@ import { FileField, TextareaField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
 import { Keccak256Hash } from '@/types'
 import { required, maxValue } from '@/validators'
-import { Time } from '@/utils'
-import { ref, reactive, computed } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, computed } from 'vue'
+import { Time } from '@distributedlab/utils'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
