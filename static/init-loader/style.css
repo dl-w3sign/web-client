@@ -9,7 +9,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: scroll;
 }
 
 .app__init-logo {
