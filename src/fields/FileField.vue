@@ -363,8 +363,9 @@ const cancelFileByName = (fileName: string) => {
   left: 0;
   margin: auto;
   display: block;
-  height: 0;
-  width: 0;
+  height: toRem(0.1);
+  width: toRem(0.1);
   padding: 0;
+  z-index: var(--z-hidden-input);
 }
 </style>

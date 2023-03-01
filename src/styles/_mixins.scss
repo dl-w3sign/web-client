@@ -35,9 +35,10 @@ $media-breakpoints: (
 }
 
 @mixin field-label {
-  font-size: toRem(16);
-  line-height: 1.5;
-  margin-bottom: toRem(8);
+  display: inline-block;
+  padding-bottom: toRem(8);
+
+  @include body-large-inter;
 }
 
 @mixin note {

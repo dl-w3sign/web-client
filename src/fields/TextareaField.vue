@@ -107,9 +107,6 @@ const { textarea } = useTextareaAutosize({
 
 <style lang="scss" scoped>
 .textarea-field__label {
-  display: block;
-  margin-bottom: toRem(8);
-
   @include field-label;
 }
 

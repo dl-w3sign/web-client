@@ -1,20 +1,22 @@
 <template>
-  <div
-    class="checkbox-field"
-    :class="{ 'checkbox-field--checked': modelValue }"
-  >
-    <label class="checkbox-field__label">
-      <input
-        v-bind="$attrs"
-        class="checkbox-field__input"
-        type="checkbox"
-        :checked="modelValue"
-        @change="updateModelValue"
-      />
-      <icon
-        class="checkbox-field__icon"
-        :name="modelValue ? $icons.checkboxChecked : $icons.checkbox"
-      />
+  <div class="checkbox-field">
+    <label
+      class="checkbox-field__label"
+      :class="{ 'checkbox-field__label--checked': modelValue }"
+    >
+      <span class="checkbox-field__icon-wrp">
+        <icon
+          class="checkbox-field__icon"
+          :name="modelValue ? $icons.checkboxChecked : $icons.checkbox"
+        />
+        <input
+          class="checkbox-field__input"
+          type="checkbox"
+          :checked="modelValue"
+          v-bind="$attrs"
+          @change="updateModelValue"
+        />
+      </span>
       <span v-if="label" class="checkbox-field__label-message">
         {{ label }}
       </span>
@@ -46,7 +48,11 @@ const updateModelValue = (event: InputEvent) => {
 </script>
 
 <style lang="scss" scoped>
-.checkbox-field {
+.checkbox-field__label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
   transition: var(--transition-duration);
   fill: var(--col-brittle);
   width: max-content;
@@ -56,7 +62,7 @@ const updateModelValue = (event: InputEvent) => {
   }
 
   &:not([disabled]):active {
-    fill: var(--col-primary);
+    fill: var(--col-initial);
   }
 
   &--checked {
@@ -72,15 +78,18 @@ const updateModelValue = (event: InputEvent) => {
   }
 }
 
-.checkbox-field__label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
+.checkbox-field__icon-wrp {
+  position: relative;
 }
 
 .checkbox-field__input {
-  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  z-index: var(--z-hidden-input);
 }
 
 .checkbox-field__icon {
