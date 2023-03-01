@@ -62,10 +62,7 @@
           "
           @click="isDocCreationModalShown = true"
         />
-        <doc-creation-modal
-          :is-shown="isDocCreationModalShown"
-          @update:is-shown="isDocCreationModalShown = false"
-        />
+        <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
       </div>
       <div class="main-page__card">
         <h2 class="main-page__card-title">
@@ -87,8 +84,7 @@
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
-          :is-shown="isDocVerificationModalShown"
-          @update:is-shown="isDocVerificationModalShown = false"
+          v-model:is-shown="isDocVerificationModalShown"
         />
       </div>
     </div>
