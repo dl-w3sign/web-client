@@ -11,7 +11,7 @@
     "welcome-beginning": "Welcome to",
     "welcome-continuing": "Documents Timestamping Service",
     "description": "Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.",
-    "connect-ethereum-message": "Connect to MetaMask to start work",
+    "connect-ethereum-message": "Connect to MetaMask\nto start work",
     "connected-ethereum-message": "You connected with a MetaMask!",
     "doc-creation-card-title": "CREATE DOCUMENT",
     "doc-creation-card-button-text": "Create document",

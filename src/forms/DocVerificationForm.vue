@@ -9,9 +9,9 @@
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-verification-form__loader" />
-        <p class="doc-verification-form__please-wait-msg">
+        <h5 class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-verification-form__doc-info">
@@ -293,12 +293,6 @@ const reset = () => {
 
 .doc-verification-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to('tablet') {
-    @include text-1;
-  }
 }
 
 .doc-verification-form__doc-info {
@@ -312,12 +306,10 @@ const reset = () => {
 }
 
 .doc-verification-form__doc-hash-title {
-  @include text-1;
+  @include body-large;
 
   @include respond-to('tablet') {
     margin-bottom: toRem(8);
-
-    @include text-5;
   }
 }
 
@@ -330,8 +322,6 @@ const reset = () => {
   justify-content: end;
   gap: toRem(11);
   margin: toRem(8) auto toRem(24);
-  font-size: toRem(14);
-  line-height: 1.2;
 
   &--top {
     margin: 0 0 0 auto;
@@ -345,33 +335,23 @@ const reset = () => {
       margin-bottom: toRem(12);
     }
   }
+
+  @include body-medium;
 }
 
 .doc-verification-form__timestamp-title {
   color: var(--col-fine);
-
-  @include text-4;
-
-  @include respond-to('tablet') {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__timestamp {
   color: var(--col-primary);
-
-  @include text-4;
-
-  @include respond-to('tablet') {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__list-title {
   margin-bottom: toRem(8);
 
   @include respond-to('tablet') {
-    @include text-1;
+    @include body-large;
   }
 }
 

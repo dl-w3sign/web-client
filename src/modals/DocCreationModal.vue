@@ -25,8 +25,6 @@ import { DocCreationForm } from '@/forms'
 
   @include respond-to('tablet') {
     margin-bottom: toRem(16);
-
-    @include h4;
   }
 }
 

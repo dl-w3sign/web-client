@@ -92,12 +92,10 @@ withDefaults(
     }
   }
 
-  @include text-1;
+  @include body-large;
 
   @include respond-to('tablet') {
     height: toRem(48);
-
-    @include text-5;
   }
 }
 </style>

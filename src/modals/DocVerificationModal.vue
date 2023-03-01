@@ -28,8 +28,6 @@ import { DocVerificationForm } from '@/forms'
 
   @include respond-to('tablet') {
     margin-bottom: toRem(12);
-
-    @include h4;
   }
 }
 

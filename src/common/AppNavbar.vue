@@ -47,8 +47,8 @@ import { BUTTON_PRESETS } from '@/enums'
 .app-navbar__connect-ethereum {
   height: toRem(48);
   width: toRem(226);
-
-  @include text-5;
+  font-size: toRem(14);
+  line-height: toRem(20);
 
   @include respond-to('tablet') {
     width: toRem(216);

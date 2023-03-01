@@ -56,12 +56,12 @@
             :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
             :name="$icons.cloudUpload"
           />
-          <h6 class="file-field__title" v-show="!isOverDropZone">
+          <h4 class="file-field__title" v-show="!isOverDropZone">
             {{ $t('file-field.title') }}
             <label :for="`file-field--${uid}`" class="file-field__browse-label">
               {{ $t('file-field.open-dialog-button-text') }}
             </label>
-          </h6>
+          </h4>
           <p class="file-field__require" v-show="!isOverDropZone">
             {{ $t('file-field.require') }}
           </p>
@@ -203,16 +203,12 @@ const cancelFileByName = (fileName: string) => {
 
 .file-field__file-name {
   @include text-ellipsis;
-
-  @include respond-to('tablet') {
-    @include text-5;
-  }
 }
 
 .file-field__file-size {
   color: var(--col-fancy);
 
-  @include text-4;
+  @include body-medium;
 
   @include respond-to('tablet') {
     margin-top: toRem(4);
@@ -310,12 +306,8 @@ const cancelFileByName = (fileName: string) => {
 .file-field__title {
   margin-top: toRem(16);
 
-  @include h4;
-
   @include respond-to('tablet') {
     margin-top: toRem(8);
-
-    @include h5;
   }
 }
 
@@ -360,11 +352,7 @@ const cancelFileByName = (fileName: string) => {
   color: var(--col-fine);
   margin-top: toRem(8);
 
-  @include text-2;
-
-  @include respond-to('tablet') {
-    @include text-4;
-  }
+  @include body-large-inter;
 }
 
 .file-field__input {

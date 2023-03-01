@@ -6,16 +6,16 @@
           {{ $t('main-page.welcome-beginning') }}
           <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
         </h1>
-        <h1 class="main-page__welcome-bottom">
+        <h1>
           {{ $t('main-page.welcome-continuing') }}
         </h1>
         <svg class="main-page__welcome-background-img">
           <use href="/branding/ribbon.svg#ribbon" />
         </svg>
       </div>
-      <p class="main-page__description">
+      <h4 class="main-page__description">
         {{ $t('main-page.description') }}
-      </p>
+      </h4>
     </div>
     <div
       class="main-page__container"
@@ -29,19 +29,13 @@
             'main-page__connect-ethereum--connected': web3Provider?.isConnected,
           }"
         >
-          <p
-            class="main-page__connect-ethereum-message"
-            :class="{
-              'main-page__connect-ethereum-message--bounded':
-                !web3Provider?.isConnected,
-            }"
-          >
+          <h4 class="main-page__connect-ethereum-message">
             {{
               web3Provider?.isConnected
                 ? $t('main-page.connected-ethereum-message')
                 : $t('main-page.connect-ethereum-message')
             }}
-          </p>
+          </h4>
           <connect-ethereum
             v-if="!web3Provider?.isConnected"
             class="main-page__connect-ethereum-button"
@@ -161,20 +155,12 @@ const isDocVerificationModalShown = ref(false)
   gap: toRem(16);
   margin-bottom: toRem(7);
 
-  @include respond-to('xmedium') {
-    @include h2;
-  }
-
   @include respond-to('medium') {
-    font-size: toRem(42);
-    line-height: toRem(48);
     margin-bottom: toRem(3);
   }
 
   @include respond-to('tablet') {
     margin-bottom: 0;
-
-    @include h3;
   }
 }
 
@@ -199,21 +185,6 @@ const isDocVerificationModalShown = ref(false)
   }
 }
 
-.main-page__welcome-bottom {
-  @include respond-to('xmedium') {
-    @include h2;
-  }
-
-  @include respond-to('medium') {
-    font-size: toRem(42);
-    line-height: toRem(48);
-  }
-
-  @include respond-to('tablet') {
-    @include h3;
-  }
-}
-
 .main-page__welcome-background-img {
   position: absolute;
   bottom: toRem(0);
@@ -228,16 +199,12 @@ const isDocVerificationModalShown = ref(false)
 }
 
 .main-page__description {
-  font-size: toRem(20);
-  line-height: 1.4;
   color: var(--col-fancy);
   max-width: toRem(698);
   margin: 0 auto;
 
   @include respond-to('xmedium') {
     max-width: toRem(650);
-
-    @include h5;
   }
 
   @include respond-to('medium') {
@@ -286,20 +253,7 @@ const isDocVerificationModalShown = ref(false)
 
 .main-page__connect-ethereum-message {
   text-align: center;
-
-  &--bounded {
-    width: toRem(214);
-  }
-
-  @include h4;
-
-  @include respond-to('tablet') {
-    &--bounded {
-      width: toRem(200);
-    }
-
-    @include h5;
-  }
+  white-space: pre-line;
 }
 
 .main-page__connect-ethereum-button {
@@ -385,7 +339,7 @@ const isDocVerificationModalShown = ref(false)
 }
 
 .main-page__card-title {
-  @include text-caption;
+  @include caption;
 }
 
 .main-page__card-illustration-wrp {

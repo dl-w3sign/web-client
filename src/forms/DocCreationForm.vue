@@ -3,9 +3,9 @@
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-creation-form__loader" />
-        <p class="doc-creation-form__please-wait-msg">
+        <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-creation-form__note doc-creation-form__note--success">
@@ -210,12 +210,6 @@ const reset = () => {
 
 .doc-creation-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to('tablet') {
-    @include text-1;
-  }
 }
 
 .doc-creation-form__note {

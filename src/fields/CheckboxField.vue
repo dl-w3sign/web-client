@@ -98,10 +98,6 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field__label-message {
   margin-left: toRem(8);
 
-  @include text-2;
-
-  @include respond-to('tablet') {
-    @include text-4;
-  }
+  @include body-large-inter;
 }
 </style>

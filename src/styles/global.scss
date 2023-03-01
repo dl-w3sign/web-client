@@ -54,7 +54,7 @@ textarea {
     @include respond-to('tablet') {
       padding: toRem(12) toRem(16);
 
-      @include text-6;
+      @include body-small;
     }
   }
 
@@ -65,8 +65,6 @@ textarea {
 
     @include respond-to('tablet') {
       padding: toRem(9) toRem(11);
-
-      @include text-4;
     }
   }
 
@@ -91,7 +89,7 @@ textarea {
     border-color: var(--col-initial);
   }
 
-  @include text-2;
+  @include body-large-inter;
 }
 
 body,
@@ -141,22 +139,62 @@ h1 {
   font-size: toRem(56);
   line-height: toRem(64);
   font-weight: 700;
+
+  @include respond-to('xmedium') {
+    font-weight: 600;
+    font-size: toRem(48);
+    line-height: toRem(56);
+  }
+
+  @include respond-to('medium') {
+    font-size: toRem(42);
+    line-height: toRem(48);
+  }
+
+  @include respond-to('tablet') {
+    font-size: toRem(32);
+    line-height: toRem(40);
+    font-weight: 500;
+  }
 }
 
 h2 {
-  @include h2;
+  font-weight: 600;
+  font-size: toRem(48);
+  line-height: toRem(56);
 }
 
 h3 {
-  @include h3;
+  font-size: toRem(32);
+  line-height: toRem(40);
+  font-weight: 500;
+
+  @include respond-to('tablet') {
+    font-size: toRem(20);
+    line-height: toRem(28);
+  }
 }
 
 h4 {
-  @include h4;
+  font-size: toRem(20);
+  line-height: toRem(28);
+  font-weight: 500;
+
+  @include respond-to('tablet') {
+    font-size: toRem(18);
+    line-height: toRem(24);
+  }
 }
 
 h5 {
-  @include h5;
+  font-size: toRem(18);
+  line-height: toRem(24);
+  font-weight: 500;
+
+  @include respond-to('tablet') {
+    font-size: toRem(16);
+    line-height: toRem(24);
+  }
 }
 
 a {
