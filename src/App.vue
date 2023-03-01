@@ -4,12 +4,18 @@
       <app-navbar class="app__navbar" />
       <router-view v-slot="{ Component, route }">
         <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component class="app__main" :is="Component" />
+          <component v-if="Component" :is="Component" class="app__main" />
+          <div v-else class="app__main">
+            <div class="app__loader-wrp">
+              <animation
+                class="app__loader"
+                :animation-data="LoaderJSON"
+                is-infinite
+              />
+            </div>
+          </div>
         </transition>
       </router-view>
-    </div>
-    <div v-else class="app__init">
-      <animation class="app__loader" :animation-data="LoaderJSON" is-infinite />
     </div>
   </transition>
 </template>
@@ -35,7 +41,7 @@ const init = async () => {
     await web3Store.detectProviders()
 
     if (web3Store.metamask)
-      web3Provider.init(web3Store.metamask as DesignatedProvider)
+      await web3Provider.init(web3Store.metamask as DesignatedProvider)
 
     document.title = $config.APP_NAME
   } catch (error) {
@@ -73,7 +79,13 @@ init()
   }
 }
 
+.app__loader-wrp {
+  height: 100%;
+  display: flex;
+}
+
 .app__loader {
+  margin: auto;
   max-height: toRem(500);
   max-width: toRem(500);
 }
