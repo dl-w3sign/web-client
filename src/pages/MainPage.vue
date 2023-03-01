@@ -215,11 +215,13 @@ const isDocVerificationModalShown = ref(false)
 .main-page__connect-ethereum {
   position: absolute;
   top: 0;
+  right: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: toRem(16);
   background: var(--col-great);
-  width: 100%;
   height: toRem(104);
   border-radius: var(--border-radius-large);
   padding: toRem(24) 7.8%;
@@ -234,20 +236,9 @@ const isDocVerificationModalShown = ref(false)
   }
 
   @include respond-to('tablet') {
-    height: toRem(96);
-  }
-
-  @include respond-to('small') {
     flex-direction: column;
-    padding: toRem(24);
-    gap: toRem(16);
     height: toRem(168);
-    min-width: toRem(395);
-  }
-
-  @include respond-to('xsmall') {
-    width: toRem(343);
-    min-width: 0;
+    margin: 0 toRem(16);
   }
 }
 
@@ -263,12 +254,11 @@ const isDocVerificationModalShown = ref(false)
 .main-page__container {
   position: relative;
   display: flex;
-  justify-content: center;
   gap: toRem(32);
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
   max-width: max-content;
-  margin: auto auto toRem(44);
+  margin: 0 auto toRem(44);
 
   &--lifted {
     transition-delay: 3.7s;
@@ -285,23 +275,13 @@ const isDocVerificationModalShown = ref(false)
 
   @include respond-to('tablet') {
     flex-direction: column;
-    max-width: 100%;
-    margin: 0 8.4% toRem(32);
-    gap: toRem(24);
-  }
-
-  @include respond-to('small') {
-    gap: toRem(16);
-    margin: 0 toRem(16) toRem(32);
+    max-width: toRem(600);
+    margin: 0 auto toRem(32);
+    padding: 0 toRem(16);
 
     &:not(.main-page__container--lifted) {
       padding-top: toRem(184);
     }
-  }
-
-  @include respond-to('xsmall') {
-    width: toRem(343);
-    margin: 0 auto toRem(32);
   }
 }
 
@@ -331,10 +311,6 @@ const isDocVerificationModalShown = ref(false)
 
   @include respond-to('tablet') {
     width: 100%;
-  }
-
-  @include respond-to('xsmall') {
-    padding: toRem(38) toRem(90);
   }
 }
 
@@ -367,6 +343,10 @@ const isDocVerificationModalShown = ref(false)
 .main-page__card-button {
   @include respond-to('tablet') {
     max-width: toRem(233);
+  }
+
+  @include respond-to('xsmall') {
+    max-width: toRem(163);
   }
 }
 

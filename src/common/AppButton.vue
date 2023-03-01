@@ -39,7 +39,8 @@ withDefaults(
   width: 100%;
   height: toRem(52);
   border-radius: var(--border-radius);
-  transition: var(--transition-duration);
+  transition-property: border, background-color, color, fill, stroke;
+  transition-duration: var(--transition-duration);
 
   &--waiting {
     cursor: wait;
