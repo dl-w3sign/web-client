@@ -83,7 +83,7 @@
             'doc-verification-form__button',
             'doc-verification-form__button--signer',
           ]"
-          :preset="BUTTON_PRESETS.primary"
+          preset="primary"
           @click="signOrExit"
         >
           {{
@@ -104,26 +104,19 @@
           />
           {{ errorMessage }}
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else>
         <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -142,7 +135,7 @@ import {
   useTimestampContract,
   useContext,
 } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, TIMEZONES } from '@/enums'
+import { TIMEZONES } from '@/enums'
 import { FileField, TextareaField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler } from '@/helpers'
 import { Keccak256Hash } from '@/types'

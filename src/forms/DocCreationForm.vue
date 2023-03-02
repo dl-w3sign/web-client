@@ -23,7 +23,7 @@
           is-copyable
           readonly
         />
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
@@ -38,7 +38,7 @@
             {{ errorMessage }}
           </p>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
@@ -51,19 +51,12 @@
           :label="$t('doc-creation-form.checkbox-is-sign')"
         />
         <div class="doc-creation-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
@@ -83,7 +76,7 @@ import {
   useFormValidation,
   useTimestampContract,
 } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
+import { RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
 import { required, maxValue } from '@/validators'

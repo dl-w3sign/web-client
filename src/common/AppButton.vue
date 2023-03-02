@@ -2,32 +2,37 @@
   <button
     class="app-button"
     :class="{
-      [`app-button--${state}`]: state,
-      [`app-button--${preset}`]: preset,
+      'app-button--waiting': isWaiting,
+      [`app-button--${preset}`]: !!preset,
     }"
-    :disabled="state === 'not-allowed' || state === 'waiting' || isDisabled"
-    v-bind="$attrs"
+    :disabled="isDisabled || isWaiting"
   >
     <slot>{{ text }}</slot>
   </button>
 </template>
 
 <script lang="ts" setup>
-import { BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
+import { computed, useAttrs } from 'vue'
+
+type PRESETS = 'primary' | 'outline-brittle'
 
 withDefaults(
   defineProps<{
     text?: string
-    state?: BUTTON_STATES
-    preset?: BUTTON_PRESETS
-    isDisabled?: boolean
+    preset?: PRESETS
+    isWaiting?: boolean
   }>(),
   {
     text: '',
-    state: undefined,
     preset: undefined,
-    isDisabled: false,
+    isWaiting: false,
   },
+)
+
+const attrs = useAttrs()
+
+const isDisabled = computed(() =>
+  ['', 'disabled', true].includes(attrs.disabled as string | boolean),
 )
 </script>
 
@@ -41,10 +46,6 @@ withDefaults(
   border-radius: var(--border-radius);
   transition-property: border, background-color, color, fill, stroke;
   transition-duration: var(--transition-duration);
-
-  &--waiting {
-    cursor: wait;
-  }
 
   &--not-allowed {
     cursor: not-allowed;
@@ -86,10 +87,18 @@ withDefaults(
       background: var(--col-original);
     }
 
-    &.app-button--none-events {
+    &:not(.app-button--waiting):disabled {
       background: var(--col-negative);
       color: var(--col-positive);
       fill: var(--col-positive);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+
+    &.app-button--waiting {
+      cursor: wait;
     }
   }
 

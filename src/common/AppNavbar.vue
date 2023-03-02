@@ -6,7 +6,7 @@
       </svg>
       <connect-ethereum
         class="app-navbar__connect-ethereum"
-        :button-preset="BUTTON_PRESETS.outlineBrittle"
+        preset="outline-brittle"
       />
     </div>
   </header>
@@ -14,7 +14,6 @@
 
 <script lang="ts" setup>
 import { ConnectEthereum } from '@/common'
-import { BUTTON_PRESETS } from '@/enums'
 </script>
 
 <style lang="scss" scoped>

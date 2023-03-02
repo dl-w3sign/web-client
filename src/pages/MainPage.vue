@@ -39,7 +39,7 @@
           <connect-ethereum
             v-if="!web3Provider?.isConnected"
             class="main-page__connect-ethereum-button"
-            :button-preset="BUTTON_PRESETS.primary"
+            preset="primary"
           />
         </div>
       </transition>
@@ -55,11 +55,9 @@
         </div>
         <app-button
           class="main-page__card-button"
+          preset="primary"
           :text="$t('main-page.doc-creation-card-button-text')"
-          :preset="BUTTON_PRESETS.primary"
-          :state="
-            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
-          "
+          :disabled="!web3Provider.isConnected"
           @click="isDocCreationModalShown = true"
         />
         <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
@@ -76,11 +74,9 @@
         </div>
         <app-button
           class="main-page__card-button"
+          preset="primary"
           :text="$t('main-page.doc-verification-card-button-text')"
-          :preset="BUTTON_PRESETS.primary"
-          :state="
-            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
-          "
+          :disabled="!web3Provider.isConnected"
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
@@ -93,7 +89,6 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon, ConnectEthereum } from '@/common'
-import { BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import {
   DocCreationIllustration,
   DocVerificationIllustration,

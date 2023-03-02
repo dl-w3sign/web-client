@@ -2,8 +2,6 @@
   "connect-ethereum": {
     "connect-button-text": "Connect to MetaMask",
     "connect-button-text-connecting": "Connecting...",
-    "connect-button-text-loading": "Loading...",
-    "connect-button-text-failed-load": "Failed load",
     "connect-button-text-install-provider": "Install MetaMask",
     "connect-button-text-go-to-metamask-app": "Go To MetaMask"
   },
