@@ -53,7 +53,8 @@ import { Icon } from '@/common'
 import { useTextareaAutosize } from '@/composables'
 import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
-import { getCurrentInstance, computed, useAttrs } from 'vue'
+import { computed, useAttrs } from 'vue'
+import { v4 as generateUid } from 'uuid'
 import { useWindowSize } from '@vueuse/core'
 
 const emit = defineEmits<{
@@ -65,7 +66,7 @@ const updateModelValue = (event: InputEvent) => {
   emit('update:modelValue', eventTarget.value)
 }
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 const props = withDefaults(
   defineProps<{
     modelValue: string

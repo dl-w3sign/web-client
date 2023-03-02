@@ -24,8 +24,8 @@
 
 <script lang="ts" setup>
 import { Icon } from '@/common'
-import { getCurrentInstance } from 'vue'
 import { ICON_NAMES } from '@/enums'
+import { v4 as generateUid } from 'uuid'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
@@ -36,7 +36,7 @@ const updateModelValue = (event: InputEvent) => {
   emit('update:modelValue', eventTarget.value)
 }
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 withDefaults(
   defineProps<{
     modelValue: string

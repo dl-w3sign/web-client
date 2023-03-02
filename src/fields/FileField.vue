@@ -77,7 +77,8 @@ import { useContext } from '@/composables'
 import { FILE_TYPES } from '@/enums'
 import { errors } from '@/errors'
 import { ErrorHandler, getFileIconName, formatFileSize } from '@/helpers'
-import { ref, computed, getCurrentInstance, useAttrs } from 'vue'
+import { ref, computed, useAttrs } from 'vue'
+import { v4 as generateUid } from 'uuid'
 import { unionBy } from 'lodash-es'
 import { useDropZone } from '@vueuse/core'
 
@@ -97,7 +98,7 @@ const isReadonly = computed(() =>
   ['', 'readonly', true].includes(attrs.readonly as string | boolean),
 )
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 const inputElement = ref<HTMLInputElement>()
 const dropZoneLabelElement = ref<HTMLLabelElement>()
 const { $t, $config } = useContext()
