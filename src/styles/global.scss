@@ -51,7 +51,7 @@ textarea {
     padding: toRem(16) toRem(24);
     cursor: text;
 
-    @include respond-to('tablet') {
+    @include respond-to(tablet) {
       padding: toRem(12) toRem(16);
 
       @include body-small;
@@ -63,7 +63,7 @@ textarea {
     padding: toRem(13) toRem(15);
     border: toRem(1) solid var(--col-brittle);
 
-    @include respond-to('tablet') {
+    @include respond-to(tablet) {
       padding: toRem(9) toRem(11);
     }
   }
@@ -140,18 +140,18 @@ h1 {
   line-height: toRem(64);
   font-weight: 700;
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     font-weight: 600;
     font-size: toRem(48);
     line-height: toRem(56);
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     font-size: toRem(42);
     line-height: toRem(48);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-size: toRem(32);
     line-height: toRem(40);
     font-weight: 500;
@@ -169,7 +169,7 @@ h3 {
   line-height: toRem(40);
   font-weight: 500;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-size: toRem(20);
     line-height: toRem(28);
   }
@@ -180,7 +180,7 @@ h4 {
   line-height: toRem(28);
   font-weight: 500;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-size: toRem(18);
     line-height: toRem(24);
   }
@@ -191,7 +191,7 @@ h5 {
   line-height: toRem(24);
   font-weight: 500;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-size: toRem(16);
     line-height: toRem(24);
   }
@@ -213,12 +213,12 @@ a {
   height: toRem(8);
   width: toRem(8);
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     height: toRem(6);
     width: toRem(6);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: toRem(4);
     width: toRem(4);
   }

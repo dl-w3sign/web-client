@@ -85,7 +85,7 @@ const onWrapperClick = (event: PointerEvent) => {
     }
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     padding: 2%;
   }
 }
@@ -98,7 +98,7 @@ const onWrapperClick = (event: PointerEvent) => {
   width: toRem(608);
   flex-shrink: 0;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     padding: toRem(16);
     width: toRem(343);
   }

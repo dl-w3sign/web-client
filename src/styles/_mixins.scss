@@ -54,7 +54,7 @@ $media-breakpoints: (
 
   @include body-large-inter;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     gap: toRem(8);
     padding: toRem(12);
   }
@@ -99,7 +99,7 @@ $media-breakpoints: (
   line-height: toRem(24);
   font-weight: 500;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-size: toRem(14);
     line-height: toRem(20);
   }
@@ -111,7 +111,7 @@ $media-breakpoints: (
   line-height: toRem(24);
   font-weight: 400;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
     font-size: toRem(14);
     line-height: toRem(20);
@@ -124,7 +124,7 @@ $media-breakpoints: (
   line-height: toRem(20);
   font-weight: 400;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     font-family: 'Inter', 'Arial', sans-serif;
     font-size: toRem(12);
   }

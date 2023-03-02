@@ -61,7 +61,7 @@ init()
 .app__navbar {
   height: toRem(80);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: toRem(72);
   }
 }
@@ -70,7 +70,7 @@ init()
   overflow-y: scroll;
   height: calc(100vh - toRem(80));
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: calc(100vh - toRem(72));
   }
 

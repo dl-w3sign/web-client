@@ -97,7 +97,7 @@ const updateModelValue = (event: InputEvent) => {
   height: toRem(18);
   margin: toRem(3);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     width: toRem(15);
     height: toRem(15);
     margin: toRem(2.5);

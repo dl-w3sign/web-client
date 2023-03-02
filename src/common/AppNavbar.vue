@@ -33,7 +33,7 @@ import { ConnectEthereum } from '@/common'
   width: 100%;
   max-width: toRem(1440);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     padding: 0 4.5%;
   }
 }
@@ -49,7 +49,7 @@ import { ConnectEthereum } from '@/common'
   font-size: toRem(14);
   line-height: toRem(20);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     width: toRem(216);
   }
 }

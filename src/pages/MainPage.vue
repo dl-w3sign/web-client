@@ -116,15 +116,15 @@ const isDocVerificationModalShown = ref(false)
     fill: var(--col-quiet);
   }
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     padding: toRem(38) toRem(38) toRem(24);
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     padding: toRem(36) toRem(36) toRem(22);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     padding: toRem(24) toRem(16) toRem(40);
   }
 }
@@ -134,7 +134,7 @@ const isDocVerificationModalShown = ref(false)
   z-index: var(--z-main-page-welcome);
   padding: 0 toRem(28) toRem(23);
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     padding-bottom: toRem(18);
   }
 }
@@ -146,11 +146,11 @@ const isDocVerificationModalShown = ref(false)
   gap: toRem(16);
   margin-bottom: toRem(7);
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     margin-bottom: toRem(3);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     margin-bottom: 0;
   }
 }
@@ -160,17 +160,17 @@ const isDocVerificationModalShown = ref(false)
   width: toRem(72);
   flex-shrink: 0;
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     height: toRem(62);
     width: toRem(62);
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     height: toRem(54);
     width: toRem(54);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: toRem(46);
     width: toRem(46);
   }
@@ -184,7 +184,7 @@ const isDocVerificationModalShown = ref(false)
   height: toRem(51);
   width: 99.1%;
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     height: toRem(44);
   }
 }
@@ -194,11 +194,11 @@ const isDocVerificationModalShown = ref(false)
   max-width: toRem(698);
   margin: 0 auto;
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     max-width: toRem(650);
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     max-width: toRem(580);
   }
 }
@@ -226,7 +226,7 @@ const isDocVerificationModalShown = ref(false)
     background: var(--col-mild);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     flex-direction: column;
     height: toRem(168);
     margin: 0 toRem(16);
@@ -256,7 +256,7 @@ const isDocVerificationModalShown = ref(false)
     padding-top: 0;
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     gap: toRem(16);
 
     &:not(.main-page__container--lifted) {
@@ -264,7 +264,7 @@ const isDocVerificationModalShown = ref(false)
     }
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     flex-direction: column;
     max-width: toRem(600);
     margin: 0 auto toRem(32);
@@ -292,15 +292,15 @@ const isDocVerificationModalShown = ref(false)
     background: var(--col-mild);
   }
 
-  @include respond-to('xmedium') {
+  @include respond-to(xmedium) {
     padding: toRem(27) toRem(60);
   }
 
-  @include respond-to('medium') {
+  @include respond-to(medium) {
     padding: toRem(27) toRem(50);
   }
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     width: 100%;
   }
 }
@@ -317,7 +317,7 @@ const isDocVerificationModalShown = ref(false)
   width: toRem(233);
   overflow: hidden;
 
-  @include respond-to('xsmall') {
+  @include respond-to(xsmall) {
     height: toRem(163);
     width: toRem(163);
   }
@@ -326,17 +326,17 @@ const isDocVerificationModalShown = ref(false)
 .main-page__card-illustration {
   transform: scale(0.83511);
 
-  @include respond-to('xsmall') {
+  @include respond-to(xsmall) {
     transform: scale(0.584);
   }
 }
 
 .main-page__card-button {
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     max-width: toRem(233);
   }
 
-  @include respond-to('xsmall') {
+  @include respond-to(xsmall) {
     max-width: toRem(163);
   }
 }

@@ -104,7 +104,7 @@ const isDisabled = computed(() =>
 
   @include body-large;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: toRem(48);
   }
 }

@@ -177,7 +177,7 @@ const reset = () => {
 .doc-creation-form__checkbox {
   margin-top: toRem(24);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     margin-top: toRem(16);
   }
 }
@@ -187,7 +187,7 @@ const reset = () => {
   gap: toRem(16);
   margin-top: toRem(24);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     gap: toRem(8);
     margin-top: toRem(16);
   }
@@ -196,7 +196,7 @@ const reset = () => {
 .doc-creation-form__loader {
   margin: toRem(24) 0;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }
@@ -215,7 +215,7 @@ const reset = () => {
 
     @include note-error;
 
-    @include respond-to('tablet') {
+    @include respond-to(tablet) {
       margin: toRem(16) 0;
     }
   }
@@ -229,7 +229,7 @@ const reset = () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -238,7 +238,7 @@ const reset = () => {
 .doc-creation-form__doc-hash {
   margin: toRem(24) 0;
 
-  @include respond-to('tablet') {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }
