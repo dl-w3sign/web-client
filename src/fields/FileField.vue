@@ -1,34 +1,38 @@
 <template>
   <div class="file-field">
-    <div v-if="modelValue" class="file-field__container">
-      <div
-        v-for="file in props.modelValue"
-        :key="file.name"
-        class="file-field__file-info"
-      >
-        <icon class="file-field__file-icon" :name="getFileIconName(file)" />
-        <div class="file-field__file-meta">
-          <h4 class="file-field__file-name">
-            {{ file.name }}
-          </h4>
-          <p class="file-field__file-size">
-            {{ formatFileSize(file.size) }}
-          </p>
-        </div>
-        <button
-          v-if="!isReadonly"
-          class="file-field__cancel-button"
-          @click="cancelFileByName(file.name)"
+    <div v-if="isReadonly && !modelValue" class="file-field__file-info" />
+    <div v-if="isMultiple && modelValue" class="file-field__container">
+      <transition-group name="fade" appear>
+        <div
+          v-for="file in modelValue"
+          :key="file.name"
+          class="file-field__file-info"
         >
-          <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
-        </button>
-      </div>
+          <icon class="file-field__file-icon" :name="getFileIconName(file)" />
+          <div class="file-field__file-meta">
+            <h4 class="file-field__file-name">
+              {{ file.name }}
+            </h4>
+            <p class="file-field__file-size">
+              {{ formatFileSize(file.size) }}
+            </p>
+          </div>
+          <button
+            v-if="!isReadonly"
+            class="file-field__cancel-button"
+            @click="cancelFileByName(file.name)"
+          >
+            <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
+          </button>
+        </div>
+      </transition-group>
     </div>
     <div
-      class="file-field__drop-zone-wrp"
+      class="file-field__drop-zone"
       :class="{
-        'file-field__drop-zone-wrp--offset':
-          !isReadonly && props.modelValue && isMultiple,
+        'file-field__drop-zone--offset':
+          !isReadonly && modelValue && isMultiple,
+        'file-field__drop-zone--active': isOverDropZone,
       }"
     >
       <input
@@ -40,32 +44,50 @@
         v-bind="$attrs"
         @change="onChange"
       />
-      <div
-        v-if="!isReadonly && (isMultiple ? true : !modelValue)"
-        class="file-field__drop-zone"
-        :class="{ 'file-field__drop-zone--active': isOverDropZone }"
-      >
-        <label
-          :for="`file-field--${uid}`"
-          ref="dropZoneLabelElement"
-          class="file-field__drop-zone-label"
+      <label
+        :for="`file-field--${uid}`"
+        ref="dropZoneLabelElement"
+        class="file-field__drop-zone-label"
+      />
+      <div v-if="!isMultiple && modelValue" class="file-field__file-info">
+        <icon
+          class="file-field__file-icon"
+          :name="getFileIconName(modelValue[0])"
         />
-        <div class="file-field__drop-zone-container">
-          <icon
-            class="file-field__drop-zone-icon"
-            :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
-            :name="$icons.cloudUpload"
-          />
-          <h4 class="file-field__title" v-show="!isOverDropZone">
-            {{ $t('file-field.title') }}
-            <label :for="`file-field--${uid}`" class="file-field__browse-label">
-              {{ $t('file-field.open-dialog-button-text') }}
-            </label>
+        <div class="file-field__file-meta">
+          <h4 class="file-field__file-name">
+            {{ modelValue[0].name }}
           </h4>
-          <p class="file-field__require" v-show="!isOverDropZone">
-            {{ $t('file-field.require') }}
+          <p class="file-field__file-size">
+            {{ formatFileSize(modelValue[0].size) }}
           </p>
         </div>
+        <button
+          v-if="!isReadonly"
+          class="file-field__cancel-button"
+          @click="cancelFileByName(modelValue[0].name)"
+        >
+          <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
+        </button>
+      </div>
+      <div
+        v-if="!isReadonly && (isMultiple ? true : !modelValue)"
+        class="file-field__drop-zone-container"
+      >
+        <icon
+          class="file-field__drop-zone-icon"
+          :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
+          :name="$icons.cloudUpload"
+        />
+        <h4 class="file-field__title" v-show="!isOverDropZone">
+          {{ $t('file-field.title') }}
+          <label :for="`file-field--${uid}`" class="file-field__browse-label">
+            {{ $t('file-field.open-dialog-button-text') }}
+          </label>
+        </h4>
+        <p class="file-field__require" v-show="!isOverDropZone">
+          {{ $t('file-field.require') }}
+        </p>
       </div>
     </div>
   </div>
@@ -103,49 +125,45 @@ const inputElement = ref<HTMLInputElement>()
 const dropZoneLabelElement = ref<HTMLLabelElement>()
 const { $t, $config } = useContext()
 
-const emitUpdateModelValue = (files: File[] | null) => {
-  if (files) {
-    try {
-      files.forEach(file => {
-        if (file.size > 2 * 1000 * 1000) throw new errors.FileSizeError()
-        if (!$config.FILE_MIME_TYPES.includes(file.type as FILE_TYPES))
-          throw new errors.FileTypeError()
-      })
-    } catch (err) {
-      switch (err?.constructor) {
-        case errors.FileSizeError:
-          ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
-          return
-        case errors.FileTypeError:
-          ErrorHandler.process(
-            err,
-            $t('file-field.error-uncorrected-file-type'),
-          )
-          return
-      }
-    }
+const tryEmitFiles = (files: File[]) => {
+  try {
+    files.forEach(file => {
+      if (file.size > 2 * 1000 * 1000) throw new errors.FileSizeError()
+      if (!$config.FILE_MIME_TYPES.includes(file.type as FILE_TYPES))
+        throw new errors.FileTypeError()
+    })
 
-    if (props.modelValue)
-      emit(
-        'update:modelValue',
-        unionBy(props.modelValue, files, file => file.name),
-      )
-    else emit('update:modelValue', files)
+    if (isMultiple.value) {
+      if (props.modelValue)
+        emit(
+          'update:modelValue',
+          unionBy(props.modelValue, files, file => file.name),
+        )
+      else emit('update:modelValue', files)
+    } else {
+      emit('update:modelValue', [files[0]])
+    }
+  } catch (err) {
+    switch (err?.constructor) {
+      case errors.FileSizeError:
+        ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
+        break
+      case errors.FileTypeError:
+        ErrorHandler.process(err, $t('file-field.error-uncorrected-file-type'))
+    }
   }
 }
 
 const onChange = (event: Event) => {
   const eventTarget = event.target as HTMLInputElement
-  const files = eventTarget.files?.length
-    ? ([...eventTarget.files] as File[])
-    : null
-
-  emitUpdateModelValue(files)
+  if (eventTarget.files?.length) tryEmitFiles([...eventTarget.files] as File[])
 }
 
 const { isOverDropZone } = useDropZone(
   dropZoneLabelElement,
-  emitUpdateModelValue,
+  (files: File[] | null) => {
+    if (files) tryEmitFiles(files)
+  },
 )
 
 const cancelFileByName = (fileName: string) => {
@@ -182,7 +200,9 @@ const cancelFileByName = (fileName: string) => {
   height: toRem(96);
   transition: background-color, var(--transition-duration);
 
-  &:hover {
+  &:hover,
+  .file-field__drop-zone--active &,
+  .file-field__drop-zone:hover & {
     background: var(--col-mild);
   }
 
@@ -223,7 +243,8 @@ const cancelFileByName = (fileName: string) => {
   fill: var(--col-fancy);
   flex-shrink: 0;
   color: var(--col-intense);
-  transition: var(--transition-duration-fast);
+  transition: var(--transition-duration);
+  z-index: var(--z-file-field-cancel-button);
 
   &:hover {
     fill: var(--col-accent);
@@ -239,8 +260,11 @@ const cancelFileByName = (fileName: string) => {
   }
 }
 
-.file-field__drop-zone-wrp {
+.file-field__drop-zone {
   position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: background-color var(--transition-duration);
 
   &--offset {
     margin-top: toRem(12);
@@ -251,19 +275,31 @@ const cancelFileByName = (fileName: string) => {
   }
 }
 
-.file-field__drop-zone {
-  position: relative;
+.file-field__drop-zone-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  cursor: pointer;
+  border-radius: inherit;
+}
+
+.file-field__drop-zone-container {
   background-image: url('/branding/border-file-field-drop-zone.png');
   background-color: var(--col-great);
-  display: flex;
-  margin: auto;
   height: toRem(257);
   width: toRem(544);
-  border-radius: var(--border-radius);
-  transition: background-color var(--transition-duration-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  margin: auto;
+  transition: inherit;
 
-  &:hover,
-  &--active {
+  .file-field__drop-zone--active &,
+  .file-field__drop-zone:hover & {
     background-color: var(--col-grand);
   }
 
@@ -272,25 +308,6 @@ const cancelFileByName = (fileName: string) => {
     width: toRem(311);
     background-image: url('/branding/border-file-field-drop-zone-small.png');
   }
-}
-
-.file-field__drop-zone-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  cursor: pointer;
-  border-radius: var(--border-radius);
-}
-
-.file-field__drop-zone-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  margin: auto;
 }
 
 .file-field__drop-zone-icon {
@@ -362,11 +379,27 @@ const cancelFileByName = (fileName: string) => {
   right: 0;
   bottom: 0;
   left: 0;
-  margin: auto;
-  display: block;
-  height: toRem(0.1);
-  width: toRem(0.1);
-  padding: 0;
+  margin: 0 toRem(4);
   z-index: var(--z-hidden-input);
+  display: block;
+  padding: 0;
+}
+
+.fade-leave-active {
+  animation: fade-in var(--transition-duration) reverse;
+}
+
+.fade-enter-active {
+  animation: fade-in var(--transition-duration-slow);
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

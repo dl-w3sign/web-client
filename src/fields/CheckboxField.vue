@@ -80,10 +80,19 @@ const updateModelValue = (event: InputEvent) => {
 
 .checkbox-field__icon-wrp {
   position: relative;
+  display: block;
+  margin: toRem(3);
+  width: toRem(18);
+  height: toRem(18);
+
+  @include respond-to(tablet) {
+    margin: toRem(2.5);
+  }
 }
 
 .checkbox-field__input {
   position: absolute;
+  width: toRem(0.1);
   top: 0;
   right: 0;
   bottom: 0;
@@ -95,12 +104,10 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field__icon {
   width: toRem(18);
   height: toRem(18);
-  margin: toRem(3);
 
   @include respond-to(tablet) {
     width: toRem(15);
     height: toRem(15);
-    margin: toRem(2.5);
   }
 }
 

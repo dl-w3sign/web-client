@@ -12,7 +12,8 @@
 }
 
 .app__init-logo {
-  width: 20%;
+  height: 12rem;
+  width: 12rem;
   color: #c9dcff;
   fill: #2d74ff;
   animation: twinkle 0.2s infinite alternate;
