@@ -64,12 +64,12 @@
   --transition-duration-fast: 0.1s;
 
   /* z-indexes */
-  --z-modal: 5000;
-  --z-file-field-open-dialog-button: 100;
-  --z-main-page-welcome: 20;
-  --z-main-page-welcome-background-img: -10;
-  --z-hidden-input: -1;
-  --z-file-field-cancel-button: 1;
+  --z-layer-negative-10: -10;
+  --z-layer-negative-1: -1;
+  --z-layer-1: 1;
+  --z-layer-20: 20;
+  --z-layer-100: 100;
+  --z-layer-1300: 1300;
 
   /* App variables */
   --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;

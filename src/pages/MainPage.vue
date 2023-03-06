@@ -131,7 +131,7 @@ const isDocVerificationModalShown = ref(false)
 
 .main-page__welcome {
   position: relative;
-  z-index: var(--z-main-page-welcome);
+  z-index: var(--z-layer-20);
   padding: 0 toRem(28) toRem(23);
 
   @include respond-to(xmedium) {
@@ -180,7 +180,7 @@ const isDocVerificationModalShown = ref(false)
   position: absolute;
   bottom: toRem(0);
   left: toRem(0);
-  z-index: var(--z-main-page-welcome-background-img);
+  z-index: var(--z-layer-negative-10);
   height: toRem(51);
   width: 99.1%;
 

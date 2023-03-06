@@ -51,7 +51,7 @@ const onWrapperClick = (event: PointerEvent) => {
 .modal__wrapper {
   display: flex;
   position: absolute;
-  z-index: var(--z-modal);
+  z-index: var(--z-layer-1300);
   top: 0;
   right: 0;
   bottom: 0;

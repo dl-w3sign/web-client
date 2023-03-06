@@ -244,7 +244,7 @@ const cancelFileByName = (fileName: string) => {
   flex-shrink: 0;
   color: var(--col-intense);
   transition: var(--transition-duration);
-  z-index: var(--z-file-field-cancel-button);
+  z-index: var(--z-layer-1);
 
   &:hover {
     fill: var(--col-accent);
@@ -332,7 +332,7 @@ const cancelFileByName = (fileName: string) => {
 .file-field__browse-label {
   display: inline-block;
   position: relative;
-  z-index: var(--z-file-field-open-dialog-button);
+  z-index: var(--z-layer-100);
   font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -380,7 +380,7 @@ const cancelFileByName = (fileName: string) => {
   bottom: 0;
   left: 0;
   margin: 0 toRem(4);
-  z-index: var(--z-hidden-input);
+  z-index: var(--z-layer-negative-1);
   display: block;
   padding: 0;
 }

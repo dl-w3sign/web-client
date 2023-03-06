@@ -95,7 +95,7 @@ const updateModelValue = (event: InputEvent) => {
   bottom: 0;
   left: 0;
   margin: 0;
-  z-index: var(--z-hidden-input);
+  z-index: var(--z-layer-negative-1);
 }
 
 .checkbox-field__label-message {
