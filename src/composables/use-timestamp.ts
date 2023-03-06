@@ -1,11 +1,11 @@
-import { ref } from 'vue'
+import { useWeb3ProvidersStore } from '@/store'
 import {
   TimestampContract,
   TimestampContract__factory,
   Keccak256Hash,
 } from '@/types'
-import { BN } from '@/utils'
-import { useWeb3ProvidersStore } from '@/store'
+import { BigNumber } from '@/utils'
+import { ref } from 'vue'
 
 type Signer = {
   address: string
@@ -35,10 +35,10 @@ export const useTimestampContract = (address: string) => {
   const getStampInfo = async (fileHash: Keccak256Hash) => {
     const receipt = await _instance.value?.getStampInfo(fileHash)
     if (receipt) {
-      docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
+      docTimestamp.value = BigNumber.from(receipt.timestamp._hex).toNumber()
       signers.value = receipt.signersInfo.map(signerInfo => ({
         address: signerInfo.signer,
-        signatureTimestamp: new BN(
+        signatureTimestamp: BigNumber.from(
           signerInfo.signatureTimestamp._hex,
         ).toNumber(),
       }))
@@ -56,10 +56,10 @@ export const useTimestampContract = (address: string) => {
       limit,
     )
     if (receipt) {
-      docTimestamp.value = new BN(receipt.timestamp._hex).toNumber()
+      docTimestamp.value = BigNumber.from(receipt.timestamp._hex).toNumber()
       signers.value = receipt.signersInfo.map(signerInfo => ({
         address: signerInfo.signer,
-        signatureTimestamp: new BN(
+        signatureTimestamp: BigNumber.from(
           signerInfo.signatureTimestamp._hex,
         ).toNumber(),
       }))
@@ -67,7 +67,7 @@ export const useTimestampContract = (address: string) => {
   }
 
   const createStamp = async (fileHash: Keccak256Hash, isSign: boolean) => {
-    return await _instance_rw.value?.createStamp(fileHash, isSign)
+    return _instance_rw.value?.createStamp(fileHash, isSign)
   }
 
   const sign = async (fileHash: Keccak256Hash) => {

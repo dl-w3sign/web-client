@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <title>vue-vite-template</title>
+  <title>Time Stamp Service</title>
 
   <noscript>
     <style>
@@ -16,10 +16,10 @@
   <meta name="theme-color" content="#ffffff">
 
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-  <meta name="description" content="vue-vite-template">
-  <meta property="og:title" content="vue-vite-template">
-  <meta property="og:description" content="vue-vite-template">
-  <meta property="og:url" content="https://vue-vite-template.com">
+  <meta name="description" content="Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.">
+  <meta property="og:title" content="Time Stamping Service">
+  <meta property="og:description" content="Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.">
+  <meta property="og:url" content="https://tss.tokend.io">
   <meta property="og:image" content="/branding/logo.svg">
   <meta property="og:locale" content="en_GB">
   <meta property="og:type" content="website">
@@ -30,8 +30,11 @@
   <link href="/branding/favicon.png" rel="icon" type="image/png">
   <link rel="apple-touch-icon" href="/branding/apple-touch-icon.png">
 
-  <link rel="preload" href="/branding/fonts/Roboto/Roboto-Regular.ttf" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/branding/fonts/Roboto/Roboto-Bold.ttf" as="font" crossorigin="anonymous">
+  <link rel="preload" href="/branding/fonts/inter/Inter-Regular.ttf" as="font" crossorigin="anonymous">
+  <link rel="preload" href="/branding/fonts/inter/Inter-SemiBold.ttf" as="font" crossorigin="anonymous">
+  <link rel="preload" href="/branding/fonts/plus-jakarta-sans/PlusJakartaSans-Regular.ttf" as="font" crossorigin="anonymous">
+  <link rel="preload" href="/branding/fonts/plus-jakarta-sans/PlusJakartaSans-Medium.ttf" as="font" crossorigin="anonymous">
+  <link rel="preload" href="/branding/fonts/plus-jakarta-sans/PlusJakartaSans-Bold.ttf" as="font" crossorigin="anonymous">
 
   <link as="style" rel="stylesheet preload" type="text/css" href="/branding/fonts/index.css" crossorigin="anonymous">
   <link href="/noscript/style.css" type="text/css" rel="stylesheet">
@@ -43,32 +46,35 @@
 <body>
 <div id="app" class="app">
   <div id="noscript" class="app__init">
-    <img src="/init-loader/init-logo.svg" alt="vue-vite-template" width="280">
+    <svg class="app__init-logo">
+      <use href="/init-loader/init-logo.svg#logo" />
+    </svg>
   </div>
+  <!-- built files will be auto injected -->
 </div>
 <div id="modal" class="modal"></div>
 <!-- built files will be auto injected -->
 <noscript>
   <div class="noscript">
     <h1 class="noscript__title">Update your browser or enable JavaScript</h1>
-    <p class="noscript__message">Your browser either does not support JavaScript, or it has JavaScript support disabled. If you want to correctly view this page, please upgrade your browser or <a class="noscript__enable-support" href="http://activatejavascript.org/en/instructions/" target="_blank">enable JavaScript support</a>.</p>
+    <p class="noscript__message">Your browser either does not support JavaScript, or it has JavaScript support disabled. If you want to correctly view this page, please upgrade your browser or <a class="noscript__enable-support" href="https://activatejavascript.org/en/instructions/" target="_blank">enable JavaScript support</a>.</p>
     <p class="noscript__recommendations">These are the ones we recommend:</p>
     <ul class="noscript__list">
       <li class="noscript__list-item">
         <a class="noscript__link" href="https://www.google.com/chrome/?hl=en%22" >
-          <img class="noscript__image" src="/noscript/chrome.jpg" width="138px" height="138px" alt="chrome-logo">
+          <img class="noscript__image" src="/noscript/chrome.jpg" width="138" height="138" alt="chrome-logo">
         </a>
         <span class="noscript__browser-name">Google Chrome</span>
       </li>
       <li class="noscript__list-item">
         <a class="noscript__link" href="https://www.mozilla.com/firefox/">
-          <img class="noscript__image" src="/noscript/firefox.jpg" width="138px" height="138px" alt="firefox-logo">
+          <img class="noscript__image" src="/noscript/firefox.jpg" width="138" height="138" alt="firefox-logo">
         </a>
         <span class="noscript__browser-name">Firefox</span>
       </li>
       <li class="noscript__list-item" style="margin-right: 0;">
         <a class="noscript__link" href="https://www.apple.com/safari/">
-          <img class="noscript__image" src="/noscript/safari.jpg" width="138px" height="138px" alt="safari-logo">
+          <img class="noscript__image" src="/noscript/safari.jpg" width="138" height="138" alt="safari-logo">
         </a>
         <span class="noscript__browser-name">Safari</span>
       </li>

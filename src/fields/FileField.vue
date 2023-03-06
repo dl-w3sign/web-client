@@ -1,44 +1,93 @@
 <template>
   <div class="file-field">
-    <div v-if="modelValue" class="file-field__file-info">
-      <icon class="file-field__file-icon" :name="getFileIconName(modelValue)" />
-      <h5 class="file-field__file-name">
-        {{ modelValue.name }}
-      </h5>
-      <button
-        v-if="!isReadonly"
-        class="file-field__cancel-button"
-        @click="cancelFile"
-      >
-        <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
-      </button>
+    <div v-if="isReadonly && !modelValue" class="file-field__file-info" />
+    <div v-if="isMultiple && modelValue" class="file-field__container">
+      <transition-group name="fade" appear>
+        <div
+          v-for="file in modelValue"
+          :key="file.name"
+          class="file-field__file-info"
+        >
+          <icon class="file-field__file-icon" :name="getFileIconName(file)" />
+          <div class="file-field__file-meta">
+            <h4 class="file-field__file-name">
+              {{ file.name }}
+            </h4>
+            <p class="file-field__file-size">
+              {{ formatFileSize(file.size) }}
+            </p>
+          </div>
+          <button
+            v-if="!isReadonly"
+            class="file-field__cancel-button"
+            @click="cancelFileByName(file.name)"
+          >
+            <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
+          </button>
+        </div>
+      </transition-group>
     </div>
     <div
-      v-else-if="!isReadonly"
-      :class="[
-        'file-field__drop-zone',
-        isOverDropZone ? 'file-field__drop-zone--active' : '',
-      ]"
+      class="file-field__drop-zone"
+      :class="{
+        'file-field__drop-zone--offset':
+          !isReadonly && modelValue && isMultiple,
+        'file-field__drop-zone--active': isOverDropZone,
+      }"
     >
-      <label
-        ref="dropZone"
-        class="file-field__drop-zone-label"
-        @click="openFileDialog"
+      <input
+        :id="`file-field--${uid}`"
+        :accept="$config.FILE_MIME_TYPES.join(', ')"
+        ref="inputElement"
+        type="file"
+        class="file-field__input"
+        v-bind="$attrs"
+        @change="onChange"
       />
-      <div v-show="!isOverDropZone" class="file-field__not-drag-block">
-        <icon class="file-field__icon" :name="$icons.cloudUpload" />
-        <h6 class="file-field__title">
-          {{ $t('file-field.title') }}
-        </h6>
-        <p class="file-field__require">
-          {{ $t('file-field.require') }}
-        </p>
-        <button class="file-field__open-button" @click="openFileDialog">
-          {{ $t('file-field.label') }}
+      <label
+        :for="`file-field--${uid}`"
+        ref="dropZoneLabelElement"
+        class="file-field__drop-zone-label"
+      />
+      <div v-if="!isMultiple && modelValue" class="file-field__file-info">
+        <icon
+          class="file-field__file-icon"
+          :name="getFileIconName(modelValue[0])"
+        />
+        <div class="file-field__file-meta">
+          <h4 class="file-field__file-name">
+            {{ modelValue[0].name }}
+          </h4>
+          <p class="file-field__file-size">
+            {{ formatFileSize(modelValue[0].size) }}
+          </p>
+        </div>
+        <button
+          v-if="!isReadonly"
+          class="file-field__cancel-button"
+          @click="cancelFileByName(modelValue[0].name)"
+        >
+          <icon class="file-field__cancel-icon" :name="$icons.xCircle" />
         </button>
       </div>
-      <div v-show="isOverDropZone" class="file-field__drag-block">
-        <icon class="file-field__drag-icon" :name="$icons.cloudUploadActive" />
+      <div
+        v-if="!isReadonly && (isMultiple ? true : !modelValue)"
+        class="file-field__drop-zone-container"
+      >
+        <icon
+          class="file-field__drop-zone-icon"
+          :class="{ 'file-field__drop-zone-icon--large': isOverDropZone }"
+          :name="$icons.cloudUpload"
+        />
+        <h4 class="file-field__title" v-show="!isOverDropZone">
+          {{ $t('file-field.title') }}
+          <label :for="`file-field--${uid}`" class="file-field__browse-label">
+            {{ $t('file-field.open-dialog-button-text') }}
+          </label>
+        </h4>
+        <p class="file-field__require" v-show="!isOverDropZone">
+          {{ $t('file-field.require') }}
+        </p>
       </div>
     </div>
   </div>
@@ -47,111 +96,155 @@
 <script lang="ts" setup>
 import { Icon } from '@/common'
 import { useContext } from '@/composables'
-import { ErrorHandler, getFileIconName } from '@/helpers'
-import { ref, watch } from 'vue'
-import { useDropZone, useFileDialog } from '@vueuse/core'
+import { FILE_TYPES } from '@/enums'
+import { errors } from '@/errors'
+import { ErrorHandler, getFileIconName, formatFileSize } from '@/helpers'
+import { ref, computed, useAttrs } from 'vue'
+import { v4 as generateUid } from 'uuid'
+import { unionBy } from 'lodash-es'
+import { useDropZone } from '@vueuse/core'
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: File | null): void
+  (e: 'update:modelValue', value: File[] | null): void
 }>()
 
-const props = withDefaults(
-  defineProps<{
-    modelValue: File | null
-    isReadonly?: boolean
-  }>(),
-  {
-    accept: '',
-    isReadonly: false,
+const props = defineProps<{
+  modelValue: File[] | null
+}>()
+
+const attrs = useAttrs()
+const isMultiple = computed(() =>
+  ['', 'multiple', true].includes(attrs.multiple as string | boolean),
+)
+const isReadonly = computed(() =>
+  ['', 'readonly', true].includes(attrs.readonly as string | boolean),
+)
+
+const uid = generateUid()
+const inputElement = ref<HTMLInputElement>()
+const dropZoneLabelElement = ref<HTMLLabelElement>()
+const { $t, $config } = useContext()
+
+const tryEmitFiles = (files: File[]) => {
+  try {
+    files.forEach(file => {
+      if (file.size > 2 * 1000 * 1000) throw new errors.FileSizeError()
+      if (!$config.FILE_MIME_TYPES.includes(file.type as FILE_TYPES))
+        throw new errors.FileTypeError()
+    })
+
+    if (isMultiple.value) {
+      if (props.modelValue)
+        emit(
+          'update:modelValue',
+          unionBy(props.modelValue, files, file => file.name),
+        )
+      else emit('update:modelValue', files)
+    } else {
+      emit('update:modelValue', [files[0]])
+    }
+  } catch (err) {
+    switch (err?.constructor) {
+      case errors.FileSizeError:
+        ErrorHandler.process(err, $t('file-field.error-exceeded-file-size'))
+        break
+      case errors.FileTypeError:
+        ErrorHandler.process(err, $t('file-field.error-uncorrected-file-type'))
+    }
+  }
+}
+
+const onChange = (event: Event) => {
+  const eventTarget = event.target as HTMLInputElement
+  if (eventTarget.files?.length) tryEmitFiles([...eventTarget.files] as File[])
+}
+
+const { isOverDropZone } = useDropZone(
+  dropZoneLabelElement,
+  (files: File[] | null) => {
+    if (files) tryEmitFiles(files)
   },
 )
 
-const checkType = (files: FileList | File[]) => {
-  const fileMIMEType = files[0].type
-  if (!$config.FILE_MIME_TYPES.find(type => type === fileMIMEType)) {
-    throw new Error('Uncorrect format')
+const cancelFileByName = (fileName: string) => {
+  if (props.modelValue?.length && props.modelValue.length > 1) {
+    emit(
+      'update:modelValue',
+      props.modelValue.filter(file => file.name !== fileName),
+    )
+  } else {
+    if (inputElement.value) inputElement.value.value = ''
+    emit('update:modelValue', null)
   }
 }
-
-const { $config } = useContext()
-
-const dropZone = ref<HTMLLabelElement>()
-const { isOverDropZone } = useDropZone(dropZone, (files: File[] | null) => {
-  if (files) {
-    try {
-      checkType(files)
-    } catch (error) {
-      ErrorHandler.process(error, 'Uncorrect file type')
-      return
-    }
-  }
-  props.modelValue
-    ? emit('update:modelValue', files?.length ? files[0] : props.modelValue)
-    : emit('update:modelValue', files?.length ? files[0] : null)
-})
-
-const fileDialog = useFileDialog({
-  multiple: false,
-  accept: $config.FILE_MIME_TYPES.join(', '),
-})
-
-const openFileDialog = () => {
-  fileDialog.reset()
-  fileDialog.open()
-}
-
-const cancelFile = () => {
-  emit('update:modelValue', null)
-}
-
-const emitFileFromFileDialog = (fileList: FileList | null) => {
-  emit('update:modelValue', fileList?.length ? fileList[0] : null)
-}
-
-watch(
-  () => fileDialog.files,
-  newValue => {
-    if (newValue.value) {
-      try {
-        checkType(newValue.value)
-      } catch (err) {
-        ErrorHandler.process(err, 'Uncorrect file type')
-        return
-      }
-    }
-    emitFileFromFileDialog(newValue.value)
-  },
-  { deep: true },
-)
 </script>
 
 <style lang="scss" scoped>
+.file-field__container {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(12);
+
+  @include respond-to(tablet) {
+    gap: toRem(8);
+  }
+}
+
 .file-field__file-info {
-  background: url('/branding/background-file-field-file-info.svg');
+  background: var(--col-great);
+  border-radius: var(--border-radius-medium);
   display: flex;
   align-items: center;
-  padding: 0 toRem(20);
-  gap: toRem(12);
-  height: toRem(77);
-  width: toRem(523);
+  padding: 0 toRem(24);
+  gap: toRem(10);
+  height: toRem(96);
+  transition: background-color, var(--transition-duration);
+
+  &:hover,
+  .file-field__drop-zone--active &,
+  .file-field__drop-zone:hover & {
+    background: var(--col-mild);
+  }
+
+  @include respond-to(tablet) {
+    padding: 0 toRem(16);
+    height: toRem(76);
+  }
+}
+
+.file-field__file-meta {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-field__file-icon {
+  width: toRem(32);
+  height: toRem(32);
 }
 
 .file-field__file-name {
-  font-size: toRem(20);
-  line-height: toRem(23);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  max-width: 80%;
-
   @include text-ellipsis;
+}
+
+.file-field__file-size {
+  color: var(--col-fancy);
+
+  @include body-medium;
+
+  @include respond-to(tablet) {
+    margin-top: toRem(4);
+  }
 }
 
 .file-field__cancel-button {
   margin-left: auto;
   height: toRem(24);
   width: toRem(24);
-  fill: var(--col-primary);
+  fill: var(--col-fancy);
   flex-shrink: 0;
+  color: var(--col-intense);
+  transition: var(--transition-duration);
+  z-index: var(--z-layer-1);
 
   &:hover {
     fill: var(--col-accent);
@@ -160,82 +253,25 @@ watch(
   &:active {
     fill: var(--col-spot);
   }
+
+  @include respond-to(tablet) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 
 .file-field__drop-zone {
   position: relative;
-  background: url('/branding/background-file-field-drop-zone.png');
-  display: flex;
-  margin: auto;
-  height: toRem(172);
-  width: toRem(523);
   border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: background-color var(--transition-duration);
 
-  &:hover,
-  &--active {
-    background: url('/branding/background-file-field-drop-zone-active.png');
-  }
-}
+  &--offset {
+    margin-top: toRem(12);
 
-.file-field__not-drag-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  margin: auto;
-}
-
-.file-field__drag-block {
-  margin: auto;
-}
-
-.file-field__icon {
-  width: toRem(44.24);
-  height: toRem(44.24);
-}
-
-.file-field__drag-icon {
-  width: toRem(80);
-}
-
-.file-field__file-icon {
-  max-width: toRem(27.8);
-}
-
-.file-field__title {
-  font-size: toRem(14);
-  line-height: toRem(16);
-  margin-top: toRem(10);
-  color: var(--col-wet);
-}
-
-.file-field__require {
-  color: var(--col-secondary);
-  font-size: toRem(12);
-  line-height: toRem(14);
-  margin-top: toRem(4);
-}
-
-.file-field__open-button {
-  position: relative;
-  padding: toRem(10) toRem(16);
-  font-size: toRem(12);
-  line-height: toRem(14);
-  color: var(--col-peaceful);
-  border: toRem(1) solid var(--col-peaceful);
-  border-radius: toRem(5);
-  margin-top: toRem(10);
-  text-transform: uppercase;
-
-  &:hover {
-    color: var(--col-quiet);
-    border-color: var(--col-quiet);
-  }
-
-  &:active {
-    color: var(--col-calm);
-    border-color: var(--col-calm);
+    @include respond-to(tablet) {
+      margin-top: toRem(8);
+    }
   }
 }
 
@@ -246,5 +282,124 @@ watch(
   bottom: 0;
   left: 0;
   cursor: pointer;
+  border-radius: inherit;
+}
+
+.file-field__drop-zone-container {
+  background-image: url('/branding/border-file-field-drop-zone.png');
+  background-color: var(--col-great);
+  height: toRem(257);
+  width: toRem(544);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  margin: auto;
+  transition: inherit;
+
+  .file-field__drop-zone--active &,
+  .file-field__drop-zone:hover & {
+    background-color: var(--col-grand);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(184);
+    width: toRem(311);
+    background-image: url('/branding/border-file-field-drop-zone-small.png');
+  }
+}
+
+.file-field__drop-zone-icon {
+  width: toRem(40);
+  height: toRem(40);
+  color: var(--col-negative);
+
+  &--large {
+    height: toRem(80);
+    width: toRem(80);
+  }
+}
+
+.file-field__title {
+  margin-top: toRem(16);
+
+  @include respond-to(tablet) {
+    margin-top: toRem(8);
+  }
+}
+
+.file-field__browse-label {
+  display: inline-block;
+  position: relative;
+  z-index: var(--z-layer-100);
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--col-primary);
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: toRem(1.7);
+    display: block;
+    height: toRem(0.8);
+    width: 100%;
+    background: var(--col-primary);
+  }
+
+  &:hover {
+    color: var(--col-basic);
+
+    &:after {
+      background: var(--col-basic);
+    }
+  }
+
+  &:active {
+    color: var(--col-initial);
+
+    &:after {
+      background: var(--col-initial);
+    }
+  }
+}
+
+.file-field__require {
+  color: var(--col-fine);
+  margin-top: toRem(8);
+
+  @include body-large-inter;
+}
+
+.file-field__input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0 toRem(4);
+  z-index: var(--z-layer-negative-1);
+  display: block;
+  padding: 0;
+}
+
+.fade-leave-active {
+  animation: fade-in var(--transition-duration) reverse;
+}
+
+.fade-enter-active {
+  animation: fade-in var(--transition-duration-slow);
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

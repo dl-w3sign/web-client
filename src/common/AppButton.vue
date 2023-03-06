@@ -1,36 +1,38 @@
 <template>
   <button
     class="app-button"
-    :class="[
-      size ? `app-button--${size}` : '',
-      state ? `app-button--${state}` : '',
-      preset ? `app-button--${preset}` : '',
-    ]"
-    :disabled="state === 'not-allowed' || state === 'waiting' || isDisabled"
-    v-bind="$attrs"
+    :class="{
+      'app-button--waiting': isWaiting,
+      [`app-button--${preset}`]: !!preset,
+    }"
+    :disabled="isDisabled || isWaiting"
   >
     <slot>{{ text }}</slot>
   </button>
 </template>
 
 <script lang="ts" setup>
-import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
+import { computed, useAttrs } from 'vue'
+
+type PRESETS = 'primary' | 'outline-brittle'
 
 withDefaults(
   defineProps<{
     text?: string
-    size?: BUTTON_SIZES
-    state?: BUTTON_STATES
-    preset?: BUTTON_PRESETS
-    isDisabled?: boolean
+    preset?: PRESETS
+    isWaiting?: boolean
   }>(),
   {
     text: '',
-    size: undefined,
-    state: undefined,
     preset: undefined,
-    isDisabled: false,
+    isWaiting: false,
   },
+)
+
+const attrs = useAttrs()
+
+const isDisabled = computed(() =>
+  ['', 'disabled', true].includes(attrs.disabled as string | boolean),
 )
 </script>
 
@@ -40,19 +42,10 @@ withDefaults(
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: toRem(52);
   border-radius: var(--border-radius);
-  transition: var(--transition-duration);
-
-  &--large {
-    font-weight: 700;
-    font-size: toRem(20.0036);
-    line-height: toRem(23);
-    height: toRem(64);
-  }
-
-  &--waiting {
-    cursor: wait;
-  }
+  transition-property: border, background-color, color, fill, stroke;
+  transition-duration: var(--transition-duration);
 
   &--not-allowed {
     cursor: not-allowed;
@@ -60,6 +53,21 @@ withDefaults(
 
   &--none-events {
     pointer-events: none;
+  }
+
+  &--outline-brittle {
+    border: toRem(1) solid var(--col-brittle);
+    color: var(--col-trendy);
+    fill: var(--col-trendy);
+
+    &:not([disabled]):hover {
+      border-color: var(--col-flexible);
+    }
+
+    &:not([disabled]):active,
+    &.app-button--waiting {
+      border-color: var(--col-primary);
+    }
   }
 
   &--primary {
@@ -71,72 +79,33 @@ withDefaults(
       background: var(--col-basic);
     }
 
-    &:not([disabled]):active,
-    &.app-button--waiting {
+    &:not([disabled]):active {
       background: var(--col-initial);
     }
 
-    &.app-button--none-events {
+    &.app-button--waiting {
+      background: var(--col-original);
+    }
+
+    &:not(.app-button--waiting):disabled {
       background: var(--col-negative);
       color: var(--col-positive);
       fill: var(--col-positive);
     }
   }
 
-  &--outline-primary {
-    border: toRem(1) solid var(--col-primary);
-    color: var(--col-primary);
-    fill: var(--col-primary);
+  &:disabled {
+    cursor: not-allowed;
 
-    &:not([disabled]):hover {
-      border-color: var(--col-basic);
-      background: var(--col-basic);
-      color: var(--col-intense);
-      fill: var(--col-intense);
-    }
-
-    &:not([disabled]):active,
     &.app-button--waiting {
-      border-color: var(--col-initial);
-      background: var(--col-initial);
-      color: var(--col-intense);
-      fill: var(--col-intense);
+      cursor: wait;
     }
   }
 
-  &--genius {
-    background: var(--col-genius);
-    color: var(--col-intense);
+  @include body-large;
 
-    &:not([disabled]):hover {
-      background-color: var(--col-wise);
-    }
-
-    &:not([disabled]):active,
-    &.app-button--waiting {
-      background-color: var(--col-smart);
-    }
-  }
-
-  &--outline-accent {
-    border: toRem(1) solid var(--col-speck);
-    color: var(--col-speck);
-    fill: var(--col-speck);
-
-    &:not([disabled]):hover {
-      border-color: var(--col-accent);
-      background: var(--col-accent);
-      color: var(--col-intense);
-      fill: var(--col-intense);
-    }
-
-    &:not([disabled]):active,
-    &.app-button--waiting {
-      border-color: var(--col-spot);
-      background: var(--col-spot);
-      color: var(--col-intense);
-      fill: var(--col-intense);
-    }
+  @include respond-to(tablet) {
+    height: toRem(48);
   }
 }
 </style>

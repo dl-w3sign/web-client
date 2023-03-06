@@ -1,14 +1,9 @@
 <template>
   <div class="notification">
     <icon class="notification__icon" :name="iconName" />
-    <div class="notification__details">
-      <h4 class="notification__title">
-        {{ title }}
-      </h4>
-      <p class="notification__message">
-        {{ message }}
-      </p>
-    </div>
+    <p class="notification__message">
+      {{ message }}
+    </p>
   </div>
 </template>
 
@@ -18,12 +13,10 @@ import { ICON_NAMES } from '@/enums'
 
 withDefaults(
   defineProps<{
-    title?: string
     message: string
     iconName?: ICON_NAMES
   }>(),
   {
-    title: '',
     iconName: ICON_NAMES.check,
   },
 )
@@ -33,47 +26,68 @@ withDefaults(
 @import 'vue-toastification/src/scss/index';
 
 .Vue-Toastification__toast {
+  align-items: center;
+  cursor: default;
+
+  &--default,
+  &--info {
+    color: var(--col-primary);
+
+    @include note-info;
+  }
+
   &--success {
-    background: var(--col-fortunate);
+    color: var(--col-intense);
+
+    @include note-success;
   }
 
   &--error {
-    background: var(--col-accent);
+    color: var(--col-accent);
+
+    @include note-error;
   }
 
   &--warning {
-    background: var(--col-primary);
+    color: var(--col-wise);
+
+    @include note-warning;
   }
 
-  &--info {
-    background: var(--col-glossy);
+  @include note;
+}
+
+.Vue-Toastification__close-button {
+  position: absolute;
+  top: toRem(8);
+  right: toRem(16);
+  opacity: 1;
+  height: toRem(24);
+  align-items: flex-start;
+  transition: var(--transition-duration);
+  color: var(--col-negative);
+
+  &:hover {
+    color: var(--col-fancy);
+  }
+
+  &:active {
+    color: var(--col-trendy);
   }
 }
 
 .notification {
-  display: grid;
-  place-items: center;
-  grid-template-columns: max-content 1fr;
-  grid-gap: toRem(16);
+  display: flex;
+  gap: toRem(8);
+  padding-right: toRem(20);
 }
 
 .notification .notification__icon {
-  max-width: toRem(48);
-  max-height: toRem(48);
-  fill: var(--col-intense);
-}
-
-.notification__details {
-  display: grid;
-  grid-gap: toRem(4);
-  width: 100%;
-}
-
-.notification__title {
-  color: var(--col-intense);
+  max-width: toRem(24);
+  max-height: toRem(24);
 }
 
 .notification__message {
-  color: var(--col-intense);
+  color: var(--col-trendy);
 }
 </style>

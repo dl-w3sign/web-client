@@ -1,13 +1,12 @@
 <template>
   <app-button
     class="connect-ethereum__connect-button"
-    :size="BUTTON_SIZES.large"
-    :state="buttonState"
-    :preset="BUTTON_PRESETS.genius"
-    @click="connectOrReferToInstallMetamask"
+    :disabled="web3Provider.isConnected || web3Provider.isConnecting"
+    :is-waiting="web3Provider.isConnecting"
+    @click.prevent="connectOrReferToInstallMetamask"
   >
-    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
     {{ buttonText }}
+    <icon class="connect-ethereum__button-icon" :name="$icons.metamask" />
   </app-button>
 </template>
 
@@ -15,50 +14,64 @@
 import { computed } from 'vue'
 import { AppButton, Icon } from '@/common'
 import { useContext } from '@/composables'
-import { BUTTON_SIZES, BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
-import { abbrCenter } from '@/helpers'
+import { errors } from '@/errors'
+import { abbrCenter, isMobile, ErrorHandler } from '@/helpers'
+import { router } from '@/router'
 import { useWeb3ProvidersStore } from '@/store'
 
 const { $t, $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()
 
-const buttonState = computed<BUTTON_STATES | undefined>(() => {
-  switch (true) {
-    case web3Provider.isInitFailed:
-      return BUTTON_STATES.notAllowed
-    case web3Provider.isIniting:
-      return BUTTON_STATES.waiting
-    case web3Provider.isConnecting:
-      return BUTTON_STATES.waiting
-    case web3Provider.isConnected:
-      return BUTTON_STATES.noneEvents
-    default:
-      return undefined
-  }
-})
 const buttonText = computed<string>(() => {
   switch (true) {
-    case !web3Provider.selectedProvider:
+    case !web3Provider?.selectedProvider && isMobile():
+      return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
+    case !web3Provider?.selectedProvider:
       return $t('connect-ethereum.connect-button-text-install-provider')
-    case web3Provider.isInitFailed:
-      return $t('connect-ethereum.connect-button-text-failed-load')
-    case web3Provider.isIniting:
-      return $t('connect-ethereum.connect-button-text-loading')
-    case web3Provider.isConnecting:
+    case web3Provider?.isConnecting:
       return $t('connect-ethereum.connect-button-text-connecting')
-    case !!web3Provider.selectedAddress:
+    case !!web3Provider?.selectedAddress:
       return abbrCenter(web3Provider.selectedAddress as string)
     default:
       return $t('connect-ethereum.connect-button-text')
   }
 })
 
-const connectOrReferToInstallMetamask = async () => {
-  if (web3Provider.selectedProvider) {
-    await web3Provider.connect()
+const APP_URL = `https://metamask.app.link/dapp/${window.location.host}${router.currentRoute.value.fullPath}`
+const redirect = () => {
+  try {
+    window.open(APP_URL)
+  } catch (error) {
+    window.location.reload()
+  }
+}
 
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
+const handleMobileVersion = () => {
+  if (navigator.userAgent.includes('MetaMask')) {
+    web3Provider?.connect()
+    return
+  }
+
+  redirect()
+}
+
+const connectOrReferToInstallMetamask = async () => {
+  if (isMobile()) {
+    handleMobileVersion()
+    return
+  }
+
+  if (web3Provider?.selectedProvider) {
+    try {
+      await web3Provider.connect()
+
+      if (web3Provider.chainId !== $config.CHAIN_ID)
+        await web3Provider.switchChain($config.CHAIN_ID)
+    } catch (error) {
+      error?.constructor === errors.ProviderUserRejectedRequest
+        ? ErrorHandler.processWithoutFeedback(error)
+        : ErrorHandler.process(error)
+    }
   } else {
     window.open($config.WEB3_PROVIDER_INSTALL_LINK)
   }
@@ -67,12 +80,21 @@ const connectOrReferToInstallMetamask = async () => {
 
 <style lang="scss" scoped>
 .connect-ethereum__connect-button {
-  gap: toRem(8.33);
-  width: toRem(320);
+  gap: toRem(10);
 }
 
 .connect-ethereum__button-icon {
-  height: toRem(31.2);
-  width: toRem(34.67);
+  height: toRem(24);
+  width: toRem(24);
+
+  .app-navbar & {
+    height: toRem(20);
+    width: toRem(20);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(20);
+    width: toRem(20);
+  }
 }
 </style>

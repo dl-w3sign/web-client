@@ -1,3 +1,4 @@
+export { default as Animation } from './Animation.vue'
 export { default as Icon } from './Icon.vue'
 export { default as AppButton } from './AppButton.vue'
 export { default as AppNavbar } from './AppNavbar.vue'

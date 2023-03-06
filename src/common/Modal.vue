@@ -1,13 +1,13 @@
 <template>
   <teleport to="#modal">
-    <transition name="modal">
+    <transition name="modal" appear>
       <div
-        v-show="isShown"
+        v-if="isShown"
         class="modal__wrapper"
         ref="modalWrapper"
         @click="onWrapperClick"
       >
-        <div class="modal__pane">
+        <div class="modal__pane" v-bind="$attrs">
           <slot :close="closeModal" />
         </div>
       </div>
@@ -16,14 +16,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
-import { Bus } from '@/helpers'
+import { ref } from 'vue'
 
 const emit = defineEmits<{
   (event: 'update:is-shown', value: boolean): void
 }>()
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isShown?: boolean
     isCloseByClickOutside?: boolean
@@ -46,39 +45,63 @@ const onWrapperClick = (event: PointerEvent) => {
     event.preventDefault()
   }
 }
-
-watch(
-  () => props.isShown,
-  newValue => {
-    newValue
-      ? Bus.emit(Bus.eventList.openModal)
-      : Bus.emit(Bus.eventList.closeModal)
-  },
-)
 </script>
 
 <style lang="scss" scoped>
 .modal__wrapper {
   display: flex;
-  position: fixed;
-  z-index: 5000;
+  position: absolute;
+  z-index: var(--z-layer-1300);
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: vh(100);
+  height: 100vh;
   background: var(--col-pesky);
   overflow-y: scroll;
   padding: 4%;
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--col-flexible);
+
+    &:hover {
+      background: var(--col-brittle);
+
+      @include respond-to(375px) {
+        background: var(--col-flexible);
+      }
+    }
+
+    @include respond-to(375px) {
+      background: var(--col-brittle);
+    }
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    @include respond-to(375px) {
+      background: var(--col-rich);
+    }
+  }
+
+  @include respond-to(tablet) {
+    padding: 2%;
+  }
 }
 
 .modal__pane {
-  position: relative;
   background: var(--col-intense);
-  padding: toRem(40) toRem(24) toRem(30);
+  padding: toRem(32);
   border-radius: var(--border-radius-large);
   margin: auto;
+  width: toRem(608);
+  flex-shrink: 0;
+
+  @include respond-to(tablet) {
+    padding: toRem(16);
+    width: toRem(343);
+  }
 }
 
 .modal-enter-active,

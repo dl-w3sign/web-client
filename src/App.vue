@@ -1,24 +1,33 @@
 <template>
-  <div v-if="isAppInitialized" class="app__wrapper" ref="appWrapper">
-    <div class="app__scroll">
+  <transition name="fade">
+    <div v-if="isAppInitialized" class="app__wrapper">
       <app-navbar class="app__navbar" />
-      <router-view v-slot="{ Component, route }" v-show="isContentShown">
+      <router-view v-slot="{ Component, route }">
         <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component class="app__main" :is="Component" />
+          <component v-if="Component" :is="Component" class="app__main" />
+          <div v-else class="app__main">
+            <div class="app__loader-wrp">
+              <animation
+                class="app__loader"
+                :animation-data="LoaderJSON"
+                is-infinite
+              />
+            </div>
+          </div>
         </transition>
       </router-view>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script lang="ts" setup>
-import { AppNavbar } from '@/common'
+import { AppNavbar, Animation } from '@/common'
 import { useNotifications, useContext } from '@/composables'
-import { IMAGE_SOURCES, APP_KEYS } from '@/enums'
-import { ErrorHandler, Bus } from '@/helpers'
+import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { DesignatedProvider } from '@/types'
-import { ref, provide } from 'vue'
+import { ref } from 'vue'
+import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
 const { provider: web3Provider } = useWeb3ProvidersStore()
@@ -32,7 +41,7 @@ const init = async () => {
     await web3Store.detectProviders()
 
     if (web3Store.metamask)
-      web3Provider.init(web3Store.metamask as DesignatedProvider)
+      await web3Provider.init(web3Store.metamask as DesignatedProvider)
 
     document.title = $config.APP_NAME
   } catch (error) {
@@ -41,67 +50,52 @@ const init = async () => {
   isAppInitialized.value = true
 }
 
-const appWrapper = ref<HTMLDivElement>()
-const setAppWrapperBackground = (url?: IMAGE_SOURCES): void => {
-  if (appWrapper.value) {
-    url
-      ? (appWrapper.value.style.backgroundImage = `url(${url})`)
-      : (appWrapper.value.style.backgroundImage = '')
-  }
-}
-
-const isContentShown = ref(true)
-const hideContent = () => {
-  isContentShown.value = false
-}
-const showContent = () => {
-  isContentShown.value = true
-}
-
-provide(APP_KEYS.setAppWrapperBackground, setAppWrapperBackground)
-
-Bus.on(Bus.eventList.openModal, hideContent)
-Bus.on(Bus.eventList.closeModal, showContent)
-
 init()
 </script>
 
 <style lang="scss" scoped>
 .app__wrapper {
-  min-height: vh(100);
-  background-image: url('/branding/background-main.jpg');
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-  transition: background-image var(--transation-duration-slow) ease-in-out;
-  -webkit-transition: background-image var(--transation-duration-slow)
-    ease-in-out;
-}
-
-.app__scroll {
-  overflow-y: scroll;
-  height: 100vh;
-  width: 100vw;
+  min-width: toRem(375);
 }
 
 .app__navbar {
-  position: fixed;
-  z-index: 1000;
-  margin: toRem(60) 2.365% 0;
-  width: calc(100% - 2.365% * 2);
+  height: toRem(80);
+
+  @include respond-to(tablet) {
+    height: toRem(72);
+  }
 }
 
 .app__main {
-  position: relative;
-  top: toRem(180);
+  overflow-y: scroll;
+  height: calc(100vh - toRem(80));
+
+  @include respond-to(tablet) {
+    height: calc(100vh - toRem(72));
+  }
+
+  @include respond-to(375px) {
+    height: max-content;
+  }
+}
+
+.app__loader-wrp {
+  height: 100%;
+  display: flex;
+}
+
+.app__loader {
+  margin: auto;
+  max-height: toRem(500);
+  max-width: toRem(500);
 }
 
 .fade-enter-active {
-  animation: fade-in var(--transation-duration-slow);
+  animation: fade-in var(--transition-duration-slow);
 }
 
 .fade-leave-active {
-  animation: fade-in var(--transation-duration-slow) reverse;
+  animation: fade-in var(--transition-duration-slow) reverse;
 }
 
 @keyframes fade-in {

@@ -21,17 +21,9 @@ export const useNotifications = (): void => {
     messageType = TYPE.DEFAULT as TYPE,
     payload?: string | NotificationObjectPayload | unknown,
   ): void => {
-    let title = ''
     let message = ''
     let iconName = ''
 
-    const defaultTitles = {
-      [TYPE.SUCCESS]: t('notification.default-title-success'),
-      [TYPE.ERROR]: t('notification.default-title-error'),
-      [TYPE.WARNING]: t('notification.default-title-warning'),
-      [TYPE.INFO]: t('notification.default-title-info'),
-      [TYPE.DEFAULT]: t('notification.default-title-default'),
-    }
     const defaultMessages = {
       [TYPE.DEFAULT]: t('notification.default-message-default'),
       [TYPE.INFO]: t('notification.default-message-info'),
@@ -42,7 +34,7 @@ export const useNotifications = (): void => {
     const defaultIconNames = {
       [TYPE.DEFAULT]: ICON_NAMES.informationCircle,
       [TYPE.INFO]: ICON_NAMES.informationCircle,
-      [TYPE.SUCCESS]: ICON_NAMES.check,
+      [TYPE.SUCCESS]: ICON_NAMES.checkCircle,
       [TYPE.ERROR]: ICON_NAMES.exclamationCircle,
       [TYPE.WARNING]: ICON_NAMES.exclamation,
     }
@@ -50,7 +42,6 @@ export const useNotifications = (): void => {
     if (isObject(payload)) {
       const msgPayload = payload as NotificationObjectPayload
 
-      title = msgPayload.title || ''
       message = msgPayload.message
       iconName = msgPayload.iconName ? (msgPayload.iconName as string) : ''
     } else if (payload) {
@@ -59,9 +50,6 @@ export const useNotifications = (): void => {
       message = defaultMessages[messageType]
     }
 
-    if (!title) {
-      title = defaultTitles[messageType]
-    }
     if (!iconName) {
       iconName = defaultIconNames[messageType]
     }
@@ -70,7 +58,6 @@ export const useNotifications = (): void => {
       {
         component: Notification,
         props: {
-          ...(title && { title }),
           message,
           ...(iconName && { iconName }),
         },
@@ -79,6 +66,7 @@ export const useNotifications = (): void => {
         icon: false,
         type: messageType,
         pauseOnFocusLoss: false,
+        timeout: 10000,
       },
     )
   }

@@ -5,52 +5,73 @@
 :after {
   /* brand colors */
 
+  --col-intense: #{$intense};
+  --col-rich: #{$rich};
+  --col-great: #{$great};
+  --col-grand: #{$grand};
+  --col-fine: #{$fine};
+  --col-trendy: #{$trendy};
+  --col-fancy: #{$fancy};
+  --col-dense: #{$dense};
+  --col-rare: #{$rare};
+  --col-rarest: #{$rarest};
+  --col-unique: #{$unique};
+  --col-brittle: #{$brittle};
+  --col-flexible: #{$flexible};
   --col-primary: #{$primary};
   --col-basic: #{$basic};
   --col-initial: #{$initial};
-  --col-secondary: #{$secondary};
-  --col-genius: #{$genius};
-  --col-wise: #{$wise};
-  --col-smart: #{$smart};
-  --col-intense: #{$intense};
-  --col-trendy: #{$trendy};
-  --col-peaceful: #{$peaceful};
-  --col-quiet: #{$quiet};
-  --col-calm: #{$calm};
-  --col-pesky: #{$pesky};
-  --col-weak: #{$weak};
-  --col-clear: #{$clear};
-  --col-pure: #{$pure};
-  --col-simple: #{$simple};
-  --col-net: #{$net};
-  --col-wet: #{$wet};
-  --col-crude: #{$crude};
-  --col-speck: #{$speck};
-  --col-accent: #{$accent};
-  --col-spot: #{$spot};
-  --col-dangerous: #{$dangerous};
-  --col-soft: #{$soft};
-  --col-mild: #{$mild};
-  --col-tender: #{$tender};
-  --col-alt: #{$alt};
-  --col-home: #{$home};
-  --col-lucky: #{$lucky};
+  --col-original: #{$original};
   --col-positive: #{$positive};
   --col-negative: #{$negative};
-  --col-neutral: #{$neutral};
+  --col-pesky: #{$pesky};
+  --col-accent: #{$accent};
+  --col-spot: #{$spot};
+  --col-stress: #{$stress};
+  --col-tensity: #{$tensity};
+  --col-success: #{$success};
+  --col-lucky: #{$lucky};
+  --col-happy: #{$happy};
+  --col-peaceful: #{$peaceful};
+  --col-quiet: #{$quiet};
+  --col-tender: #{$tender};
+  --col-quantum: #{$quantum};
+  --col-home: #{$home};
+  --col-genius: #{$genius};
+  --col-wise: #{$wise};
+  --col-weak: #{$weak};
+  --col-flabby: #{$flabby};
+  --col-simple: #{$simple};
+  --col-soft: #{$soft};
   --col-glossy: #{$glossy};
-  --col-fortunate: #{$fortunate};
+  --col-crude: #{$crude};
+  --col-mild: #{$mild};
+  --col-calm: #{$calm};
+  --col-smart: #{$smart};
+  --col-creative: #{$creative};
+  --col-implicit: #{$implicit};
+  --col-visual: #{$visual};
 
   /* border radiuses */
 
-  --border-radius: #{toRem(4)};
-  --border-radius-large: #{toRem(10)};
+  --border-radius: #{toRem(8)};
+  --border-radius-medium: #{toRem(12)};
+  --border-radius-large: #{toRem(16)};
 
   /* transition */
   --transition-duration: 0.2s;
-  --transation-duration-slow: 0.5s;
-  --transition-delay: 0.5s;
+  --transition-duration-slow: 0.5s;
+  --transition-duration-fast: 0.1s;
+
+  /* z-indexes */
+  --z-layer-negative-10: -10;
+  --z-layer-negative-1: -1;
+  --z-layer-1: 1;
+  --z-layer-20: 20;
+  --z-layer-100: 100;
+  --z-layer-1300: 1300;
 
   /* App variables */
-  --app-font-family: 'Roboto', 'Arial', sans-serif;
+  --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
+  --app-font-weight: 500;
 }

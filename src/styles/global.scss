@@ -2,6 +2,7 @@
 /* stylelint-disable unit-disallowed-list */
 html {
   font-family: var(--app-font-family);
+  font-weight: var(--app-font-weight);
   overflow: hidden !important;
   -webkit-overflow-scrolling: touch !important;
   -moz-osx-font-smoothing: grayscale;
@@ -17,22 +18,78 @@ body, #app {
   display: flex;
   flex-direction: column;
   flex: 1;
-  color: var(--col-wet);
-  min-width: toRem(1080);
+  color: var(--col-trendy);
+  max-height: 100vh;
+  background: var(--col-rich);
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: var(--col-rarest);
+  }
+
+  @include respond-to(375px) {
+    overflow: auto;
+  }
 }
 
 input,
 select,
 textarea {
-  background: var(--background-primary-main);
-  color: var(--text-primary-main);
-  font-family: var(--app-font-family);
-  font-size: toRem(16);
-  font-weight: 400;
+  color: var(--col-fancy);
+  border-radius: var(--border-radius);
+  resize: none;
+  transition-property: border-color, background-color;
+  transition-duration: var(--transition-duration);
+
+  &::placeholder {
+    color: var(--col-fine);
+  }
+
+  &:read-only {
+    border: none;
+    background: var(--col-great);
+    padding: toRem(16) toRem(24);
+    cursor: text;
+
+    @include respond-to(tablet) {
+      padding: toRem(12) toRem(16);
+
+      @include body-small;
+    }
+  }
+
+  &:not(:read-only) {
+    background: var(--col-intense);
+    padding: toRem(13) toRem(15);
+    border: toRem(1) solid var(--col-brittle);
+
+    @include respond-to(tablet) {
+      padding: toRem(9) toRem(11);
+    }
+  }
 
   &:focus {
-    outline: none;
+    outline: 0;
   }
+
+  &:read-only:hover {
+    background: var(--col-mild);
+  }
+
+  &:not(:read-only):hover {
+    border-color: var(--col-fine);
+  }
+
+  &:not(:read-only):focus {
+    outline: 0;
+    border-color: var(--col-primary);
+  }
+
+  &:not(:read-only):active {
+    border-color: var(--col-initial);
+  }
+
+  @include body-large-inter;
 }
 
 body,
@@ -44,14 +101,11 @@ button {
   border: none;
   width: auto;
   overflow: visible;
-  cursor: pointer;
   user-select: none;
   background: transparent;
   font-family: var(--app-font-family);
   font-size: toRem(16);
-  color: var(--text-primary-main);
   line-height: 1.5;
-  font-weight: 600;
   outline: 0;
   margin: 0;
   padding: 0;
@@ -68,6 +122,10 @@ button {
     border: 0;
     padding: 0;
   }
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 body,
@@ -77,30 +135,66 @@ ul {
   list-style-type: none;
 }
 
-h1,
-h2,
-h3,
-h4 {
+h1 {
+  font-size: toRem(56);
+  line-height: toRem(64);
   font-weight: 700;
-  letter-spacing: -0.025em;
-  font-family: 'Times New Roman', 'Arial', sans-serif;
+
+  @include respond-to(xmedium) {
+    font-weight: 600;
+    font-size: toRem(48);
+    line-height: toRem(56);
+  }
+
+  @include respond-to(medium) {
+    font-size: toRem(42);
+    line-height: toRem(48);
+  }
+
+  @include respond-to(tablet) {
+    font-size: toRem(32);
+    line-height: toRem(40);
+    font-weight: 500;
+  }
 }
 
 h2 {
-  font-size: toRem(24);
+  font-weight: 600;
+  font-size: toRem(48);
+  line-height: toRem(56);
 }
 
 h3 {
-  line-height: toRem(46);
   font-size: toRem(32);
+  line-height: toRem(40);
+  font-weight: 500;
+
+  @include respond-to(tablet) {
+    font-size: toRem(20);
+    line-height: toRem(28);
+  }
 }
 
 h4 {
-  font-size: toRem(16);
+  font-size: toRem(20);
+  line-height: toRem(28);
+  font-weight: 500;
+
+  @include respond-to(tablet) {
+    font-size: toRem(18);
+    line-height: toRem(24);
+  }
 }
 
 h5 {
-  font-size: toRem(14);
+  font-size: toRem(18);
+  line-height: toRem(24);
+  font-weight: 500;
+
+  @include respond-to(tablet) {
+    font-size: toRem(16);
+    line-height: toRem(24);
+  }
 }
 
 a {
@@ -116,7 +210,18 @@ a {
 }
 
 ::-webkit-scrollbar {
+  height: toRem(8);
   width: toRem(8);
+
+  @include respond-to(xmedium) {
+    height: toRem(6);
+    width: toRem(6);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(4);
+    width: toRem(4);
+  }
 }
 
 ::-webkit-scrollbar-track {
@@ -124,11 +229,11 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--col-clear);
-  border-radius: toRem(10);
+  background: var(--col-brittle);
+  border-radius: var(--border-radius);
 
   &:hover {
-    background: var(--col-net);
+    background: var(--col-flexible);
   }
 }
 

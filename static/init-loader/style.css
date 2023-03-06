@@ -10,3 +10,18 @@
   justify-content: center;
   align-items: center;
 }
+
+.app__init-logo {
+  height: 12rem;
+  width: 12rem;
+  color: #c9dcff;
+  fill: #2d74ff;
+  animation: twinkle 0.2s infinite alternate;
+}
+
+@keyframes twinkle {
+  to {
+    color: #9fc1ff;
+    fill: #5790ff;
+  }
+}

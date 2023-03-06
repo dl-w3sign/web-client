@@ -1,128 +1,367 @@
 <template>
   <div class="main-page">
-    <div class="main-page__welcome">
-      <h1 class="main-page__welcome-top">
-        {{ $t('main-page.welcome-beginning') }}
-      </h1>
-      <h1 class="main-page__welcome-bottom">
-        {{ $t('main-page.welcome-continuing') }}
-      </h1>
-    </div>
-    <div class="main-page__container">
-      <div class="main-page__description">
-        <p>{{ $t('main-page.description') }}</p>
+    <div class="main-page__introduction">
+      <div class="main-page__welcome">
+        <h1 class="main-page__welcome-top">
+          {{ $t('main-page.welcome-beginning') }}
+          <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
+        </h1>
+        <h1>
+          {{ $t('main-page.welcome-continuing') }}
+        </h1>
+        <svg class="main-page__welcome-background-img">
+          <use href="/branding/ribbon.svg#ribbon" />
+        </svg>
       </div>
+      <h4 class="main-page__description">
+        {{ $t('main-page.description') }}
+      </h4>
+    </div>
+    <div
+      class="main-page__container"
+      :class="{ 'main-page__container--lifted': web3Provider.isConnected }"
+    >
       <transition name="fade">
-        <app-button
+        <div
           v-show="!web3Provider.isConnected"
-          class="main-page__start-button"
-          :preset="BUTTON_PRESETS.primary"
-          :size="BUTTON_SIZES.large"
-          :state="startButtonState"
-          @click="connectOrReferToInstallMetamask"
+          class="main-page__connect-ethereum"
+          :class="{
+            'main-page__connect-ethereum--connected': web3Provider?.isConnected,
+          }"
         >
-          {{ $t('main-page.start-button-text') }}
-          <icon class="main-page__button-icon" :name="$icons.arrowRight" />
-        </app-button>
+          <h4 class="main-page__connect-ethereum-message">
+            {{
+              web3Provider?.isConnected
+                ? $t('main-page.connected-ethereum-message')
+                : $t('main-page.connect-ethereum-message')
+            }}
+          </h4>
+          <connect-ethereum
+            v-if="!web3Provider?.isConnected"
+            class="main-page__connect-ethereum-button"
+            preset="primary"
+          />
+        </div>
       </transition>
+      <div class="main-page__card">
+        <h2 class="main-page__card-title">
+          {{ $t('main-page.doc-creation-card-title') }}
+        </h2>
+        <div class="main-page__card-illustration-wrp">
+          <doc-creation-illustration
+            class="main-page__card-illustration"
+            :is-active="web3Provider.isConnected"
+          />
+        </div>
+        <app-button
+          class="main-page__card-button"
+          preset="primary"
+          :text="$t('main-page.doc-creation-card-button-text')"
+          :disabled="!web3Provider.isConnected"
+          @click="isDocCreationModalShown = true"
+        />
+        <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
+      </div>
+      <div class="main-page__card">
+        <h2 class="main-page__card-title">
+          {{ $t('main-page.doc-verification-card-title') }}
+        </h2>
+        <div class="main-page__card-illustration-wrp">
+          <doc-verification-illustration
+            class="main-page__card-illustration"
+            :is-active="web3Provider.isConnected"
+          />
+        </div>
+        <app-button
+          class="main-page__card-button"
+          preset="primary"
+          :text="$t('main-page.doc-verification-card-button-text')"
+          :disabled="!web3Provider.isConnected"
+          @click="isDocVerificationModalShown = true"
+        />
+        <doc-verification-modal
+          v-model:is-shown="isDocVerificationModalShown"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { AppButton, Icon } from '@/common'
-import { useContext } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_SIZES, BUTTON_STATES } from '@/enums'
+import { AppButton, Icon, ConnectEthereum } from '@/common'
+import {
+  DocCreationIllustration,
+  DocVerificationIllustration,
+} from '@/illustrations'
+import { DocCreationModal, DocVerificationModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
-import { computed } from 'vue'
+import { ref } from 'vue'
 
-const { $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()
 
-const startButtonState = computed<BUTTON_STATES | undefined>(() => {
-  switch (true) {
-    case web3Provider.isInitFailed:
-      return BUTTON_STATES.notAllowed
-    case web3Provider.isIniting:
-      return BUTTON_STATES.waiting
-    case web3Provider.isConnecting:
-      return BUTTON_STATES.waiting
-    default:
-      return undefined
-  }
-})
-
-const connectOrReferToInstallMetamask = async () => {
-  if (web3Provider.selectedProvider) {
-    await web3Provider.connect()
-    await web3Provider.switchChain($config.CHAIN_ID)
-  } else {
-    window.open($config.WEB3_PROVIDER_INSTALL_LINK)
-  }
-}
+const isDocCreationModalShown = ref(false)
+const isDocVerificationModalShown = ref(false)
 </script>
 
 <style lang="scss" scoped>
-.main-page {
-  padding: toRem(116) 7.362% toRem(145);
+.main-page__introduction {
+  margin: 0 auto;
+  padding: toRem(44) toRem(44) toRem(28);
+  fill: var(--col-peaceful);
+  transition: var(--transition-duration-slow);
+  max-width: max-content;
+  text-align: center;
+
+  &:hover {
+    fill: var(--col-quiet);
+  }
+
+  @include respond-to(xmedium) {
+    padding: toRem(38) toRem(38) toRem(24);
+  }
+
+  @include respond-to(medium) {
+    padding: toRem(36) toRem(36) toRem(22);
+  }
+
+  @include respond-to(tablet) {
+    padding: toRem(24) toRem(16) toRem(40);
+  }
+}
+
+.main-page__welcome {
+  position: relative;
+  z-index: var(--z-layer-20);
+  padding: 0 toRem(28) toRem(23);
+
+  @include respond-to(xmedium) {
+    padding-bottom: toRem(18);
+  }
 }
 
 .main-page__welcome-top {
-  font-size: toRem(116);
-  color: var(--col-intense);
-}
-
-.main-page__welcome-bottom {
-  font-size: toRem(94);
-  color: var(--col-primary);
-  line-height: 1.154;
-  margin-top: toRem(4);
-}
-
-.main-page__container {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 70.69%;
-  margin-top: toRem(96);
+  align-items: center;
+  justify-content: center;
+  gap: toRem(16);
+  margin-bottom: toRem(7);
+
+  @include respond-to(medium) {
+    margin-bottom: toRem(3);
+  }
+
+  @include respond-to(tablet) {
+    margin-bottom: 0;
+  }
+}
+
+.main-page__welcome-top-icon {
+  height: toRem(72);
+  width: toRem(72);
+  flex-shrink: 0;
+
+  @include respond-to(xmedium) {
+    height: toRem(62);
+    width: toRem(62);
+  }
+
+  @include respond-to(medium) {
+    height: toRem(54);
+    width: toRem(54);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(46);
+    width: toRem(46);
+  }
+}
+
+.main-page__welcome-background-img {
+  position: absolute;
+  bottom: toRem(0);
+  left: toRem(0);
+  z-index: var(--z-layer-negative-10);
+  height: toRem(51);
+  width: 99.1%;
+
+  @include respond-to(xmedium) {
+    height: toRem(44);
+  }
 }
 
 .main-page__description {
-  background: var(--col-simple);
-  border-radius: toRem(4);
-  padding: toRem(25) toRem(26) toRem(25) toRem(24);
-  font-size: toRem(30);
-  color: var(--col-intense);
-  letter-spacing: -0.015em;
-  line-height: 1.165;
+  color: var(--col-fancy);
+  max-width: toRem(698);
+  margin: 0 auto;
+
+  @include respond-to(xmedium) {
+    max-width: toRem(650);
+  }
+
+  @include respond-to(medium) {
+    max-width: toRem(580);
+  }
 }
 
-.main-page__start-button {
-  margin-top: toRem(40);
-  max-width: toRem(320);
-  gap: toRem(10);
+.main-page__connect-ethereum {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: toRem(16);
+  background: var(--col-great);
+  height: toRem(104);
+  border-radius: var(--border-radius-large);
+  padding: toRem(24) 7.8%;
+  transition: background-color var(--transition-duration-slow);
+
+  &--connected {
+    justify-content: center;
+  }
+
+  &:hover {
+    background: var(--col-mild);
+  }
+
+  @include respond-to(tablet) {
+    flex-direction: column;
+    height: toRem(168);
+    margin: 0 toRem(16);
+  }
 }
 
-.main-page__button-icon {
-  height: toRem(24);
-  width: toRem(24);
+.main-page__connect-ethereum-message {
+  text-align: center;
+  white-space: pre-line;
 }
 
-.fade-enter-active {
-  animation: fade-in var(--transition-duration);
+.main-page__connect-ethereum-button {
+  width: toRem(256);
 }
 
-.fade-leave-active {
-  animation: fade-in var(--transition-duration) reverse;
+.main-page__container {
+  position: relative;
+  display: flex;
+  gap: toRem(32);
+  padding-top: toRem(128);
+  transition: padding var(--transition-duration-slow) ease;
+  max-width: max-content;
+  margin: 0 auto toRem(44);
+
+  &--lifted {
+    transition-delay: 3.7s;
+    padding-top: 0;
+  }
+
+  @include respond-to(medium) {
+    gap: toRem(16);
+
+    &:not(.main-page__container--lifted) {
+      padding-top: toRem(120);
+    }
+  }
+
+  @include respond-to(tablet) {
+    flex-direction: column;
+    max-width: toRem(600);
+    margin: 0 auto toRem(32);
+    padding: 0 toRem(16);
+
+    &:not(.main-page__container--lifted) {
+      padding-top: toRem(184);
+    }
+  }
 }
 
-@keyframes fade-in {
+.main-page__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: toRem(16);
+  color: var(--col-fine);
+  background: var(--col-great);
+  border-radius: var(--border-radius-large);
+  padding: toRem(27) toRem(81);
+  transition: background-color var(--transition-duration-slow);
+
+  &:hover {
+    background: var(--col-mild);
+  }
+
+  @include respond-to(xmedium) {
+    padding: toRem(27) toRem(60);
+  }
+
+  @include respond-to(medium) {
+    padding: toRem(27) toRem(50);
+  }
+
+  @include respond-to(tablet) {
+    width: 100%;
+  }
+}
+
+.main-page__card-title {
+  @include caption;
+}
+
+.main-page__card-illustration-wrp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: toRem(233);
+  width: toRem(233);
+  overflow: hidden;
+
+  @include respond-to(xsmall) {
+    height: toRem(163);
+    width: toRem(163);
+  }
+}
+
+.main-page__card-illustration {
+  transform: scale(0.83511);
+
+  @include respond-to(xsmall) {
+    transform: scale(0.584);
+  }
+}
+
+.main-page__card-button {
+  @include respond-to(tablet) {
+    max-width: toRem(233);
+  }
+
+  @include respond-to(xsmall) {
+    max-width: toRem(163);
+  }
+}
+
+.fade-leave-to {
+  animation: fade 2s ease 2s;
+}
+
+.fade-enter-from {
+  display: none;
+}
+
+.fade-enter-to {
+  opacity: 0;
+  animation: fade var(--transition-duration-slow) ease
+    var(--transition-duration) reverse;
+}
+
+@keyframes fade {
   0% {
-    opacity: 0;
+    opacity: 1;
   }
 
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 </style>

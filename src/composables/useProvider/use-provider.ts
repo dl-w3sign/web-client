@@ -12,7 +12,6 @@ import { errors } from '@/errors'
 import { ethers } from 'ethers'
 import { ErrorHandler } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
-import { ProviderUserRejectedRequest } from '@/errors/runtime.errors'
 
 export interface UseProvider {
   currentProvider: ComputedRef<ethers.providers.Web3Provider | undefined>
@@ -23,9 +22,6 @@ export interface UseProvider {
   selectedAddress: ComputedRef<string | undefined>
   isConnected: ComputedRef<boolean>
   isConnecting: Ref<boolean>
-  isInitiated: Ref<boolean>
-  isIniting: Ref<boolean>
-  isInitFailed: Ref<boolean>
 
   init: (provider: DesignatedProvider) => Promise<void>
   connect: () => Promise<void>
@@ -69,28 +65,16 @@ export const useProvider = (): UseProvider => {
   )
   const isConnecting = ref(false)
 
-  const isInitiated = ref(false)
-  const isIniting = ref(false)
-  const isInitFailed = ref(false)
-
   const init = async (provider: DesignatedProvider) => {
-    isIniting.value = true
-
     switch (provider.name as PROVIDERS) {
       case PROVIDERS.metamask:
         providerWrp.value = useMetamask(provider.instance)
         break
       default:
-        isIniting.value = false
-        isInitFailed.value = true
         throw new Error('Invalid Provider')
     }
     selectedProvider.value = provider.name
     await providerWrp.value.init()
-    isInitFailed.value = false
-
-    isIniting.value = false
-    isInitiated.value = true
   }
 
   const connect = async () => {
@@ -124,9 +108,8 @@ export const useProvider = (): UseProvider => {
       try {
         await providerWrp.value.connect()
       } catch (error) {
-        error?.constructor === ProviderUserRejectedRequest
-          ? ErrorHandler.processWithoutFeedback(error)
-          : ErrorHandler.process(error)
+        isConnecting.value = false
+        throw error
       }
     }
 
@@ -198,9 +181,6 @@ export const useProvider = (): UseProvider => {
     selectedAddress,
     isConnected,
     isConnecting,
-    isInitiated,
-    isIniting,
-    isInitFailed,
 
     init,
     connect,
