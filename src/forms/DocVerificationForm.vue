@@ -212,7 +212,7 @@ const searchAddress = async (address: string) => {
 }
 watch(
   () => addressToSearch.value,
-  newValue => debounce(() => searchAddress(newValue), 500),
+  debounce((newValue: string) => searchAddress(newValue), 500),
 )
 
 const stampInfo = ref<StampInfo | null>()
