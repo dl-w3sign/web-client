@@ -35,9 +35,10 @@ $media-breakpoints: (
 }
 
 @mixin field-label {
-  font-size: toRem(16);
-  line-height: 1.5;
-  margin-bottom: toRem(8);
+  display: inline-block;
+  padding-bottom: toRem(8);
+
+  @include body-large-inter;
 }
 
 @mixin note {
@@ -51,13 +52,11 @@ $media-breakpoints: (
   font-feature-settings: 'tnum' on, 'lnum' on;
   transition: background-color var(--transition-duration-slow);
 
-  @include text-2;
+  @include body-large-inter;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
     padding: toRem(12);
-
-    @include text-4;
   }
 }
 
@@ -94,65 +93,51 @@ $media-breakpoints: (
   }
 }
 
-@mixin h2 {
-  font-weight: 600;
-  font-size: toRem(48);
-  line-height: toRem(56);
-}
-
-@mixin h3 {
-  font-size: toRem(32);
-  line-height: toRem(40);
-  font-weight: 500;
-}
-
-@mixin h4 {
-  font-size: toRem(20);
-  line-height: toRem(28);
-  font-weight: 500;
-}
-
-@mixin h5 {
-  font-size: toRem(18);
-  line-height: toRem(24);
-  font-weight: 500;
-}
-
-@mixin text-1 { // text-3
+@mixin body-large { // body-1, body-3
   font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   font-size: toRem(16);
   line-height: toRem(24);
   font-weight: 500;
+
+  @include respond-to(tablet) {
+    font-size: toRem(14);
+    line-height: toRem(20);
+  }
 }
 
-@mixin text-2 { // body 2 inter
+@mixin body-large-inter { // body 2 inter
   font-family: 'Inter', 'Arial', sans-serif;
   font-size: toRem(16);
   line-height: toRem(24);
   font-weight: 400;
+
+  @include respond-to(tablet) {
+    font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
+    font-size: toRem(14);
+    line-height: toRem(20);
+  }
 }
 
-@mixin text-4 { // body-4-regular
+@mixin body-medium { // body-4-regular
   font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   font-size: toRem(14);
   line-height: toRem(20);
   font-weight: 400;
+
+  @include respond-to(tablet) {
+    font-family: 'Inter', 'Arial', sans-serif;
+    font-size: toRem(12);
+  }
 }
 
-@mixin text-5 { // body-4-medium
-  font-size: toRem(14);
-  line-height: toRem(20);
-  font-weight: 500;
-}
-
-@mixin text-6 { // body-5
+@mixin body-small { // body-5
   font-family: 'Inter', 'Arial', sans-serif;
   font-size: toRem(12);
   line-height: toRem(20);
   font-weight: 400;
 }
 
-@mixin text-caption {
+@mixin caption {
   font-weight: 500;
   font-size: toRem(16);
   line-height: toRem(24);

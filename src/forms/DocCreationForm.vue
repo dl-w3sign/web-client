@@ -3,9 +3,9 @@
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-creation-form__loader" />
-        <p class="doc-creation-form__please-wait-msg">
+        <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-creation-form__note doc-creation-form__note--success">
@@ -20,15 +20,15 @@
         <textarea-field
           class="doc-creation-form__doc-hash"
           :model-value="fileHash || ''"
-          is-copied
+          is-copyable
           readonly
         />
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
             class="doc-creation-form__note-icon"
@@ -38,32 +38,25 @@
             {{ errorMessage }}
           </p>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else>
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <checkbox-field
-          v-show="form.file"
+          v-show="form.files"
           class="doc-creation-form__checkbox"
           v-model="form.isSign"
           :label="$t('doc-creation-form.checkbox-is-sign')"
         />
         <div class="doc-creation-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
@@ -83,7 +76,7 @@ import {
   useFormValidation,
   useTimestampContract,
 } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
+import { RPC_ERROR_MESSAGES } from '@/enums'
 import { FileField, TextareaField, CheckboxField } from '@/fields'
 import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
 import { required, maxValue } from '@/validators'
@@ -116,16 +109,18 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
   isSign: true,
 })
 
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -143,7 +138,7 @@ const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
+    fileHash.value = await getKeccak256FileHash(form.files?.[0] as File)
 
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
@@ -169,7 +164,7 @@ const reset = () => {
   errorMessage.value = ''
   fileHash.value = null
 
-  form.file = null
+  form.files = null
   form.isSign = true
 
   isConfirmationShown.value = false
@@ -182,7 +177,7 @@ const reset = () => {
 .doc-creation-form__checkbox {
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-top: toRem(16);
   }
 }
@@ -192,7 +187,7 @@ const reset = () => {
   gap: toRem(16);
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
     margin-top: toRem(16);
   }
@@ -201,19 +196,13 @@ const reset = () => {
 .doc-creation-form__loader {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }
 
 .doc-creation-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-creation-form__note {
@@ -226,7 +215,7 @@ const reset = () => {
 
     @include note-error;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin: toRem(16) 0;
     }
   }
@@ -240,7 +229,7 @@ const reset = () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -249,7 +238,7 @@ const reset = () => {
 .doc-creation-form__doc-hash {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }

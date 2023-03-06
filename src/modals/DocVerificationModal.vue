@@ -26,10 +26,8 @@ import { DocVerificationForm } from '@/forms'
   gap: toRem(16);
   margin-bottom: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(12);
-
-    @include h4;
   }
 }
 
@@ -37,7 +35,7 @@ import { DocVerificationForm } from '@/forms'
   width: toRem(40);
   height: toRem(40);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     width: toRem(28);
     height: toRem(28);
   }
