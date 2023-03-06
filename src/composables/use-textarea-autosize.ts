@@ -27,7 +27,7 @@ export const useTextareaAutosize = (options?: UseTextareaAutosizeOptions) => {
   }
 
   if (textarea.value?.value)
-    watch([input, textarea.value?.value], resize, { immediate: true })
+    watch([input, textarea.value.value], resize, { immediate: true })
 
   useResizeObserver(textarea, () => resize())
 
