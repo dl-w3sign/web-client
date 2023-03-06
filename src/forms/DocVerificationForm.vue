@@ -145,7 +145,7 @@ import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { useWeb3ProvidersStore } from '@/store'
 import { ref, reactive, computed, watch } from 'vue'
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash-es'
 import { Time } from '@distributedlab/utils'
 
 const emit = defineEmits<{
