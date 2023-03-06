@@ -52,7 +52,8 @@
             {{ $t('doc-verification-form.list-title') }}
           </h4>
           <input-field
-            @update:model-value="searchAddress"
+            :model-value="addressToSearch"
+            @update:model-value="onUpdateAddressToSearch"
             class="doc-verification-form__search-input"
             :placeholder="$t('doc-verification-form.search-placeholder')"
             :left-icon-name="$icons.search"
@@ -143,7 +144,8 @@ import { Keccak256Hash, UsePaginationCallbackArg, StampInfo } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash.debounce'
 import { Time } from '@distributedlab/utils'
 
 const emit = defineEmits<{
@@ -187,21 +189,19 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const addressToSearch = ref('')
-const searchAddress = async (newAddress: string) => {
+const onUpdateAddressToSearch = (newAddress: string) => {
   addressToSearch.value = newAddress
+  if (newAddress && stampInfo.value) stampInfo.value.signers.length = 0
+}
+const searchAddress = async (address: string) => {
+  if (address && isAddress(address)) {
+    const signer = await timestampContractInstance.getSignerInfo(
+      address,
+      fileHash.value as Keccak256Hash,
+    )
 
-  if (addressToSearch.value) {
-    if (stampInfo.value) stampInfo.value.signers.length = 0
-
-    if (isAddress(addressToSearch.value)) {
-      const signer = await timestampContractInstance.getSignerInfo(
-        addressToSearch.value,
-        fileHash.value as Keccak256Hash,
-      )
-
-      if (signer) stampInfo.value?.signers.push(signer)
-    }
-  } else {
+    if (signer) stampInfo.value?.signers.push(signer)
+  } else if (!address) {
     stampInfo.value =
       await timestampContractInstance.getStampInfoWithPagination(
         fileHash.value as Keccak256Hash,
@@ -210,6 +210,10 @@ const searchAddress = async (newAddress: string) => {
       )
   }
 }
+watch(
+  () => addressToSearch.value,
+  newValue => debounce(() => searchAddress(newValue), 500),
+)
 
 const stampInfo = ref<StampInfo | null>()
 const isSignedBySomeone = ref(false)
