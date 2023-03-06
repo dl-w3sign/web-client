@@ -1,4 +1,3 @@
-export * from './buttons.enum'
 export * from './file-types.enum'
 export * from './route-names.enum'
 export * from './icon-names.enum'

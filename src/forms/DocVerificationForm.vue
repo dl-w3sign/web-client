@@ -9,9 +9,9 @@
     <transition name="fade">
       <div v-if="isSubmitting">
         <spinner class="doc-verification-form__loader" />
-        <p class="doc-verification-form__please-wait-msg">
+        <h5 class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-verification-form__doc-info">
@@ -32,7 +32,7 @@
             </p>
           </div>
         </div>
-        <textarea-field :model-value="fileHash || ''" is-copied readonly />
+        <textarea-field :model-value="fileHash || ''" is-copyable readonly />
         <div
           :class="[
             'doc-verification-form__note',
@@ -52,7 +52,8 @@
             {{ $t('doc-verification-form.list-title') }}
           </h4>
           <input-field
-            @update:model-value="searchAddress"
+            :model-value="addressToSearch"
+            @update:model-value="onUpdateAddressToSearch"
             class="doc-verification-form__search-input"
             :placeholder="$t('doc-verification-form.search-placeholder')"
             :left-icon-name="$icons.search"
@@ -86,7 +87,7 @@
             />
           </div>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="signOrExit">
+        <app-button preset="primary" @click="signOrExit">
           {{
             isAlreadySignedByCurrentSigner || isJustSignedByCurrentSigner
               ? $t('doc-verification-form.exit-button-text')
@@ -95,7 +96,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
         >
@@ -105,26 +106,19 @@
           />
           {{ errorMessage }}
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else>
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -143,36 +137,34 @@ import {
   useTimestampContract,
   useContext,
 } from '@/composables'
-import {
-  BUTTON_PRESETS,
-  BUTTON_STATES,
-  RPC_ERROR_MESSAGES,
-  TIMEZONES,
-} from '@/enums'
+import { RPC_ERROR_MESSAGES, TIMEZONES } from '@/enums'
 import { FileField, InputField, TextareaField } from '@/fields'
 import { getKeccak256FileHash, Bus, ErrorHandler, isAddress } from '@/helpers'
 import { Keccak256Hash, UsePaginationCallbackArg, StampInfo } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { Time } from '@/utils'
-import { ref, reactive, computed } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash.debounce'
+import { Time } from '@distributedlab/utils'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
 })
 
 const { $t, $config } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -197,21 +189,19 @@ const fileHash = ref<Keccak256Hash | null>(null)
 const errorMessage = ref('')
 
 const addressToSearch = ref('')
-const searchAddress = async (newAddress: string) => {
+const onUpdateAddressToSearch = (newAddress: string) => {
   addressToSearch.value = newAddress
+  if (newAddress && stampInfo.value) stampInfo.value.signers.length = 0
+}
+const searchAddress = async (address: string) => {
+  if (address && isAddress(address)) {
+    const signer = await timestampContractInstance.getSignerInfo(
+      address,
+      fileHash.value as Keccak256Hash,
+    )
 
-  if (addressToSearch.value) {
-    if (stampInfo.value) stampInfo.value.signers.length = 0
-
-    if (isAddress(addressToSearch.value)) {
-      const signer = await timestampContractInstance.getSignerInfo(
-        addressToSearch.value,
-        fileHash.value as Keccak256Hash,
-      )
-
-      if (signer) stampInfo.value?.signers.push(signer)
-    }
-  } else {
+    if (signer) stampInfo.value?.signers.push(signer)
+  } else if (!address) {
     stampInfo.value =
       await timestampContractInstance.getStampInfoWithPagination(
         fileHash.value as Keccak256Hash,
@@ -220,6 +210,10 @@ const searchAddress = async (newAddress: string) => {
       )
   }
 }
+watch(
+  () => addressToSearch.value,
+  debounce((newValue: string) => searchAddress(newValue), 500),
+)
 
 const stampInfo = ref<StampInfo | null>()
 const isSignedBySomeone = ref(false)
@@ -227,7 +221,7 @@ const isAlreadySignedByCurrentSigner = ref(false)
 const isJustSignedByCurrentSigner = ref(false)
 
 const { width: windowWidth } = useWindowSize()
-const pageLimit = computed(() => (windowWidth.value < 850 ? 2 : 3))
+const pageLimit = computed(() => (windowWidth.value < 868 ? 2 : 3))
 const onPageChange = async ({
   newItemsOffset,
   pageLimit,
@@ -247,7 +241,7 @@ const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.file as File)
+    fileHash.value = await getKeccak256FileHash(form.files?.[0] as File)
 
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
@@ -321,7 +315,7 @@ const signOrExit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  form.file = null
+  form.files = null
   fileHash.value = null
   isSignedBySomeone.value = false
   isAlreadySignedByCurrentSigner.value = false
@@ -334,7 +328,7 @@ const reset = () => {
 <style lang="scss" scoped>
 .doc-verification-form {
   &--confirmation-hidden {
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin-top: toRem(16);
     }
   }
@@ -345,7 +339,7 @@ const reset = () => {
   gap: toRem(16);
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
     margin-top: toRem(16);
   }
@@ -354,19 +348,13 @@ const reset = () => {
 .doc-verification-form__loader {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }
 
 .doc-verification-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-verification-form__doc-info {
@@ -374,18 +362,16 @@ const reset = () => {
   flex-wrap: wrap;
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(4);
   }
 }
 
 .doc-verification-form__doc-hash-title {
-  @include text-1;
+  @include body-large;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(8);
-
-    @include text-5;
   }
 }
 
@@ -413,7 +399,7 @@ const reset = () => {
     stroke: var(--col-primary);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(8) 0 toRem(12);
   }
 }
@@ -423,47 +409,35 @@ const reset = () => {
   justify-content: end;
   gap: toRem(11);
   margin: toRem(8) auto toRem(24);
-  font-size: toRem(14);
-  line-height: 1.2;
 
   &--top {
     margin: 0 0 0 auto;
     align-self: flex-end;
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(4);
 
     &:not(.doc-verification-form__timestamp-info--top) {
       margin-bottom: toRem(12);
     }
   }
+
+  @include body-medium;
 }
 
 .doc-verification-form__timestamp-title {
   color: var(--col-fine);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__timestamp {
   color: var(--col-primary);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__pagination-control {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(12) 0;
   }
 }
@@ -471,8 +445,8 @@ const reset = () => {
 .doc-verification-form__list-title {
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
-    @include text-1;
+  @include respond-to(tablet) {
+    @include body-large;
   }
 }
 
@@ -482,7 +456,7 @@ const reset = () => {
   &--success {
     @include note-success;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin: toRem(12) 0;
     }
   }
@@ -490,7 +464,7 @@ const reset = () => {
   &--error {
     @include note-error;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin: toRem(16) 0;
     }
   }
@@ -504,7 +478,7 @@ const reset = () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -516,14 +490,6 @@ const reset = () => {
 
 .fade-enter-active {
   animation: fade ease-out var(--transition-duration-fast);
-}
-
-.fade-list-leave-active {
-  // TODO: to discuss
-}
-
-.fade-list-enter-active {
-  animation: fade ease var(--transition-duration-fast);
 }
 
 @keyframes fade {

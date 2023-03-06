@@ -4,7 +4,7 @@ import {
   TimestampContract__factory,
   Keccak256Hash,
 } from '@/types'
-import { BN } from '@/utils'
+import { BigNumber } from '@/utils'
 import { useWeb3ProvidersStore } from '@/store'
 import { ContractTransaction } from 'ethers'
 
@@ -65,16 +65,16 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
 
     if (receipt) {
       return {
-        docTimestamp: new BN(receipt.timestamp._hex).toNumber(),
+        docTimestamp: BigNumber.from(receipt.timestamp._hex).toNumber(),
 
         signers: receipt.signersInfo.map(signerInfo => ({
           address: signerInfo.signer,
-          signatureTimestamp: new BN(
+          signatureTimestamp: BigNumber.from(
             signerInfo.signatureTimestamp._hex,
           ).toNumber(),
         })),
 
-        signersTotalCount: new BN(receipt.signersCount._hex).toNumber(),
+        signersTotalCount: BigNumber.from(receipt.signersCount._hex).toNumber(),
       }
     } else {
       return null
@@ -90,7 +90,9 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     if (receipt) {
       return {
         address: receipt.signer,
-        signatureTimestamp: new BN(receipt.signatureTimestamp._hex).toNumber(),
+        signatureTimestamp: BigNumber.from(
+          receipt.signatureTimestamp._hex,
+        ).toNumber(),
       }
     } else {
       return null
