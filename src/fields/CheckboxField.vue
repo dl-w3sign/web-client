@@ -5,10 +5,7 @@
       :class="{ 'checkbox-field__label--checked': modelValue }"
     >
       <span class="checkbox-field__icon-wrp">
-        <icon
-          class="checkbox-field__icon"
-          :name="modelValue ? $icons.checkboxChecked : $icons.checkbox"
-        />
+        <icon :name="modelValue ? $icons.checkboxChecked : $icons.checkbox" />
         <input
           class="checkbox-field__input"
           type="checkbox"
@@ -81,12 +78,12 @@ const updateModelValue = (event: InputEvent) => {
 .checkbox-field__icon-wrp {
   position: relative;
   display: block;
-  margin: toRem(3);
-  width: toRem(18);
-  height: toRem(18);
+  width: toRem(24);
+  height: toRem(24);
 
   @include respond-to(tablet) {
-    margin: toRem(2.5);
+    width: toRem(20);
+    height: toRem(20);
   }
 }
 
@@ -99,16 +96,6 @@ const updateModelValue = (event: InputEvent) => {
   left: 0;
   margin: 0;
   z-index: var(--z-hidden-input);
-}
-
-.checkbox-field__icon {
-  width: toRem(18);
-  height: toRem(18);
-
-  @include respond-to(tablet) {
-    width: toRem(15);
-    height: toRem(15);
-  }
 }
 
 .checkbox-field__label-message {
