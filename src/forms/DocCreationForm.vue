@@ -1,6 +1,6 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
-    <transition name="fade">
+    <transition name="fade" mode="out-in">
       <div v-if="isSubmitting">
         <spinner class="doc-creation-form__loader" />
         <h5 class="doc-creation-form__please-wait-msg">
@@ -243,15 +243,15 @@ const reset = () => {
   }
 }
 
-.fade-leave-from {
-  display: none;
+.fade-leave-active {
+  animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
 .fade-enter-active {
-  animation: fade var(--transition-duration);
+  animation: fade-in ease-out var(--transition-duration-slow);
 }
 
-@keyframes fade {
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
