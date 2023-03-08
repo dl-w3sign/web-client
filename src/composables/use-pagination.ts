@@ -55,28 +55,28 @@ export const usePagination = (options: UsePaginationOptions): UsePagination => {
 
       pageNumber.value = newPageNumber
     } catch (error) {
-      throw ErrorHandler.processWithoutFeedback(error)
+      ErrorHandler.process(error)
     }
   }
 
   const toFirst = async () => {
     if (isFirstPage.value) return
-    tryChangePage(1)
+    await tryChangePage(1)
   }
 
   const toPrev = async () => {
     if (isFirstPage.value) return
-    tryChangePage(pageNumber.value - 1)
+    await tryChangePage(pageNumber.value - 1)
   }
 
   const toNext = async () => {
     if (isLastPage.value) return
-    tryChangePage(pageNumber.value + 1)
+    await tryChangePage(pageNumber.value + 1)
   }
 
   const toLast = async () => {
     if (isLastPage.value) return
-    tryChangePage(pagesCount.value)
+    await tryChangePage(pagesCount.value)
   }
 
   watch(

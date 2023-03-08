@@ -6,7 +6,7 @@
       </svg>
       <connect-ethereum
         class="app-navbar__connect-ethereum"
-        :button-preset="BUTTON_PRESETS.outlineBrittle"
+        preset="outline-brittle"
       />
     </div>
   </header>
@@ -14,7 +14,6 @@
 
 <script lang="ts" setup>
 import { ConnectEthereum } from '@/common'
-import { BUTTON_PRESETS } from '@/enums'
 </script>
 
 <style lang="scss" scoped>
@@ -34,7 +33,7 @@ import { BUTTON_PRESETS } from '@/enums'
   width: 100%;
   max-width: toRem(1440);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     padding: 0 4.5%;
   }
 }
@@ -55,10 +54,10 @@ import { BUTTON_PRESETS } from '@/enums'
 .app-navbar__connect-ethereum {
   height: toRem(48);
   width: toRem(226);
+  font-size: toRem(14);
+  line-height: toRem(20);
 
-  @include text-5;
-
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     width: toRem(216);
   }
 }

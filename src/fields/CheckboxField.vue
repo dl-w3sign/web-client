@@ -1,20 +1,19 @@
 <template>
-  <div
-    class="checkbox-field"
-    :class="{ 'checkbox-field--checked': modelValue }"
-  >
-    <label class="checkbox-field__label">
-      <input
-        v-bind="$attrs"
-        class="checkbox-field__input"
-        type="checkbox"
-        :checked="modelValue"
-        @change="updateModelValue"
-      />
-      <icon
-        class="checkbox-field__icon"
-        :name="modelValue ? $icons.checkboxChecked : $icons.checkbox"
-      />
+  <div class="checkbox-field">
+    <label
+      class="checkbox-field__label"
+      :class="{ 'checkbox-field__label--checked': modelValue }"
+    >
+      <span class="checkbox-field__icon-wrp">
+        <icon :name="modelValue ? $icons.checkboxChecked : $icons.checkbox" />
+        <input
+          class="checkbox-field__input"
+          type="checkbox"
+          :checked="modelValue"
+          v-bind="$attrs"
+          @change="updateModelValue"
+        />
+      </span>
       <span v-if="label" class="checkbox-field__label-message">
         {{ label }}
       </span>
@@ -46,7 +45,11 @@ const updateModelValue = (event: InputEvent) => {
 </script>
 
 <style lang="scss" scoped>
-.checkbox-field {
+.checkbox-field__label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
   transition: var(--transition-duration);
   fill: var(--col-brittle);
   width: max-content;
@@ -56,7 +59,7 @@ const updateModelValue = (event: InputEvent) => {
   }
 
   &:not([disabled]):active {
-    fill: var(--col-primary);
+    fill: var(--col-initial);
   }
 
   &--checked {
@@ -72,36 +75,32 @@ const updateModelValue = (event: InputEvent) => {
   }
 }
 
-.checkbox-field__label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
+.checkbox-field__icon-wrp {
+  position: relative;
+  display: block;
+  width: toRem(24);
+  height: toRem(24);
+
+  @include respond-to(tablet) {
+    width: toRem(20);
+    height: toRem(20);
+  }
 }
 
 .checkbox-field__input {
-  display: none;
-}
-
-.checkbox-field__icon {
-  width: toRem(18);
-  height: toRem(18);
-  margin: toRem(3);
-
-  @include respond-to(850px) {
-    width: toRem(15);
-    height: toRem(15);
-    margin: toRem(2.5);
-  }
+  position: absolute;
+  width: toRem(0.1);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  z-index: var(--z-layer-negative-1);
 }
 
 .checkbox-field__label-message {
   margin-left: toRem(8);
 
-  @include text-2;
-
-  @include respond-to(850px) {
-    @include text-4;
-  }
+  @include body-large-inter;
 }
 </style>

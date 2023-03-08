@@ -30,8 +30,8 @@
 
 <script lang="ts" setup>
 import { Icon } from '@/common'
-import { getCurrentInstance } from 'vue'
 import { ICON_NAMES } from '@/enums'
+import { v4 as generateUid } from 'uuid'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
@@ -42,7 +42,7 @@ const updateModelValue = (event: InputEvent) => {
   emit('update:modelValue', eventTarget.value)
 }
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 withDefaults(
   defineProps<{
     modelValue?: string
@@ -80,7 +80,7 @@ withDefaults(
   width: toRem(24);
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -94,7 +94,7 @@ withDefaults(
   &--with-left-icon {
     padding-left: toRem(49);
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       padding-left: toRem(41);
     }
   }
@@ -107,7 +107,7 @@ withDefaults(
     &--left {
       left: toRem(16);
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         left: toRem(12);
       }
     }
@@ -115,7 +115,7 @@ withDefaults(
     &--right {
       right: toRem(16);
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         right: toRem(12);
       }
     }

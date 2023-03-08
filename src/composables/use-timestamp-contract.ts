@@ -6,7 +6,7 @@ import {
   BytesLike,
   ZKPPointsStructType,
 } from '@/types'
-import { BN } from '@/utils'
+import { BigNumber } from '@/utils'
 import { useWeb3ProvidersStore } from '@/store'
 import {
   ContractTransaction,
@@ -40,7 +40,7 @@ export type UseTimestampContract = {
     publicHash: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides,
   ) => Promise<SignerInfo | null>
-  getFee: (overrides?: CallOverrides) => Promise<BN | null>
+  getFee: (overrides?: CallOverrides) => Promise<BigNumber | null>
   createStamp: (
     publicHash: PromiseOrValue<BytesLike>,
     isSign: PromiseOrValue<boolean>,
@@ -94,19 +94,19 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
       return {
         isPublic: receipt.isPublic,
 
-        docTimestamp: new BN(receipt.timestamp._hex).toNumber(),
+        docTimestamp: BigNumber.from(receipt.timestamp._hex).toNumber(),
 
         signers: receipt.signersInfo.map(signerInfo => ({
           address: signerInfo.signer,
-          signatureTimestamp: new BN(
+          signatureTimestamp: BigNumber.from(
             signerInfo.signatureTimestamp._hex,
           ).toNumber(),
           isAdmittedToSigning: signerInfo.isAddmitted,
         })),
 
         signersTotalCount: receipt.isPublic
-          ? new BN(receipt.usersSigned._hex).toNumber()
-          : new BN(receipt.usersToSign._hex).toNumber(),
+          ? BigNumber.from(receipt.usersSigned._hex).toNumber()
+          : BigNumber.from(receipt.usersToSign._hex).toNumber(),
       }
     } else {
       return null
@@ -126,8 +126,10 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
     if (receipt) {
       return {
         address: receipt.signer,
-        signatureTimestamp: new BN(receipt.signatureTimestamp._hex).toNumber(),
-        isAdmittedToSigning: (await receipt).isAddmitted,
+        signatureTimestamp: BigNumber.from(
+          receipt.signatureTimestamp._hex,
+        ).toNumber(),
+        isAdmittedToSigning: receipt.isAddmitted,
       }
     } else {
       return null
@@ -140,7 +142,7 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
       ? await _instance.value.fee(overrides)
       : await _instance.value.fee()
 
-    return receipt ? new BN(receipt._hex) : null
+    return receipt ? BigNumber.from(receipt._hex) : null
   }
 
   const createStamp = async (

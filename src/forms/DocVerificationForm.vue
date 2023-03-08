@@ -6,12 +6,12 @@
     }"
     @submit.prevent
   >
-    <transition name="fade">
+    <transition name="fade" mode="out-in">
       <div v-if="isSubmitting">
         <spinner class="doc-verification-form__loader" />
-        <p class="doc-verification-form__please-wait-msg">
+        <h5 class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown">
         <div class="doc-verification-form__doc-info">
@@ -34,7 +34,7 @@
         </div>
         <textarea-field
           :model-value="publicFileHash as string || ''"
-          is-copied
+          is-copyable
           readonly
         />
         <div
@@ -49,59 +49,77 @@
           />
           <p>
             {{
-              stampInfo.isPublic
+              stampInfo?.isPublic
                 ? $t('doc-verification-form.success-msg-public')
                 : $t('doc-verification-form.success-msg-not-public')
             }}
           </p>
         </div>
-        <div v-if="stampInfo?.signers.length || addressToSearch">
+        <div v-if="isSignedBySomeone">
           <h4 class="doc-verification-form__list-title">
             {{ $t('doc-verification-form.list-title') }}
           </h4>
           <input-field
             :model-value="addressToSearch"
-            @update:model-value="searchAddress"
+            @update:model-value="onUpdateAddressToSearch"
             class="doc-verification-form__search-input"
             :placeholder="$t('doc-verification-form.search-placeholder')"
             :left-icon-name="$icons.search"
           />
-          <div v-if="stampInfo?.signers">
-            <div v-for="signer in stampInfo.signers" :key="signer.address">
-              <textarea-field
-                class="doc-verification-form__address"
-                :model-value="signer.address"
-                :right-icon-name="
-                  signer.signatureTimestamp ? $icons.checkCircle : undefined
-                "
-                readonly
+          <transition name="fade-in">
+            <spinner v-if="isSearching" class="doc-verification-form__loader" />
+            <div
+              v-else-if="errorMessage"
+              :class="[
+                'doc-verification-form__note',
+                'doc-verification-form__note--error',
+              ]"
+            >
+              <icon
+                class="doc-verification-form__note-icon"
+                :name="$icons.exclamationCircle"
               />
-              <div class="doc-verification-form__timestamp-info">
-                <p
-                  class="doc-verification-form__timestamp-title"
-                  v-if="signer.signatureTimestamp"
-                >
-                  {{ $t('doc-verification-form.signature-timestamp-title') }}
-                </p>
-                <p class="doc-verification-form__timestamp">
-                  {{
-                    signer.signatureTimestamp
-                      ? formatTimestamp(signer.signatureTimestamp)
-                      : $t('doc-verification-form.not-signed-yet-message')
-                  }}
-                </p>
-              </div>
+              <p>
+                {{ errorMessage }}
+              </p>
             </div>
-            <pagination-control
-              v-if="!addressToSearch && stampInfo.signers.length"
-              class="doc-verification-form__pagination-control"
-              :items-count="stampInfo.signersTotalCount"
-              :page-limit="pageLimit"
-              :on-page-change="onPageChange"
-            />
-          </div>
+            <div v-else-if="stampInfo?.signers">
+              <div v-for="signer in stampInfo.signers" :key="signer.address">
+                <textarea-field
+                  class="doc-verification-form__address"
+                  :model-value="signer.address"
+                  :right-icon-name="
+                    signer.signatureTimestamp ? $icons.checkCircle : undefined
+                  "
+                  readonly
+                />
+                <div class="doc-verification-form__timestamp-info">
+                  <p
+                    class="doc-verification-form__timestamp-title"
+                    v-if="signer.signatureTimestamp"
+                  >
+                    {{ $t('doc-verification-form.signature-timestamp-title') }}
+                  </p>
+                  <p class="doc-verification-form__timestamp">
+                    {{
+                      signer.signatureTimestamp
+                        ? formatTimestamp(signer.signatureTimestamp)
+                        : $t('doc-verification-form.not-signed-yet-message')
+                    }}
+                  </p>
+                </div>
+              </div>
+              <pagination-control
+                v-if="!addressToSearch && stampInfo.signers.length"
+                class="doc-verification-form__pagination-control"
+                :items-count="stampInfo.signersTotalCount"
+                :page-limit="pageLimit"
+                :on-page-change="onPageChange"
+              />
+            </div>
+          </transition>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="signOrExit">
+        <app-button preset="primary" @click="signOrExit">
           {{
             infoOfCurrentSigner?.isAdmittedToSigning
               ? $t('doc-verification-form.sign-button-text')
@@ -110,7 +128,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
         >
@@ -120,26 +138,19 @@
           />
           {{ errorMessage }}
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else>
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -159,12 +170,7 @@ import {
   usePoseidonHashContract,
   useContext,
 } from '@/composables'
-import {
-  BUTTON_PRESETS,
-  BUTTON_STATES,
-  RPC_ERROR_MESSAGES,
-  TIMEZONES,
-} from '@/enums'
+import { RPC_ERROR_MESSAGES, TIMEZONES } from '@/enums'
 import { FileField, InputField, TextareaField } from '@/fields'
 import {
   getKeccak256FileHash,
@@ -183,25 +189,28 @@ import {
 } from '@/types'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { Time } from '@/utils'
-import { ref, reactive, computed } from 'vue'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, computed, watch } from 'vue'
+import { debounce } from 'lodash-es'
+import { Time } from '@distributedlab/utils'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
 })
 
 const { $t, $config } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -229,35 +238,49 @@ const publicFileHash = ref<BytesLike | null>(null)
 const errorMessage = ref('')
 
 const addressToSearch = ref('')
-const searchAddress = async (newAddress: string) => {
-  if (newAddress) {
-    if (stampInfo.value) stampInfo.value.signers.length = 0
+const isSearching = ref(false)
+const onUpdateAddressToSearch = (newAddress: string) => {
+  addressToSearch.value = newAddress
+  isSearching.value = true
+}
+const searchAddress = async (address: string) => {
+  if (stampInfo.value) stampInfo.value.signers.length = 0
 
-    if (isAddress(addressToSearch.value)) {
+  if (address) {
+    if (isAddress(address)) {
       const signer = await timestampContractInstance.getSignerInfo(
-        addressToSearch.value,
+        address,
         publicFileHash.value as BytesLike,
       )
 
       if (signer) stampInfo.value?.signers.push(signer)
+    } else {
+      errorMessage.value = $t('doc-verification-form.not-an-address-message')
     }
-  } else {
+  } else if (!address) {
     stampInfo.value =
       await timestampContractInstance.getStampInfoWithPagination(
         publicFileHash.value as BytesLike,
         0,
         pageLimit.value,
       )
+
+    errorMessage.value = ''
   }
 
-  addressToSearch.value = newAddress
+  isSearching.value = false
 }
+watch(
+  () => addressToSearch.value,
+  debounce((newValue: string) => searchAddress(newValue), 500),
+)
 
 const stampInfo = ref<StampInfo | null>()
 const infoOfCurrentSigner = ref<SignerInfo | null>()
+const isSignedBySomeone = ref(false)
 
 const { width: windowWidth } = useWindowSize()
-const pageLimit = computed(() => (windowWidth.value < 850 ? 2 : 3))
+const pageLimit = computed(() => (windowWidth.value < 868 ? 2 : 3))
 const onPageChange = async ({
   newItemsOffset,
   pageLimit,
@@ -281,7 +304,7 @@ const submitVerification = async () => {
       await web3Provider.switchChain($config.CHAIN_ID)
 
     const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
-      (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+      (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
     )) as PoseidonHash
 
     const { publicHash } = await generateZKPPointsStructAndPublicHash(
@@ -306,9 +329,7 @@ const submitVerification = async () => {
         publicFileHash.value,
       )
 
-      if (infoOfCurrentSigner.value?.signatureTimestamp) {
-        infoOfCurrentSigner.value.isAdmittedToSigning = false
-      }
+      isSignedBySomeone.value = true
     }
 
     showConfirmation()
@@ -356,11 +377,13 @@ const signOrExit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  form.file = null
+  form.files = null
   publicFileHash.value = null
   stampInfo.value = undefined
   infoOfCurrentSigner.value = undefined
+  isSignedBySomeone.value = false
   addressToSearch.value = ''
+  isSearching.value = false
   resetState()
 }
 </script>
@@ -368,7 +391,7 @@ const reset = () => {
 <style lang="scss" scoped>
 .doc-verification-form {
   &--confirmation-hidden {
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin-top: toRem(16);
     }
   }
@@ -379,7 +402,7 @@ const reset = () => {
   gap: toRem(16);
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
     margin-top: toRem(16);
   }
@@ -388,19 +411,13 @@ const reset = () => {
 .doc-verification-form__loader {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(16) 0;
   }
 }
 
 .doc-verification-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-verification-form__doc-info {
@@ -408,18 +425,16 @@ const reset = () => {
   flex-wrap: wrap;
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(4);
   }
 }
 
 .doc-verification-form__doc-hash-title {
-  @include text-1;
+  @include body-large;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(8);
-
-    @include text-5;
   }
 }
 
@@ -448,7 +463,7 @@ const reset = () => {
     stroke: var(--col-primary);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(8) 0 toRem(12);
   }
 }
@@ -458,47 +473,35 @@ const reset = () => {
   justify-content: end;
   gap: toRem(11);
   margin: toRem(8) auto toRem(24);
-  font-size: toRem(14);
-  line-height: 1.2;
 
   &--top {
     margin: 0 0 0 auto;
     align-self: flex-end;
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(4);
 
     &:not(.doc-verification-form__timestamp-info--top) {
       margin-bottom: toRem(12);
     }
   }
+
+  @include body-medium;
 }
 
 .doc-verification-form__timestamp-title {
   color: var(--col-fine);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__timestamp {
   color: var(--col-primary);
-
-  @include text-4;
-
-  @include respond-to(850px) {
-    @include text-6;
-  }
 }
 
 .doc-verification-form__pagination-control {
   margin: toRem(24) 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin: toRem(12) 0;
   }
 }
@@ -506,8 +509,8 @@ const reset = () => {
 .doc-verification-form__list-title {
   margin-bottom: toRem(8);
 
-  @include respond-to(850px) {
-    @include text-1;
+  @include respond-to(tablet) {
+    @include body-large;
   }
 }
 
@@ -517,7 +520,7 @@ const reset = () => {
   &--success {
     @include note-success;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin: toRem(12) 0;
       white-space: pre-line;
     }
@@ -526,7 +529,7 @@ const reset = () => {
   &--error {
     @include note-error;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin: toRem(16) 0;
     }
   }
@@ -540,29 +543,26 @@ const reset = () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
 }
 
-.fade-leave-from {
+.fade-in-leave-active {
   display: none;
 }
 
+.fade-leave-active {
+  animation: fade-in ease-out var(--transition-duration) reverse;
+}
+
+.fade-in-enter-active,
 .fade-enter-active {
-  animation: fade ease-out var(--transition-duration-fast);
+  animation: fade-in ease-out var(--transition-duration-slow);
 }
 
-.fade-list-leave-active {
-  // TODO: to discuss
-}
-
-.fade-list-enter-active {
-  animation: fade ease var(--transition-duration-fast);
-}
-
-@keyframes fade {
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
