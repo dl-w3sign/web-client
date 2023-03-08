@@ -293,7 +293,9 @@ const onPageChange = async ({
 }
 
 const formatTimestamp = (timestamp: number): string => {
-  return new Time(timestamp, 'X').tz(TIMEZONES.CET).format('hh:mm A YYYY [CET]')
+  return new Time(timestamp, 'X')
+    .tz(TIMEZONES.CET)
+    .format('hh:mm A MMMM YYYY [CET]')
 }
 
 const submitVerification = async () => {
