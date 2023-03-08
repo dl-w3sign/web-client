@@ -45,6 +45,7 @@
         @change="onChange"
       />
       <label
+        v-if="!isReadonly"
         :for="`file-field--${uid}`"
         ref="dropZoneLabelElement"
         class="file-field__drop-zone-label"
