@@ -6,16 +6,16 @@
           {{ $t('main-page.welcome-beginning') }}
           <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
         </h1>
-        <h1 class="main-page__welcome-bottom">
+        <h1>
           {{ $t('main-page.welcome-continuing') }}
         </h1>
         <svg class="main-page__welcome-background-img">
           <use href="/branding/ribbon.svg#ribbon" />
         </svg>
       </div>
-      <p class="main-page__description">
+      <h4 class="main-page__description">
         {{ $t('main-page.description') }}
-      </p>
+      </h4>
     </div>
     <div
       class="main-page__container"
@@ -29,23 +29,17 @@
             'main-page__connect-ethereum--connected': web3Provider?.isConnected,
           }"
         >
-          <p
-            class="main-page__connect-ethereum-message"
-            :class="{
-              'main-page__connect-ethereum-message--bounded':
-                !web3Provider?.isConnected,
-            }"
-          >
+          <h4 class="main-page__connect-ethereum-message">
             {{
               web3Provider?.isConnected
                 ? $t('main-page.connected-ethereum-message')
                 : $t('main-page.connect-ethereum-message')
             }}
-          </p>
+          </h4>
           <connect-ethereum
             v-if="!web3Provider?.isConnected"
             class="main-page__connect-ethereum-button"
-            :button-preset="BUTTON_PRESETS.primary"
+            preset="primary"
           />
         </div>
       </transition>
@@ -61,17 +55,12 @@
         </div>
         <app-button
           class="main-page__card-button"
+          preset="primary"
           :text="$t('main-page.doc-creation-card-button-text')"
-          :preset="BUTTON_PRESETS.primary"
-          :state="
-            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
-          "
+          :disabled="!web3Provider.isConnected"
           @click="isDocCreationModalShown = true"
         />
-        <doc-creation-modal
-          :is-shown="isDocCreationModalShown"
-          @update:is-shown="isDocCreationModalShown = false"
-        />
+        <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
       </div>
       <div class="main-page__card">
         <h2 class="main-page__card-title">
@@ -85,16 +74,13 @@
         </div>
         <app-button
           class="main-page__card-button"
+          preset="primary"
           :text="$t('main-page.doc-verification-card-button-text')"
-          :preset="BUTTON_PRESETS.primary"
-          :state="
-            web3Provider?.isConnected ? undefined : BUTTON_STATES.noneEvents
-          "
+          :disabled="!web3Provider.isConnected"
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
-          :is-shown="isDocVerificationModalShown"
-          @update:is-shown="isDocVerificationModalShown = false"
+          v-model:is-shown="isDocVerificationModalShown"
         />
       </div>
     </div>
@@ -103,7 +89,6 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon, ConnectEthereum } from '@/common'
-import { BUTTON_PRESETS, BUTTON_STATES } from '@/enums'
 import {
   DocCreationIllustration,
   DocVerificationIllustration,
@@ -131,25 +116,25 @@ const isDocVerificationModalShown = ref(false)
     fill: var(--col-quiet);
   }
 
-  @include respond-to(1100px) {
+  @include respond-to(xmedium) {
     padding: toRem(38) toRem(38) toRem(24);
   }
 
-  @include respond-to(956px) {
+  @include respond-to(medium) {
     padding: toRem(36) toRem(36) toRem(22);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     padding: toRem(24) toRem(16) toRem(40);
   }
 }
 
 .main-page__welcome {
   position: relative;
-  z-index: var(--z-main-page-welcome);
+  z-index: var(--z-layer-20);
   padding: 0 toRem(28) toRem(23);
 
-  @include respond-to(1100px) {
+  @include respond-to(xmedium) {
     padding-bottom: toRem(19);
   }
 }
@@ -161,20 +146,12 @@ const isDocVerificationModalShown = ref(false)
   gap: toRem(16);
   margin-bottom: toRem(7);
 
-  @include respond-to(1100px) {
-    @include h2;
-  }
-
-  @include respond-to(956px) {
-    font-size: toRem(42);
-    line-height: toRem(48);
+  @include respond-to(medium) {
     margin-bottom: toRem(3);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: 0;
-
-    @include h3;
   }
 }
 
@@ -183,34 +160,19 @@ const isDocVerificationModalShown = ref(false)
   width: toRem(72);
   flex-shrink: 0;
 
-  @include respond-to(1100px) {
+  @include respond-to(xmedium) {
     height: toRem(62);
     width: toRem(62);
   }
 
-  @include respond-to(956px) {
+  @include respond-to(medium) {
     height: toRem(54);
     width: toRem(54);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(46);
     width: toRem(46);
-  }
-}
-
-.main-page__welcome-bottom {
-  @include respond-to(1100px) {
-    @include h2;
-  }
-
-  @include respond-to(956px) {
-    font-size: toRem(42);
-    line-height: toRem(48);
-  }
-
-  @include respond-to(850px) {
-    @include h3;
   }
 }
 
@@ -218,37 +180,33 @@ const isDocVerificationModalShown = ref(false)
   position: absolute;
   bottom: toRem(0);
   left: toRem(0);
-  z-index: var(--z-main-page-welcome-background-img);
+  z-index: var(--z-layer-negative-10);
   height: toRem(51);
   width: 99.1%;
 
-  @include respond-to(1100px) {
+  @include respond-to(xmedium) {
     height: toRem(44);
   }
 
-  @include respond-to(956px) {
+  @include respond-to(medium) {
     height: toRem(40);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(38);
   }
 }
 
 .main-page__description {
-  font-size: toRem(20);
-  line-height: 1.4;
   color: var(--col-fancy);
   max-width: toRem(698);
   margin: 0 auto;
 
-  @include respond-to(1100px) {
+  @include respond-to(xmedium) {
     max-width: toRem(650);
-
-    @include h5;
   }
 
-  @include respond-to(956px) {
+  @include respond-to(medium) {
     max-width: toRem(580);
   }
 }
@@ -256,11 +214,13 @@ const isDocVerificationModalShown = ref(false)
 .main-page__connect-ethereum {
   position: absolute;
   top: 0;
+  right: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: toRem(16);
   background: var(--col-great);
-  width: 100%;
   height: toRem(104);
   border-radius: var(--border-radius-large);
   padding: toRem(24) 7.8%;
@@ -274,40 +234,16 @@ const isDocVerificationModalShown = ref(false)
     background: var(--col-mild);
   }
 
-  @include respond-to(850px) {
-    height: toRem(96);
-  }
-
-  @include respond-to(768px) {
+  @include respond-to(tablet) {
     flex-direction: column;
-    padding: toRem(24);
-    gap: toRem(16);
     height: toRem(168);
-    min-width: toRem(395);
-  }
-
-  @include respond-to(460px) {
-    width: toRem(343);
-    min-width: 0;
+    margin: 0 toRem(16);
   }
 }
 
 .main-page__connect-ethereum-message {
   text-align: center;
-
-  &--bounded {
-    width: toRem(214);
-  }
-
-  @include h4;
-
-  @include respond-to(850px) {
-    &--bounded {
-      width: toRem(200);
-    }
-
-    @include h5;
-  }
+  white-space: pre-line;
 }
 
 .main-page__connect-ethereum-button {
@@ -317,19 +253,18 @@ const isDocVerificationModalShown = ref(false)
 .main-page__container {
   position: relative;
   display: flex;
-  justify-content: center;
   gap: toRem(32);
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
   max-width: max-content;
-  margin: auto auto toRem(44);
+  margin: 0 auto toRem(44);
 
   &--lifted {
     transition-delay: 3.7s;
     padding-top: 0;
   }
 
-  @include respond-to(956px) {
+  @include respond-to(medium) {
     gap: toRem(16);
 
     &:not(.main-page__container--lifted) {
@@ -337,25 +272,15 @@ const isDocVerificationModalShown = ref(false)
     }
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     flex-direction: column;
-    max-width: 100%;
-    margin: 0 8.4% toRem(32);
-    gap: toRem(24);
-  }
-
-  @include respond-to(768px) {
-    gap: toRem(16);
-    margin: 0 toRem(16) toRem(32);
+    max-width: toRem(600);
+    margin: 0 auto toRem(32);
+    padding: 0 toRem(16);
 
     &:not(.main-page__container--lifted) {
       padding-top: toRem(184);
     }
-  }
-
-  @include respond-to(460px) {
-    width: toRem(343);
-    margin: 0 auto toRem(32);
   }
 }
 
@@ -368,7 +293,6 @@ const isDocVerificationModalShown = ref(false)
   color: var(--col-fine);
   background: var(--col-great);
   border-radius: var(--border-radius-large);
-  width: toRem(395);
   padding: toRem(27) toRem(81);
   transition: background-color var(--transition-duration-slow);
 
@@ -376,18 +300,21 @@ const isDocVerificationModalShown = ref(false)
     background: var(--col-mild);
   }
 
-  @include respond-to(850px) {
-    width: 100%;
+  @include respond-to(xmedium) {
+    padding: toRem(27) toRem(60);
   }
 
-  @include respond-to(460px) {
-    width: toRem(343);
-    padding: toRem(38) toRem(90);
+  @include respond-to(medium) {
+    padding: toRem(27) toRem(50);
+  }
+
+  @include respond-to(tablet) {
+    width: 100%;
   }
 }
 
 .main-page__card-title {
-  @include text-caption;
+  @include caption;
 }
 
 .main-page__card-illustration-wrp {
@@ -398,7 +325,7 @@ const isDocVerificationModalShown = ref(false)
   width: toRem(233);
   overflow: hidden;
 
-  @include respond-to(460px) {
+  @include respond-to(xsmall) {
     height: toRem(163);
     width: toRem(163);
   }
@@ -407,14 +334,18 @@ const isDocVerificationModalShown = ref(false)
 .main-page__card-illustration {
   transform: scale(0.83511);
 
-  @include respond-to(460px) {
+  @include respond-to(xsmall) {
     transform: scale(0.584);
   }
 }
 
 .main-page__card-button {
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     max-width: toRem(233);
+  }
+
+  @include respond-to(xsmall) {
+    max-width: toRem(163);
   }
 }
 

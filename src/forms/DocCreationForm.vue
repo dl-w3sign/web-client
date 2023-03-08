@@ -3,9 +3,9 @@
     <transition name="fade" mode="out-in">
       <div v-if="isSubmitting" class="doc-creation-form__container">
         <spinner />
-        <p class="doc-creation-form__please-wait-msg">
+        <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div v-else-if="isConfirmationShown" class="doc-creation-form__container">
         <div class="doc-creation-form__note doc-creation-form__note--success">
@@ -19,15 +19,15 @@
         </div>
         <textarea-field
           :model-value="publicFileHash as string || ''"
-          is-copied
+          is-copyable
           readonly
         />
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else-if="isFailureShown" class="doc-creation-form__container">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
             class="doc-creation-form__note-icon"
@@ -37,14 +37,14 @@
             {{ errorMessage }}
           </p>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else class="doc-creation-form__container">
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <transition name="fade-in">
-          <div v-show="form.file" class="doc-creation-form__container">
+          <div v-show="form.files" class="doc-creation-form__container">
             <div class="doc-creation-form__checkboxes">
               <checkbox-field
                 v-model="form.isSign"
@@ -60,7 +60,7 @@
             <p class="doc-creation-form__fee">
               {{ $t('doc-creation-form.fee-title') }}
               <span class="doc-creation-form__fee-value">
-                {{ formatFee(fee as BigNumberish) }}
+                {{ formatFee(fee as BigNumber) }}
               </span>
             </p>
             <transition name="fade-in">
@@ -91,19 +91,12 @@
           </div>
         </transition>
         <div class="doc-creation-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-creation-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
@@ -126,7 +119,7 @@ import {
   UseTimestampContract,
   UsePoseidonHashContract,
 } from '@/composables'
-import { BUTTON_PRESETS, BUTTON_STATES, RPC_ERROR_MESSAGES } from '@/enums'
+import { RPC_ERROR_MESSAGES } from '@/enums'
 import { errors } from '@/errors'
 import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
 import {
@@ -145,7 +138,7 @@ import {
   PoseidonHash,
   BytesLike,
   ChainId,
-  BigNumberish,
+  BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 
@@ -181,24 +174,26 @@ const {
 } = useForm()
 isSubmitting.value = true
 
-const fee = ref<BigNumberish | null>()
+const fee = ref<BigNumber | null>()
 const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
 const errorMessage = ref('')
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
   isSign: true,
   isIndicatingAddresses: false,
   indicatedAddresses: [] as string[],
 })
 
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
   indicatedAddresses: {
@@ -233,7 +228,7 @@ const getErrorMessage = (err: unknown): string => {
   }
 }
 
-const formatFee = (fee: BigNumberish) => {
+const formatFee = (fee: BigNumber) => {
   return `${formatEther(fee)} ${getCurrencySymbolByChainId(
     web3Store.provider.chainId as ChainId,
   )}`.replace('.', ',')
@@ -251,7 +246,7 @@ const submit = async () => {
   try {
     const secretFileHash =
       (await poseidonHashContractInstance.value.getPoseidonHash(
-        (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+        (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
       )) as PoseidonHash
 
     const { ZKPPointsStruct, publicHash } =
@@ -268,7 +263,7 @@ const submit = async () => {
       form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
       ZKPPointsStruct,
       {
-        value: fee.value as BigNumberish,
+        value: fee.value as BigNumber,
       },
     )
 
@@ -287,7 +282,7 @@ const reset = () => {
   errorMessage.value = ''
   publicFileHash.value = null
 
-  form.file = null
+  form.files = null
   form.isSign = true
   form.isIndicatingAddresses = false
   form.indicatedAddresses = []
@@ -322,7 +317,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(16);
   }
 }
@@ -331,7 +326,7 @@ onMounted(async () => {
   display: flex;
   gap: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     flex-direction: column;
     gap: toRem(16);
   }
@@ -341,13 +336,11 @@ onMounted(async () => {
   display: flex;
   gap: toRem(11);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(4);
-
-    @include text-5;
   }
 
-  @include text-1;
+  @include body-large;
 }
 
 .doc-creation-form__fee-value {
@@ -362,19 +355,13 @@ onMounted(async () => {
   display: flex;
   gap: toRem(16);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
   }
 }
 
 .doc-creation-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-creation-form__note {
@@ -395,7 +382,7 @@ onMounted(async () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -411,7 +398,7 @@ onMounted(async () => {
 
 .fade-in-enter-active,
 .fade-enter-active {
-  animation: fade-in ease-out var(--transition-duration);
+  animation: fade-in ease-out var(--transition-duration-slow);
 }
 
 @keyframes fade-in {

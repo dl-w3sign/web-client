@@ -12,7 +12,7 @@
       </transition>
       <connect-ethereum
         class="app-navbar__connect-ethereum"
-        :button-preset="BUTTON_PRESETS.outlineBrittle"
+        preset="outline-brittle"
       />
     </div>
   </header>
@@ -20,7 +20,6 @@
 
 <script lang="ts" setup>
 import { ConnectEthereum, SwitchEthereum } from '@/common'
-import { BUTTON_PRESETS } from '@/enums'
 import { useWeb3ProvidersStore } from '@/store'
 
 const { provider: web3Provider } = useWeb3ProvidersStore()
@@ -44,7 +43,7 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
   width: 100%;
   max-width: toRem(1440);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
     padding: 0 4.5%;
   }
@@ -67,7 +66,7 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
     fill: var(--col-initial);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(44);
     width: toRem(44);
   }
@@ -76,16 +75,16 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
 .app-navbar__connect-ethereum {
   height: toRem(48);
   width: toRem(218);
+  font-size: toRem(14);
+  line-height: toRem(20);
 
-  @include text-5;
-
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     width: toRem(208);
   }
 }
 
 .app-navbar__switch-ethereum {
-  z-index: var(--z-switch-ethereum);
+  z-index: var(--z-layer-1000);
   height: toRem(48);
   width: toRem(179);
   margin-left: auto;
@@ -95,11 +94,11 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
     margin-top: toRem(24);
     width: toRem(179);
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       margin-top: toRem(16);
     }
 
-    @include respond-to(580px) {
+    @include respond-to(small) {
       position: absolute;
       top: toRem(80);
       right: toRem(16);
@@ -107,7 +106,7 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
     }
   }
 
-  @include respond-to(580px) {
+  @include respond-to(small) {
     width: toRem(64);
   }
 }

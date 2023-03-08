@@ -1,8 +1,8 @@
 <template>
   <app-button
     class="connect-ethereum__connect-button"
-    :state="buttonState"
-    :preset="buttonPreset"
+    :disabled="web3Provider.isConnected || web3Provider.isConnecting"
+    :is-waiting="web3Provider.isConnecting"
     @click.prevent="connectOrReferToInstallMetamask"
   >
     {{ buttonText }}
@@ -14,15 +14,10 @@
 import { computed } from 'vue'
 import { AppButton, Icon } from '@/common'
 import { useContext } from '@/composables'
-import { BUTTON_STATES, BUTTON_PRESETS } from '@/enums'
 import { errors } from '@/errors'
 import { abbrCenter, isMobile, ErrorHandler } from '@/helpers'
 import { router } from '@/router'
 import { useWeb3ProvidersStore } from '@/store'
-
-defineProps<{
-  buttonPreset?: BUTTON_PRESETS
-}>()
 
 const { $t, $config } = useContext()
 const {
@@ -31,16 +26,6 @@ const {
   showInvalidNetworkModal,
 } = useWeb3ProvidersStore()
 
-const buttonState = computed<BUTTON_STATES | undefined>(() => {
-  switch (true) {
-    case web3Provider.isConnecting:
-      return BUTTON_STATES.waiting
-    case web3Provider.isConnected:
-      return BUTTON_STATES.noneEvents
-    default:
-      return undefined
-  }
-})
 const buttonText = computed<string>(() => {
   switch (true) {
     case !web3Provider?.selectedProvider && isMobile():
@@ -109,7 +94,7 @@ const connectOrReferToInstallMetamask = async () => {
     width: toRem(20);
   }
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }

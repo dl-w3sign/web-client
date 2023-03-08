@@ -14,7 +14,7 @@
         class="textarea-field__textarea"
         :class="{
           'textarea-field__textarea--removable': isRemovable,
-          'textarea-field__textarea--copied': isCopied,
+          'textarea-field__textarea--copyable': isCopyable,
           'textarea-field__textarea--with-left-icon': leftIconName,
           'textarea-field__textarea--with-right-icon': rightIconName,
         }"
@@ -33,7 +33,7 @@
         <icon class="textarea-field__icon" :name="$icons.xCircle" />
       </button>
       <button
-        v-else-if="isCopied"
+        v-else-if="isCopyable"
         class="textarea-field__copy-button"
         @click.prevent="copy()"
       >
@@ -61,7 +61,8 @@ import { Icon } from '@/common'
 import { useTextareaAutosize } from '@/composables'
 import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
-import { getCurrentInstance, computed, useAttrs } from 'vue'
+import { computed, useAttrs } from 'vue'
+import { v4 as generateUid } from 'uuid'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
@@ -76,7 +77,7 @@ const updateModelValue = (event: InputEvent) => {
   resize()
 }
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 const props = withDefaults(
   defineProps<{
     modelValue: string
@@ -84,7 +85,7 @@ const props = withDefaults(
     idProp?: string
     placeholder?: string
     isRemovable?: boolean
-    isCopied?: boolean
+    isCopyable?: boolean
     isWithoutLineBreaks?: boolean
     leftIconName?: ICON_NAMES
     rightIconName?: ICON_NAMES
@@ -94,7 +95,7 @@ const props = withDefaults(
     idProp: '',
     placeholder: '',
     isRemovable: false,
-    isCopied: false,
+    isCopyable: false,
     isWithoutLineBreaks: true,
     leftIconName: undefined,
     rightIconName: undefined,
@@ -133,7 +134,7 @@ const { textarea, resize } = useTextareaAutosize()
   width: toRem(24);
   flex-shrink: 0;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -148,7 +149,7 @@ const { textarea, resize } = useTextareaAutosize()
   width: toRem(24);
   transition: var(--transition-duration);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
@@ -173,7 +174,7 @@ const { textarea, resize } = useTextareaAutosize()
   width: 100%;
 
   &--removable,
-  &--copied,
+  &--copyable,
   &--with-right-icon {
     &:read-only {
       padding-right: toRem(64);
@@ -183,7 +184,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(24) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         padding-right: toRem(40);
 
         & ~ .textarea-field__icon--right {
@@ -200,7 +201,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(16) auto toRem(10);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         padding-right: toRem(41);
 
         & ~ .textarea-field__icon--right {
@@ -219,7 +220,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(16) auto toRem(24);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         padding-left: toRem(40);
 
         & ~ .textarea-field__icon--left {
@@ -236,7 +237,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(10) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         padding-left: toRem(41);
 
         & ~ .textarea-field__icon--left {
@@ -252,7 +253,7 @@ const { textarea, resize } = useTextareaAutosize()
       fill: var(--col-fine);
       color: var(--col-intense);
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         right: toRem(12);
       }
     }
@@ -265,7 +266,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(24) auto toRem(16);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         width: toRem(40);
 
         .textarea-field__icon {
@@ -282,7 +283,7 @@ const { textarea, resize } = useTextareaAutosize()
       stroke: var(--col-stylish);
       color: var(--col-stylish);
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         right: toRem(12);
       }
     }
@@ -295,7 +296,7 @@ const { textarea, resize } = useTextareaAutosize()
         margin: auto toRem(16) auto toRem(10);
       }
 
-      @include respond-to(850px) {
+      @include respond-to(tablet) {
         width: toRem(42);
       }
     }

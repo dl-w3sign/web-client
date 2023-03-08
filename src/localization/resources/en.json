@@ -15,7 +15,7 @@
     "welcome-beginning": "Welcome to",
     "welcome-continuing": "Documents Timestamping Service",
     "description": "Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.",
-    "connect-ethereum-message": "Connect to MetaMask to start work",
+    "connect-ethereum-message": "Connect to MetaMask\nto start work",
     "connected-ethereum-message": "You connected with a MetaMask!",
     "doc-creation-card-title": "CREATE DOCUMENT",
     "doc-creation-card-button-text": "Create document",
@@ -73,6 +73,7 @@
     "list-title": "List of signatory addresses",
     "sign-success-message": "You have successfully signed the document",
     "already-signed-message": "You signed this document before",
+    "not-an-address-message": "The entered data is not an address",
     "error-default": "Something went wrong",
     "error-doc-not-found": "This document has not been uploaded yet",
     "error-failed-to-fetch": "Network error, it may have happened due to an ad blocker, try disabling it and try again"
@@ -80,8 +81,8 @@
   "file-field": {
     "title": "Drag and drop files or",
     "open-dialog-button-text": "Browse",
-    "require": "PDF, PNG, JPG, DOC(X), XLS, CSV, file size no more than 2 MB",
-    "error-uncorrect-file-type": "Uncorrect file type",
+    "require": "JPG, PNG, file size no more than 2 MB",
+    "error-uncorrected-file-type": "Uncorrected file type",
     "error-exceeded-file-size": "File size exceeded"
   },
   "validations": {

@@ -40,8 +40,8 @@ export async function getKeccak256FileHash(file: File): Promise<Keccak256Hash> {
 }
 
 export function formatFileSize(size: number): string {
-  return `${new Intl.NumberFormat(undefined, {
+  return new Intl.NumberFormat(undefined, {
     style: 'unit',
     unit: 'kilobyte',
-  }).format(Math.round(size / 1000))}`
+  }).format(Math.round(size / 1000))
 }

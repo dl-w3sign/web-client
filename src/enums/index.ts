@@ -1,4 +1,3 @@
-export * from './buttons.enum'
 export * from './chains.enum'
 export * from './file-types.enum'
 export * from './route-names.enum'

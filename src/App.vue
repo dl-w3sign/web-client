@@ -4,16 +4,22 @@
       <app-navbar class="app__navbar" />
       <router-view v-slot="{ Component, route }">
         <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component class="app__main" :is="Component" />
+          <component v-if="Component" :is="Component" class="app__main" />
+          <div v-else class="app__main">
+            <div class="app__loader-wrp">
+              <animation
+                class="app__loader"
+                :animation-data="LoaderJSON"
+                is-infinite
+              />
+            </div>
+          </div>
         </transition>
       </router-view>
       <invalid-network-modal
         :is-shown="web3Store.isInvalidNetworkModalShown"
         @update:is-shown="web3Store.isInvalidNetworkModalShown = false"
       />
-    </div>
-    <div v-else class="app__init">
-      <animation class="app__loader" :animation-data="LoaderJSON" is-infinite />
     </div>
   </transition>
 </template>
@@ -65,13 +71,13 @@ watch(
 <style lang="scss" scoped>
 .app__wrapper {
   position: relative;
-  min-width: toRem(380);
+  min-width: toRem(375);
 }
 
 .app__navbar {
   height: toRem(80);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(72);
   }
 }
@@ -80,16 +86,22 @@ watch(
   overflow-y: scroll;
   height: calc(vh(100) - toRem(80));
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: calc(vh(100) - toRem(72));
   }
 
-  @include respond-to(380px) {
+  @include respond-to(375px) {
     height: max-content;
   }
 }
 
+.app__loader-wrp {
+  height: 100%;
+  display: flex;
+}
+
 .app__loader {
+  margin: auto;
   max-height: toRem(500);
   max-width: toRem(500);
 }

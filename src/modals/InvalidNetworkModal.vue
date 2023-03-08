@@ -14,9 +14,9 @@
           class="invalid-network-modal__container"
         >
           <spinner />
-          <p class="invalid-network-modal__please-wait-msg">
+          <h5 class="invalid-network-modal__message">
             {{ $t('invalid-network-modal.please-wait-msg') }}
-          </p>
+          </h5>
         </div>
         <div v-else class="invalid-network-modal__container">
           <div class="invalid-network-modal__illustration-wrp">
@@ -24,9 +24,9 @@
               class="invalid-network-modal__illustration"
             />
           </div>
-          <p class="invalid-network-modal__message">
+          <h5 class="invalid-network-modal__message">
             {{ $t('invalid-network-modal.message') }}
-          </p>
+          </h5>
           <select-field
             class="invalid-network-modal__chain-select-field"
             preset="outline-brittle"
@@ -105,7 +105,7 @@ const switchAndClose = async () => {
   gap: toRem(24);
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(16);
     margin-top: toRem(16);
   }
@@ -116,30 +116,21 @@ const switchAndClose = async () => {
   align-items: center;
   justify-content: center;
   gap: toRem(16);
-
-  @include respond-to(850px) {
-    @include h4;
-  }
 }
 
 .invalid-network-modal__title-icon {
   width: toRem(40);
   height: toRem(40);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     width: toRem(28);
     height: toRem(28);
   }
 }
 
-.invalid-network-modal__please-wait-msg {
+.invalid-network-modal__message {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
+  white-space: pre-line;
 }
 
 .invalid-network-modal__illustration-wrp {
@@ -150,26 +141,15 @@ const switchAndClose = async () => {
   width: toRem(246);
   overflow: hidden;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(222);
     width: toRem(222);
   }
 }
 
 .invalid-network-modal__illustration {
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     transform: scale(0.9024);
-  }
-}
-
-.invalid-network-modal__message {
-  text-align: center;
-  white-space: pre-line;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
   }
 }
 
@@ -184,7 +164,7 @@ const switchAndClose = async () => {
   gap: toRem(12);
   padding: toRem(12) toRem(15);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
   }
 }
@@ -202,7 +182,7 @@ const switchAndClose = async () => {
   gap: toRem(12);
   padding: toRem(12) toRem(15);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
   }
 

@@ -1,7 +1,7 @@
 <template>
   <select-field
     class="switch-ethereum__select-field"
-    :state="web3Store.isChainSwitching ? BUTTON_STATES.waiting : undefined"
+    :is-waiting="web3Store.isChainSwitching"
     :preset="
       web3Store.hasValidCurrentChain || web3Store.isChainSwitching
         ? 'outline-brittle'
@@ -58,7 +58,6 @@
 
 <script lang="ts" setup>
 import { Icon } from '@/common'
-import { BUTTON_STATES } from '@/enums'
 import { SelectField } from '@/fields'
 import { getIconNameByChainId, getTitleByChainId } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
@@ -75,7 +74,7 @@ const web3Store = useWeb3ProvidersStore()
   gap: toRem(12);
   margin: 0 toRem(12) 0 toRem(15);
 
-  @include respond-to(580px) {
+  @include respond-to(small) {
     margin: 0 toRem(4) 0 toRem(7);
   }
 }
@@ -97,11 +96,11 @@ const web3Store = useWeb3ProvidersStore()
 }
 
 .switch-ethereum__chain-title {
-  @include respond-to(580px) {
+  @include respond-to(small) {
     display: none;
   }
 
-  @include text-1;
+  @include body-large;
 }
 
 .switch-ethereum__select-dropdown {

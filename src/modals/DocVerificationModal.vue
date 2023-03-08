@@ -24,17 +24,13 @@ import { DocVerificationForm } from '@/forms'
   align-items: center;
   justify-content: center;
   gap: toRem(16);
-
-  @include respond-to(850px) {
-    @include h4;
-  }
 }
 
 .doc-verification-modal__title-icon {
   width: toRem(40);
   height: toRem(40);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     width: toRem(28);
     height: toRem(28);
   }

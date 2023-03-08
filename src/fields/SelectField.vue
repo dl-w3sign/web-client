@@ -19,10 +19,10 @@
         class="select-field__select-head"
         :class="{
           'select-field__select-head--with-opened-drop-menu': isDropMenuOpen,
-          [`select-field__select-head--${state}`]: state,
+          'select-field__select-head--waiting': isWaiting,
           [`select-field__select-head--${preset}`]: preset,
         }"
-        :disabled="state === 'waiting'"
+        :disabled="isDisabled || isWaiting"
         v-bind="$attrs"
         @click="toggleDropMenu"
       >
@@ -49,7 +49,7 @@
             'select-field__select-head-indicator--upward':
               ($slots.dropup && !isDropMenuOpen) ||
               ($slots.dropdown && isDropMenuOpen),
-            [`select-field__select-head-indicator--${state}`]: state,
+            'select-field__select-head-indicator--rightward': isWaiting,
           }"
           :name="$icons.chevronDown"
         />
@@ -81,13 +81,13 @@ import { onClickOutside } from '@vueuse/core'
 const props = withDefaults(
   defineProps<{
     modelValue?: string | number
-    state?: string
     preset?: string
+    isWaiting?: boolean
   }>(),
   {
     modelValue: '',
-    state: undefined,
     preset: '',
+    isWaiting: false,
   },
 )
 
@@ -226,7 +226,7 @@ watch(
     }
   }
 
-  @include respond-to(580px) {
+  @include respond-to(small) {
     padding-right: toRem(27);
   }
 }
@@ -245,11 +245,11 @@ watch(
     transform: rotate(-180deg);
   }
 
-  &--waiting {
+  &--rightward {
     transform: rotate(-90deg);
   }
 
-  @include respond-to(580px) {
+  @include respond-to(small) {
     right: toRem(8);
     height: toRem(20);
     width: toRem(20);

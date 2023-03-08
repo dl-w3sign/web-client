@@ -9,9 +9,9 @@
     <transition name="fade" mode="out-in">
       <div v-if="isSubmitting" class="doc-verification-form__container">
         <spinner />
-        <p class="doc-verification-form__please-wait-msg">
+        <h5 class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
-        </p>
+        </h5>
       </div>
       <div
         v-else-if="isConfirmationShown"
@@ -63,62 +63,79 @@
             }}
           </p>
         </div>
-        <div
-          v-if="stampInfo?.signers.length || addressToSearch"
-          class="doc-verification-form__container"
-        >
+        <div v-if="isSignedBySomeone" class="doc-verification-form__container">
           <div>
             <h4 class="doc-verification-form__list-title">
               {{ $t('doc-verification-form.list-title') }}
             </h4>
             <input-field
               :model-value="addressToSearch"
-              @update:model-value="searchAddress"
+              @update:model-value="onUpdateAddressToSearch"
               class="doc-verification-form__search-input"
               :placeholder="$t('doc-verification-form.search-placeholder')"
               :left-icon-name="$icons.search"
             />
           </div>
-          <div
-            v-if="stampInfo?.signers"
-            class="doc-verification-form__container"
-          >
-            <transition-group name="fade-group">
-              <div v-for="signer in stampInfo.signers" :key="signer.address">
-                <textarea-field
-                  class="doc-verification-form__address"
-                  :model-value="signer.address"
-                  :right-icon-name="
-                    signer.signatureTimestamp ? $icons.checkCircle : undefined
-                  "
-                  readonly
-                />
-                <div class="doc-verification-form__timestamp-info">
-                  <p
-                    class="doc-verification-form__timestamp-title"
-                    v-if="signer.signatureTimestamp"
-                  >
-                    {{ $t('doc-verification-form.signature-timestamp-title') }}
-                  </p>
-                  <p class="doc-verification-form__timestamp">
-                    {{
-                      signer.signatureTimestamp
-                        ? formatTimestamp(signer.signatureTimestamp)
-                        : $t('doc-verification-form.not-signed-yet-message')
-                    }}
-                  </p>
+          <transition name="fade-in">
+            <spinner v-if="isSearching" />
+            <div
+              v-else-if="errorMessage"
+              :class="[
+                'doc-verification-form__note',
+                'doc-verification-form__note--error',
+              ]"
+            >
+              <icon
+                class="doc-verification-form__note-icon"
+                :name="$icons.exclamationCircle"
+              />
+              <p>
+                {{ errorMessage }}
+              </p>
+            </div>
+            <div
+              v-else-if="stampInfo?.signers"
+              class="doc-verification-form__container"
+            >
+              <transition-group name="fade-in">
+                <div v-for="signer in stampInfo.signers" :key="signer.address">
+                  <textarea-field
+                    class="doc-verification-form__address"
+                    :model-value="signer.address"
+                    :right-icon-name="
+                      signer.signatureTimestamp ? $icons.checkCircle : undefined
+                    "
+                    readonly
+                  />
+                  <div class="doc-verification-form__timestamp-info">
+                    <p
+                      class="doc-verification-form__timestamp-title"
+                      v-if="signer.signatureTimestamp"
+                    >
+                      {{
+                        $t('doc-verification-form.signature-timestamp-title')
+                      }}
+                    </p>
+                    <p class="doc-verification-form__timestamp">
+                      {{
+                        signer.signatureTimestamp
+                          ? formatTimestamp(signer.signatureTimestamp)
+                          : $t('doc-verification-form.not-signed-yet-message')
+                      }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </transition-group>
-            <pagination-control
-              v-if="!addressToSearch && stampInfo.signers.length"
-              :items-count="stampInfo.signersTotalCount"
-              :page-limit="pageLimit"
-              :on-page-change="onPageChange"
-            />
-          </div>
+              </transition-group>
+              <pagination-control
+                v-if="!addressToSearch && stampInfo.signers.length"
+                :items-count="stampInfo.signersTotalCount"
+                :page-limit="pageLimit"
+                :on-page-change="onPageChange"
+              />
+            </div>
+          </transition>
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="signOrExit">
+        <app-button preset="primary" @click="signOrExit">
           {{
             infoOfCurrentSigner?.isAdmittedToSigning
               ? $t('doc-verification-form.sign-button-text')
@@ -127,7 +144,7 @@
         </app-button>
       </div>
       <div v-else-if="isFailureShown" class="doc-verification-form__container">
-        <file-field :model-value="form.file" is-readonly />
+        <file-field :model-value="form.files" readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
         >
@@ -137,26 +154,19 @@
           />
           {{ errorMessage }}
         </div>
-        <app-button :preset="BUTTON_PRESETS.primary" @click="reset">
+        <app-button preset="primary" @click="reset">
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
       <div v-else class="doc-verification-form__container">
-        <file-field v-model="form.file" />
+        <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
-          <app-button
-            :preset="BUTTON_PRESETS.outlineBrittle"
-            @click="emit('cancel')"
-          >
+          <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-verification-form.cancel-button-text') }}
           </app-button>
           <app-button
-            :preset="BUTTON_PRESETS.primary"
-            :state="
-              isFormDisabled || !isFieldsValid
-                ? BUTTON_STATES.noneEvents
-                : undefined
-            "
+            preset="primary"
+            :disabled="isFormDisabled || !isFieldsValid"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -178,12 +188,7 @@ import {
   UseTimestampContract,
   UsePoseidonHashContract,
 } from '@/composables'
-import {
-  BUTTON_PRESETS,
-  BUTTON_STATES,
-  RPC_ERROR_MESSAGES,
-  TIMEZONES,
-} from '@/enums'
+import { RPC_ERROR_MESSAGES, TIMEZONES } from '@/enums'
 import { errors } from '@/errors'
 import { FileField, InputField, TextareaField } from '@/fields'
 import {
@@ -204,36 +209,33 @@ import {
   PoseidonHash,
   ChainId,
 } from '@/types'
+import { useWeb3ProvidersStore } from '@/store'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { Time } from '@/utils'
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  onMounted,
-  getCurrentInstance,
-} from 'vue'
-import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { debounce } from 'lodash-es'
+import { v4 as generateUid } from 'uuid'
+import { Time } from '@distributedlab/utils'
 
-const uid = getCurrentInstance()?.uid
+const uid = generateUid()
 
 const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
 const form = reactive({
-  file: null as File | null,
+  files: null as File[] | null,
 })
 
 const { $t } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
-  file: {
-    required,
-    size: {
+  files: {
+    0: {
       required,
-      maxValue: maxValue(10 * 1000 * 1000),
+      size: {
+        required,
+        maxValue: maxValue(2 * 1000 * 1000),
+      },
     },
   },
 })
@@ -267,35 +269,49 @@ const publicFileHash = ref<BytesLike | null>(null)
 const errorMessage = ref('')
 
 const addressToSearch = ref('')
-const searchAddress = async (newAddress: string) => {
-  if (newAddress) {
-    if (stampInfo.value) stampInfo.value.signers.length = 0
+const isSearching = ref(false)
+const onUpdateAddressToSearch = (newAddress: string) => {
+  addressToSearch.value = newAddress
+  isSearching.value = true
+}
+const searchAddress = async (address: string) => {
+  if (stampInfo.value) stampInfo.value.signers.length = 0
 
-    if (isAddress(addressToSearch.value)) {
+  if (address) {
+    if (isAddress(address)) {
       const signer = await timestampContractInstance.value.getSignerInfo(
-        addressToSearch.value,
+        address,
         publicFileHash.value as BytesLike,
       )
 
       if (signer) stampInfo.value?.signers.push(signer)
+    } else {
+      errorMessage.value = $t('doc-verification-form.not-an-address-message')
     }
-  } else {
+  } else if (!address) {
     stampInfo.value =
       await timestampContractInstance.value.getStampInfoWithPagination(
         publicFileHash.value as BytesLike,
         0,
         pageLimit.value,
       )
+
+    errorMessage.value = ''
   }
 
-  addressToSearch.value = newAddress
+  isSearching.value = false
 }
+watch(
+  () => addressToSearch.value,
+  debounce((newValue: string) => searchAddress(newValue), 500),
+)
 
 const stampInfo = ref<StampInfo | null>()
 const infoOfCurrentSigner = ref<SignerInfo | null>()
+const isSignedBySomeone = ref(false)
 
 const { width: windowWidth } = useWindowSize()
-const pageLimit = computed(() => (windowWidth.value < 850 ? 2 : 3))
+const pageLimit = computed(() => (windowWidth.value < 868 ? 2 : 3))
 const onPageChange = async ({
   newItemsOffset,
   pageLimit,
@@ -309,7 +325,9 @@ const onPageChange = async ({
 }
 
 const formatTimestamp = (timestamp: number): string => {
-  return new Time(timestamp, 'X').tz(TIMEZONES.CET).format('hh:mm A YYYY [CET]')
+  return new Time(timestamp, 'X')
+    .tz(TIMEZONES.CET)
+    .format('hh:mm A MMM YYYY [CET]')
 }
 
 const updateInfoOfCurrentSigner = async () => {
@@ -344,7 +362,7 @@ const submitVerification = async () => {
   try {
     const secretFileHash =
       (await poseidonHashContractInstance.value.getPoseidonHash(
-        (await getKeccak256FileHash(form.file as File)) as Keccak256Hash,
+        (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
       )) as PoseidonHash
 
     const { publicHash } = await generateZKPPointsStructAndPublicHash(
@@ -364,6 +382,7 @@ const submitVerification = async () => {
       throw new Error('Document not found')
 
     if (stampInfo.value?.signers.length) {
+      isSignedBySomeone.value = true
       await updateInfoOfCurrentSigner()
     }
 
@@ -421,11 +440,13 @@ const signOrExit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  form.file = null
+  form.files = null
   publicFileHash.value = null
   stampInfo.value = undefined
   infoOfCurrentSigner.value = undefined
+  isSignedBySomeone.value = false
   addressToSearch.value = ''
+  isSearching.value = false
   resetState()
 }
 
@@ -448,7 +469,7 @@ onMounted(async () => {
 .doc-verification-form {
   margin-top: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-top: toRem(16);
 
     &--confirmation-shown {
@@ -462,7 +483,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: toRem(24);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(16);
 
     .doc-verification-form--confirmation-shown & {
@@ -475,19 +496,13 @@ onMounted(async () => {
   display: flex;
   gap: toRem(16);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(8);
   }
 }
 
 .doc-verification-form__please-wait-msg {
   text-align: center;
-
-  @include h5;
-
-  @include respond-to(850px) {
-    @include text-1;
-  }
 }
 
 .doc-verification-form__doc-info {
@@ -496,12 +511,10 @@ onMounted(async () => {
 }
 
 .doc-verification-form__doc-hash-label {
-  @include text-1;
+  @include body-large;
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-bottom: toRem(8);
-
-    @include text-5;
   }
 }
 
@@ -509,14 +522,14 @@ onMounted(async () => {
   width: 100%;
   margin-top: toRem(8);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     margin-top: toRem(4);
   }
 }
 
 .doc-verification-form__list-title {
-  @include respond-to(850px) {
-    @include text-1;
+  @include respond-to(tablet) {
+    @include body-large;
   }
 }
 
@@ -550,13 +563,11 @@ onMounted(async () => {
     align-self: flex-end;
   }
 
-  @include text-4;
-
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     gap: toRem(4);
-
-    @include text-6;
   }
+
+  @include body-medium;
 }
 
 .doc-verification-form__timestamp-title {
@@ -567,11 +578,19 @@ onMounted(async () => {
   color: var(--col-primary);
 }
 
+.doc-verification-form__pagination-control {
+  margin: toRem(24) 0;
+
+  @include respond-to(tablet) {
+    margin: toRem(12) 0;
+  }
+}
+
 .doc-verification-form__note {
   &--success {
     @include note-success;
 
-    @include respond-to(850px) {
+    @include respond-to(tablet) {
       white-space: pre-line;
     }
   }
@@ -589,25 +608,22 @@ onMounted(async () => {
   flex-shrink: 0;
   color: var(--col-intense);
 
-  @include respond-to(850px) {
+  @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
   }
+}
+
+.fade-in-leave-active {
+  display: none;
 }
 
 .fade-leave-active {
   animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
+.fade-in-enter-active,
 .fade-enter-active {
-  animation: fade-in ease-out var(--transition-duration);
-}
-
-.fade-group-leave-active {
-  display: none;
-}
-
-.fade-group-enter-active {
   animation: fade-in ease-out var(--transition-duration-slow);
 }
 
