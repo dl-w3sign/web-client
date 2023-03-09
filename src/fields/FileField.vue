@@ -156,7 +156,7 @@ const tryEmitFiles = (files: File[]) => {
 }
 
 const onChange = (event: Event) => {
-  if (inputElement.value?.readOnly) return
+  if (isReadonly.value) return
   const eventTarget = event.target as HTMLInputElement
   if (eventTarget.files?.length) tryEmitFiles([...eventTarget.files] as File[])
 }
@@ -164,7 +164,7 @@ const onChange = (event: Event) => {
 const { isOverDropZone } = useDropZone(
   dropZoneLabelElement,
   (files: File[] | null) => {
-    if (inputElement.value?.readOnly) return
+    if (isReadonly.value) return
     if (files) tryEmitFiles(files)
   },
 )
