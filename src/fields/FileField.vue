@@ -45,6 +45,7 @@
         @change="onChange"
       />
       <label
+        v-show="!isReadonly"
         :for="`file-field--${uid}`"
         ref="dropZoneLabelElement"
         class="file-field__drop-zone-label"
@@ -155,6 +156,7 @@ const tryEmitFiles = (files: File[]) => {
 }
 
 const onChange = (event: Event) => {
+  if (isReadonly.value) return
   const eventTarget = event.target as HTMLInputElement
   if (eventTarget.files?.length) tryEmitFiles([...eventTarget.files] as File[])
 }
@@ -162,6 +164,7 @@ const onChange = (event: Event) => {
 const { isOverDropZone } = useDropZone(
   dropZoneLabelElement,
   (files: File[] | null) => {
+    if (isReadonly.value) return
     if (files) tryEmitFiles(files)
   },
 )
@@ -369,6 +372,7 @@ const cancelFileByName = (fileName: string) => {
 .file-field__require {
   color: var(--col-fine);
   margin-top: toRem(8);
+  text-align: center;
 
   @include body-large-inter;
 }

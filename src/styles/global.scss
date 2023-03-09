@@ -89,6 +89,10 @@ textarea {
     border-color: var(--col-initial);
   }
 
+  @include respond-to(tablet) {
+    padding: toRem(9) toRem(11);
+  }
+
   @include body-large-inter;
 }
 

@@ -81,3 +81,7 @@ export function getEthExplorerTxUrl(explorerUrl: string, txHash: string) {
 export function getEthExplorerAddressUrl(explorerUrl: string, address: string) {
   return `${explorerUrl}/address/${address}`
 }
+
+export function isAddress(address: string) {
+  return ethers.utils.isAddress(address)
+}
