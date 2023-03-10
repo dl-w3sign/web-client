@@ -69,12 +69,11 @@
                 class="doc-creation-form__container"
               >
                 <input-field
+                  v-model="walletAddress"
                   :label="$t('doc-creation-form.wallets-addresses-title')"
                   :placeholder="
                     $t('doc-creation-form.wallet-address-placeholder')
                   "
-                  :model-value="walletAddress"
-                  @update:model-value="addIndicatedAddress"
                 />
                 <transition-group name="fade">
                   <textarea-field
@@ -108,7 +107,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
@@ -141,6 +139,7 @@ import {
   BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -205,11 +204,13 @@ const { isFieldsValid } = useFormValidation(form, {
 const addIndicatedAddress = (address: string) => {
   if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
     form.indicatedAddresses.unshift(address)
-    setTimeout(() => (walletAddress.value = '')) // TODO: to discuss
+    walletAddress.value = ''
   }
-
-  walletAddress.value = address
 }
+watch(
+  () => walletAddress.value,
+  newValue => addIndicatedAddress(newValue),
+)
 
 const removeIndicatedAddress = (address: string) => {
   form.indicatedAddresses = form.indicatedAddresses.filter(
