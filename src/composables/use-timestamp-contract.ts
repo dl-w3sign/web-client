@@ -1,3 +1,4 @@
+import { config } from '@/config'
 import { errors } from '@/errors'
 import { useWeb3ProvidersStore } from '@/store'
 import { BigNumber } from '@/utils'
@@ -14,7 +15,7 @@ import {
   PayableOverrides,
   Overrides,
 } from 'ethers'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 export type SignerInfo = {
   address: string
@@ -55,21 +56,26 @@ export type UseTimestampContract = {
   ) => Promise<ContractTransaction | null>
 }
 
-export const useTimestampContract = (address: string): UseTimestampContract => {
-  const _instance = ref<TimestampContract | undefined>()
-  const _instance_rw = ref<TimestampContract | undefined>()
-  const { provider } = useWeb3ProvidersStore()
+export const useTimestampContract = (): UseTimestampContract => {
+  const web3Store = useWeb3ProvidersStore()
 
-  if (address && provider.currentProvider && provider.currentSigner) {
-    _instance.value = TimestampContract__factory.connect(
-      address,
-      provider.currentProvider,
-    )
-    _instance_rw.value = TimestampContract__factory.connect(
-      address,
-      provider.currentSigner,
-    )
-  }
+  const _instance = computed<TimestampContract | undefined>(
+    () =>
+      web3Store.provider.currentProvider &&
+      TimestampContract__factory.connect(
+        config.CTR_ADDRESS_TIMESTAMP,
+        web3Store.provider.currentProvider,
+      ),
+  )
+
+  const _instance_rw = computed<TimestampContract | undefined>(
+    () =>
+      web3Store.provider.currentSigner &&
+      TimestampContract__factory.connect(
+        config.CTR_ADDRESS_TIMESTAMP,
+        web3Store.provider.currentSigner,
+      ),
+  )
 
   const getStampInfoWithPagination = async (
     publicHash: PromiseOrValue<BytesLike>,

@@ -215,12 +215,8 @@ const { isFieldsValid } = useFormValidation(form, {
   },
 })
 const { provider: web3Provider } = useWeb3ProvidersStore()
-const timestampContractInstance = useTimestampContract(
-  $config.CTR_ADDRESS_TIMESTAMP,
-)
-const poseidonHashContractInstance = usePoseidonHashContract(
-  $config.CTR_ADDRESS_POSEIDON_HASH,
-)
+const timestampContractInstance = useTimestampContract()
+const poseidonHashContractInstance = usePoseidonHashContract()
 
 const {
   isFormDisabled,

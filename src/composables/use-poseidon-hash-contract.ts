@@ -1,3 +1,4 @@
+import { config } from '@/config'
 import { errors } from '@/errors'
 import { useWeb3ProvidersStore } from '@/store'
 import {
@@ -7,7 +8,7 @@ import {
   BytesLike,
 } from '@/types'
 import { CallOverrides } from 'ethers'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 export type PoseidonHash = string // 0x...
 
@@ -18,23 +19,17 @@ export interface IUsePoseidonHashContract {
   ) => Promise<PoseidonHash | undefined>
 }
 
-export const usePoseidonHashContract = (
-  address: string,
-): IUsePoseidonHashContract => {
-  const _instance = ref<PoseidonHashContract | undefined>()
-  const _instance_rw = ref<PoseidonHashContract | undefined>()
-  const { provider } = useWeb3ProvidersStore()
+export const usePoseidonHashContract = (): IUsePoseidonHashContract => {
+  const web3Store = useWeb3ProvidersStore()
 
-  if (address && provider.currentProvider && provider.currentSigner) {
-    _instance.value = PoseidonHashContract__factory.connect(
-      address,
-      provider.currentProvider,
-    )
-    _instance_rw.value = PoseidonHashContract__factory.connect(
-      address,
-      provider.currentSigner,
-    )
-  }
+  const _instance = computed<PoseidonHashContract | undefined>(
+    () =>
+      web3Store.provider.currentProvider &&
+      PoseidonHashContract__factory.connect(
+        config.CTR_ADDRESS_POSEIDON_HASH,
+        web3Store.provider.currentProvider,
+      ),
+  )
 
   const getPoseidonHash = async (
     bytesLike: PromiseOrValue<BytesLike>,
