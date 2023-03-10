@@ -1,7 +1,10 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
     <transition name="fade" mode="out-in">
-      <div v-if="isSubmitting" class="doc-creation-form__container">
+      <div
+        v-if="isSubmitting || isInitializing"
+        class="doc-creation-form__container"
+      >
         <spinner />
         <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
@@ -156,6 +159,7 @@ const {
   enableForm,
 } = useForm()
 
+const isInitializing = ref(true)
 const fee = ref<BigNumber | null>()
 const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
@@ -265,14 +269,13 @@ const reset = () => {
   form.isIndicatingAddresses = false
   form.indicatedAddresses = []
 
+  isInitializing.value = false
   isConfirmationShown.value = false
   isFailureShown.value = false
   isFormDisabled.value = false
 }
 
 onMounted(async () => {
-  isSubmitting.value = true
-
   try {
     fee.value = await timestampContractInstance.getFee()
   } catch (error) {
@@ -280,7 +283,7 @@ onMounted(async () => {
     emit('cancel')
   }
 
-  isSubmitting.value = false
+  isInitializing.value = false
 })
 </script>
 
