@@ -1,4 +1,4 @@
-import { EthProviderRpcError } from '@/types'
+import { EthProviderRpcError, BigNumberish } from '@/types'
 import { errors } from '@/errors'
 import { ethers } from 'ethers'
 import { EIP1193, EIP1474 } from '@/enums'
@@ -84,4 +84,8 @@ export function getEthExplorerAddressUrl(explorerUrl: string, address: string) {
 
 export function isAddress(address: string) {
   return ethers.utils.isAddress(address)
+}
+
+export function formatEther(wei: BigNumberish) {
+  return ethers.utils.formatEther(wei)
 }

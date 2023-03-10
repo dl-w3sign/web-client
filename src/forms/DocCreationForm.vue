@@ -1,13 +1,16 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
     <transition name="fade" mode="out-in">
-      <div v-if="isSubmitting">
-        <spinner class="doc-creation-form__loader" />
+      <div
+        v-if="isSubmitting || isInitializing"
+        class="doc-creation-form__container"
+      >
+        <spinner />
         <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
         </h5>
       </div>
-      <div v-else-if="isConfirmationShown">
+      <div v-else-if="isConfirmationShown" class="doc-creation-form__container">
         <div class="doc-creation-form__note doc-creation-form__note--success">
           <icon
             class="doc-creation-form__note-icon"
@@ -18,8 +21,7 @@
           </p>
         </div>
         <textarea-field
-          class="doc-creation-form__doc-hash"
-          :model-value="fileHash || ''"
+          :model-value="publicFileHash as string || ''"
           is-copyable
           readonly
         />
@@ -27,7 +29,7 @@
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else-if="isFailureShown">
+      <div v-else-if="isFailureShown" class="doc-creation-form__container">
         <file-field :model-value="form.files" readonly />
         <div class="doc-creation-form__note doc-creation-form__note--error">
           <icon
@@ -42,14 +44,50 @@
           {{ $t('doc-creation-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else>
+      <div v-else class="doc-creation-form__container">
         <file-field v-model="form.files" />
-        <checkbox-field
-          v-show="form.files"
-          class="doc-creation-form__checkbox"
-          v-model="form.isSign"
-          :label="$t('doc-creation-form.checkbox-is-sign')"
-        />
+        <transition name="fade" mode="out-in">
+          <div v-show="form.files" class="doc-creation-form__container">
+            <div class="doc-creation-form__checkboxes">
+              <checkbox-field
+                v-model="form.isSign"
+                :label="$t('doc-creation-form.checkbox-is-sign')"
+              />
+              <checkbox-field
+                v-model="form.isIndicatingAddresses"
+                :label="
+                  $t('doc-creation-form.checkbox-is-indicating-addresses')
+                "
+              />
+            </div>
+            <p class="doc-creation-form__fee">
+              {{ $t('doc-creation-form.fee-title') }}
+              <span class="doc-creation-form__fee-value">
+                {{ formatFee(fee) }}
+              </span>
+            </p>
+          </div>
+        </transition>
+        <transition name="fade" mode="out-in">
+          <div
+            v-show="form.files && form.isIndicatingAddresses"
+            class="doc-creation-form__container"
+          >
+            <input-field
+              v-model="walletAddress"
+              :label="$t('doc-creation-form.wallets-addresses-title')"
+              :placeholder="$t('doc-creation-form.wallet-address-placeholder')"
+            />
+            <textarea-field
+              v-for="address in form.indicatedAddresses"
+              :key="address"
+              :model-value="address"
+              @remove="removeIndicatedAddress(address)"
+              is-removable
+              readonly
+            />
+          </div>
+        </transition>
         <div class="doc-creation-form__buttons">
           <app-button preset="outline-brittle" @click="emit('cancel')">
             {{ $t('doc-creation-form.cancel-button-text') }}
@@ -68,20 +106,33 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
   useForm,
   useFormValidation,
   useTimestampContract,
+  usePoseidonHashContract,
 } from '@/composables'
 import { RPC_ERROR_MESSAGES } from '@/enums'
-import { FileField, TextareaField, CheckboxField } from '@/fields'
-import { ErrorHandler, getKeccak256FileHash } from '@/helpers'
-import { required, maxValue } from '@/validators'
-import { EthProviderRpcError, Keccak256Hash } from '@/types'
+import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
+import {
+  ErrorHandler,
+  getKeccak256FileHash,
+  isAddress,
+  generateZKPPointsStructAndPublicHash,
+  formatEther,
+} from '@/helpers'
+import { required, maxValue, requiredIf } from '@/validators'
+import {
+  EthProviderRpcError,
+  Keccak256Hash,
+  PoseidonHash,
+  BytesLike,
+  BigNumber,
+} from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -90,9 +141,8 @@ const emit = defineEmits<{
 const { $t, $config } = useContext()
 const { provider: web3Provider } = useWeb3ProvidersStore()
 
-const timestampContractInstance = useTimestampContract(
-  $config.CTR_ADDRESS_TIMESTAMP,
-)
+const timestampContractInstance = useTimestampContract()
+const poseidonHashContractInstance = usePoseidonHashContract()
 
 const {
   isFormDisabled,
@@ -105,12 +155,17 @@ const {
   enableForm,
 } = useForm()
 
-const fileHash = ref<Keccak256Hash | null>(null)
+const isInitializing = ref(true)
+const fee = ref<BigNumber | null>()
+const publicFileHash = ref<BytesLike | null>(null)
+const walletAddress = ref('')
 const errorMessage = ref('')
 
 const form = reactive({
   files: null as File[] | null,
   isSign: true,
+  isIndicatingAddresses: false,
+  indicatedAddresses: [] as string[],
 })
 
 const { isFieldsValid } = useFormValidation(form, {
@@ -123,7 +178,28 @@ const { isFieldsValid } = useFormValidation(form, {
       },
     },
   },
+  indicatedAddresses: {
+    required: requiredIf(() => form.isIndicatingAddresses),
+    // TODO: simple string[] array validation
+  },
 })
+
+const addIndicatedAddress = (address: string) => {
+  if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
+    form.indicatedAddresses.unshift(address)
+    nextTick(() => (walletAddress.value = ''))
+  }
+}
+watch(
+  () => walletAddress.value,
+  newValue => addIndicatedAddress(newValue),
+)
+
+const removeIndicatedAddress = (address: string) => {
+  form.indicatedAddresses = form.indicatedAddresses.filter(
+    indicatedAddress => indicatedAddress !== address,
+  )
+}
 
 const getErrorMessage = (error: EthProviderRpcError): string => {
   switch (error.message) {
@@ -134,24 +210,45 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
   }
 }
 
+const formatFee = (fee?: BigNumber | null) => {
+  if (!fee) return ''
+  return `${formatEther(fee)} MATIC`.replace('.', ',')
+}
+
 const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    fileHash.value = await getKeccak256FileHash(form.files?.[0] as File)
-
     if (web3Provider.chainId !== $config.CHAIN_ID)
       await web3Provider.switchChain($config.CHAIN_ID)
 
-    await timestampContractInstance.createStamp(fileHash.value, form.isSign)
+    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
+      (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
+    )) as PoseidonHash
+
+    const { ZKPPointsStruct, publicHash } =
+      await generateZKPPointsStructAndPublicHash(
+        secretFileHash,
+        web3Provider.selectedAddress as string,
+      )
+
+    publicFileHash.value = publicHash
+
+    await timestampContractInstance.createStamp(
+      publicFileHash.value,
+      form.isSign,
+      form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
+      ZKPPointsStruct,
+      {
+        value: fee.value as BigNumber,
+      },
+    )
 
     showConfirmation()
   } catch (err) {
-    err?.error
-      ? (errorMessage.value = getErrorMessage(
-          err?.error as EthProviderRpcError,
-        ))
-      : (errorMessage.value = $t('doc-creation-form.error-default'))
+    if (err?.error)
+      errorMessage.value = getErrorMessage(err.error as EthProviderRpcError)
+    else errorMessage.value = $t('doc-creation-form.error-default')
 
     showFailure()
     ErrorHandler.processWithoutFeedback(err)
@@ -162,42 +259,77 @@ const submit = async () => {
 
 const reset = () => {
   errorMessage.value = ''
-  fileHash.value = null
+  publicFileHash.value = null
 
   form.files = null
   form.isSign = true
+  form.isIndicatingAddresses = false
+  form.indicatedAddresses = []
 
+  isInitializing.value = false
   isConfirmationShown.value = false
   isFailureShown.value = false
   isFormDisabled.value = false
 }
+
+onMounted(async () => {
+  try {
+    fee.value = await timestampContractInstance.getFee()
+  } catch (error) {
+    ErrorHandler.process(error)
+    emit('cancel')
+  }
+
+  isInitializing.value = false
+})
 </script>
 
 <style lang="scss" scoped>
-.doc-creation-form__checkbox {
-  margin-top: toRem(24);
+.doc-creation-form__container {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
 
   @include respond-to(tablet) {
-    margin-top: toRem(16);
+    gap: toRem(16);
   }
+}
+
+.doc-creation-form__checkboxes {
+  display: flex;
+  gap: toRem(24);
+
+  @include respond-to(tablet) {
+    flex-direction: column;
+    gap: toRem(16);
+  }
+}
+
+.doc-creation-form__fee {
+  display: flex;
+  gap: toRem(11);
+
+  @include respond-to(tablet) {
+    gap: toRem(4);
+  }
+
+  @include body-large;
+}
+
+.doc-creation-form__fee-value {
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--col-primary);
 }
 
 .doc-creation-form__buttons {
   display: flex;
   gap: toRem(16);
-  margin-top: toRem(24);
 
   @include respond-to(tablet) {
     gap: toRem(8);
-    margin-top: toRem(16);
-  }
-}
-
-.doc-creation-form__loader {
-  margin: toRem(24) 0;
-
-  @include respond-to(tablet) {
-    margin: toRem(16) 0;
   }
 }
 
@@ -211,13 +343,7 @@ const reset = () => {
   }
 
   &--error {
-    margin: toRem(24) 0;
-
     @include note-error;
-
-    @include respond-to(tablet) {
-      margin: toRem(16) 0;
-    }
   }
 
   @include note;
@@ -232,14 +358,6 @@ const reset = () => {
   @include respond-to(tablet) {
     height: toRem(20);
     width: toRem(20);
-  }
-}
-
-.doc-creation-form__doc-hash {
-  margin: toRem(24) 0;
-
-  @include respond-to(tablet) {
-    margin: toRem(16) 0;
   }
 }
 

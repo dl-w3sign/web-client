@@ -1,20 +1,28 @@
-import { ref, watch, WatchSource, Ref } from 'vue'
-import { useResizeObserver } from '@vueuse/core'
+import { ref, unref, watch, WatchSource, Ref } from 'vue'
+import { useResizeObserver, MaybeRef } from '@vueuse/core'
 
 export interface UseTextareaAutosizeOptions {
   /** Textarea element to autosize. */
-  element?: Ref<HTMLTextAreaElement | undefined>
+  element?: MaybeRef<HTMLTextAreaElement | undefined>
   /** Textarea content. */
-  input?: Ref<string | undefined>
+  value?: MaybeRef<string | undefined>
   /** Watch sources that should trigger a textarea resize. */
   watch?: WatchSource | WatchSource[]
   /** Function called when the textarea size changes. */
   onResize?: () => void
 }
 
-export const useTextareaAutosize = (options?: UseTextareaAutosizeOptions) => {
-  const textarea = options?.element || ref<HTMLTextAreaElement>()
-  const input = options?.input || ref<string>()
+export interface UseTextareaAutosize {
+  textarea: Ref<HTMLTextAreaElement | undefined>
+  value: Ref<string | undefined>
+  resize: () => void
+}
+
+export const useTextareaAutosize = (
+  options?: UseTextareaAutosizeOptions,
+): UseTextareaAutosize => {
+  const textarea = ref(unref(options?.element))
+  const value = ref(unref(options?.value))
 
   const resize = () => {
     if (!textarea.value) return
@@ -26,8 +34,7 @@ export const useTextareaAutosize = (options?: UseTextareaAutosizeOptions) => {
     options?.onResize?.()
   }
 
-  if (textarea.value?.value)
-    watch([input, textarea.value.value], resize, { immediate: true })
+  watch([value, textarea], resize, { immediate: true, deep: true })
 
   useResizeObserver(textarea, () => resize())
 
@@ -36,9 +43,7 @@ export const useTextareaAutosize = (options?: UseTextareaAutosizeOptions) => {
 
   return {
     textarea,
-    input,
+    value,
     resize,
   }
 }
-
-export type UseTextareaAutosizeReturn = ReturnType<typeof useTextareaAutosize>

@@ -4,3 +4,10 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+declare module 'snarkjs' {
+  export const groth16 = {
+    // eslint-disable-next-line
+    fullProve: (_input: unknown, wasmFile: string, zkeyFileName: string) => any,
+  }
+}

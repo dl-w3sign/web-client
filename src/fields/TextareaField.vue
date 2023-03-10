@@ -13,7 +13,8 @@
         v-bind="$attrs"
         class="textarea-field__textarea"
         :class="{
-          'textarea-field__textarea--copied': isCopyable,
+          'textarea-field__textarea--removable': isRemovable,
+          'textarea-field__textarea--copyable': isCopyable,
           'textarea-field__textarea--with-left-icon': leftIconName,
           'textarea-field__textarea--with-right-icon': rightIconName,
         }"
@@ -25,7 +26,14 @@
         @input="updateModelValue"
       />
       <button
-        v-if="isCopyable"
+        v-if="isRemovable"
+        class="textarea-field__remove-button"
+        @click="emit('remove')"
+      >
+        <icon class="textarea-field__icon" :name="$icons.xCircle" />
+      </button>
+      <button
+        v-else-if="isCopyable"
         class="textarea-field__copy-button"
         @click.prevent="copy()"
       >
@@ -55,15 +63,18 @@ import { useClipboard } from '@vueuse/core'
 import { ICON_NAMES } from '@/enums'
 import { computed, useAttrs } from 'vue'
 import { v4 as generateUid } from 'uuid'
-import { useWindowSize } from '@vueuse/core'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
+  (event: 'remove'): void
 }>()
 
 const updateModelValue = (event: InputEvent) => {
   const eventTarget = event.target as HTMLInputElement
+  if (props.isWithoutLineBreaks)
+    eventTarget.value = eventTarget.value.replace(/(\r\n|\n|\r)/gm, '')
   emit('update:modelValue', eventTarget.value)
+  resize()
 }
 
 const uid = generateUid()
@@ -72,14 +83,18 @@ const props = withDefaults(
     modelValue: string
     label?: string
     placeholder?: string
+    isRemovable?: boolean
     isCopyable?: boolean
+    isWithoutLineBreaks?: boolean
     leftIconName?: ICON_NAMES
     rightIconName?: ICON_NAMES
   }>(),
   {
     label: '',
     placeholder: '',
+    isRemovable: false,
     isCopyable: false,
+    isWithoutLineBreaks: true,
     leftIconName: undefined,
     rightIconName: undefined,
   },
@@ -100,10 +115,7 @@ const { copy, copied } = useClipboard({
   copiedDuring: 5000,
 })
 
-const { width: windowWidth } = useWindowSize()
-const { textarea } = useTextareaAutosize({
-  watch: windowWidth,
-})
+const { textarea, resize } = useTextareaAutosize()
 </script>
 
 <style lang="scss" scoped>
@@ -118,8 +130,22 @@ const { textarea } = useTextareaAutosize({
   bottom: 0;
   height: toRem(24);
   width: toRem(24);
-  color: var(--col-intense);
   flex-shrink: 0;
+
+  @include respond-to(tablet) {
+    height: toRem(20);
+    width: toRem(20);
+  }
+}
+
+.textarea-field__remove-button {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  height: toRem(24);
+  width: toRem(24);
+  transition: var(--transition-duration);
 
   @include respond-to(tablet) {
     height: toRem(20);
@@ -133,7 +159,7 @@ const { textarea } = useTextareaAutosize({
   right: 0;
   height: 100%;
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  transition-property: color, background;
+  transition-property: color, background-color;
   transition-duration: var(--transition-duration);
 
   .textarea-field__icon {
@@ -145,7 +171,8 @@ const { textarea } = useTextareaAutosize({
   display: block;
   width: 100%;
 
-  &--copied,
+  &--removable,
+  &--copyable,
   &--with-right-icon {
     &:read-only {
       padding-right: toRem(64);
@@ -219,6 +246,16 @@ const { textarea } = useTextareaAutosize({
   }
 
   &:read-only {
+    & + .textarea-field__remove-button {
+      right: toRem(24);
+      fill: var(--col-fine);
+      color: var(--col-intense);
+
+      @include respond-to(tablet) {
+        right: toRem(12);
+      }
+    }
+
     & + .textarea-field__copy-button {
       color: var(--col-primary);
       width: toRem(64);
@@ -238,8 +275,19 @@ const { textarea } = useTextareaAutosize({
   }
 
   &:not(:read-only) {
+    & + .textarea-field__remove-button {
+      right: toRem(16);
+      fill: var(--transparent);
+      stroke: var(--col-stylish);
+      color: var(--col-stylish);
+
+      @include respond-to(tablet) {
+        right: toRem(12);
+      }
+    }
+
     & + .textarea-field__copy-button {
-      color: var(--col-brittle);
+      color: var(--col-stylish);
       width: toRem(50);
 
       .textarea-field__icon {
@@ -252,22 +300,24 @@ const { textarea } = useTextareaAutosize({
     }
   }
 
-  &:not(:read-only):hover {
-    & + .textarea-field__copy-button {
-      color: var(--col-flexible);
-    }
+  &:read-only + .textarea-field__remove-button:hover {
+    fill: var(--col-accent);
   }
 
-  &:not(:read-only):focus {
-    & + .textarea-field__copy-button {
-      color: var(--col-primary);
-    }
+  &:read-only + .textarea-field__remove-button:active {
+    fill: var(--col-spot);
   }
 
-  &:not(:read-only):active {
-    & + .textarea-field__copy-button {
-      color: var(--col-initial);
-    }
+  &:not(:read-only) + .textarea-field__remove-button:hover {
+    stroke: var(--col-accent);
+    fill: var(--col-accent);
+    color: var(--col-intense);
+  }
+
+  &:not(:read-only) + .textarea-field__remove-button:active {
+    stroke: var(--col-spot);
+    fill: var(--col-spot);
+    color: var(--col-intense);
   }
 
   &:not(:read-only):focus + .textarea-field__copy-button:hover {

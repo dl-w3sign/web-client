@@ -1,19 +1,30 @@
-import { ref } from 'vue'
+import { config } from '@/config'
+import { errors } from '@/errors'
+import { useWeb3ProvidersStore } from '@/store'
+import { BigNumber } from '@/utils'
 import {
   TimestampContract,
   TimestampContract__factory,
-  Keccak256Hash,
+  PromiseOrValue,
+  BytesLike,
+  ZKPPointsStructType,
 } from '@/types'
-import { BigNumber } from '@/utils'
-import { useWeb3ProvidersStore } from '@/store'
-import { ContractTransaction } from 'ethers'
+import {
+  ContractTransaction,
+  CallOverrides,
+  PayableOverrides,
+  Overrides,
+} from 'ethers'
+import { computed } from 'vue'
 
 export type SignerInfo = {
   address: string
   signatureTimestamp: number
+  isAdmittedToSigning: boolean
 }
 
 export type StampInfo = {
+  isPublic: boolean
   docTimestamp: number
   signers: SignerInfo[]
   signersTotalCount: number
@@ -21,50 +32,75 @@ export type StampInfo = {
 
 export type UseTimestampContract = {
   getStampInfoWithPagination: (
-    fileHash: Keccak256Hash,
-    offset: number,
-    limit: number,
+    publicHash: PromiseOrValue<BytesLike>,
+    offset: PromiseOrValue<number>,
+    limit: PromiseOrValue<number>,
+    overrides?: CallOverrides,
   ) => Promise<StampInfo | null>
   getSignerInfo: (
-    address: string,
-    fileHash: Keccak256Hash,
+    address: PromiseOrValue<string>,
+    publicHash: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ) => Promise<SignerInfo | null>
+  getFee: (overrides?: CallOverrides) => Promise<BigNumber | null>
   createStamp: (
-    fileHash: Keccak256Hash,
-    isSign: boolean,
+    publicHash: PromiseOrValue<BytesLike>,
+    isSign: PromiseOrValue<boolean>,
+    indicatedAddresses: PromiseOrValue<string>[],
+    ZKPPointsStruct: ZKPPointsStructType,
+    overrides?: PayableOverrides,
   ) => Promise<ContractTransaction | null>
-  sign: (fileHash: Keccak256Hash) => Promise<ContractTransaction | null>
+  sign: (
+    publicHash: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> | undefined },
+  ) => Promise<ContractTransaction | null>
 }
 
-export const useTimestampContract = (address: string): UseTimestampContract => {
-  const _instance = ref<TimestampContract | undefined>()
-  const _instance_rw = ref<TimestampContract | undefined>()
-  const { provider } = useWeb3ProvidersStore()
+export const useTimestampContract = (): UseTimestampContract => {
+  const web3Store = useWeb3ProvidersStore()
 
-  if (address && provider.currentProvider && provider.currentSigner) {
-    _instance.value = TimestampContract__factory.connect(
-      address,
-      provider.currentProvider,
-    )
-    _instance_rw.value = TimestampContract__factory.connect(
-      address,
-      provider.currentSigner,
-    )
-  }
+  const _instance = computed<TimestampContract | undefined>(
+    () =>
+      web3Store.provider.currentProvider &&
+      TimestampContract__factory.connect(
+        config.CTR_ADDRESS_TIMESTAMP,
+        web3Store.provider.currentProvider,
+      ),
+  )
+
+  const _instance_rw = computed<TimestampContract | undefined>(
+    () =>
+      web3Store.provider.currentSigner &&
+      TimestampContract__factory.connect(
+        config.CTR_ADDRESS_TIMESTAMP,
+        web3Store.provider.currentSigner,
+      ),
+  )
 
   const getStampInfoWithPagination = async (
-    fileHash: Keccak256Hash,
-    offset: number,
-    limit: number,
+    publicHash: PromiseOrValue<BytesLike>,
+    offset: PromiseOrValue<number>,
+    limit: PromiseOrValue<number>,
+    overrides?: CallOverrides,
   ): Promise<StampInfo | null> => {
-    const receipt = await _instance.value?.getStampInfoWithPagination(
-      fileHash,
-      offset,
-      limit,
-    )
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
+    const receipt = overrides
+      ? await _instance.value.getStampInfoWithPagination(
+          publicHash,
+          offset,
+          limit,
+          overrides,
+        )
+      : await _instance.value.getStampInfoWithPagination(
+          publicHash,
+          offset,
+          limit,
+        )
 
     if (receipt) {
       return {
+        isPublic: receipt.isPublic,
+
         docTimestamp: BigNumber.from(receipt.timestamp._hex).toNumber(),
 
         signers: receipt.signersInfo.map(signerInfo => ({
@@ -72,9 +108,12 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
           signatureTimestamp: BigNumber.from(
             signerInfo.signatureTimestamp._hex,
           ).toNumber(),
+          isAdmittedToSigning: signerInfo.isAddmitted,
         })),
 
-        signersTotalCount: BigNumber.from(receipt.signersCount._hex).toNumber(),
+        signersTotalCount: receipt.isPublic
+          ? BigNumber.from(receipt.usersSigned._hex).toNumber()
+          : BigNumber.from(receipt.usersToSign._hex).toNumber(),
       }
     } else {
       return null
@@ -82,10 +121,14 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
   }
 
   const getSignerInfo = async (
-    address: string,
-    fileHash: Keccak256Hash,
+    address: PromiseOrValue<string>,
+    publicHash: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides,
   ): Promise<SignerInfo | null> => {
-    const receipt = await _instance.value?.getUserInfo(address, fileHash)
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
+    const receipt = overrides
+      ? await _instance.value.getUserInfo(address, publicHash, overrides)
+      : await _instance.value.getUserInfo(address, publicHash)
 
     if (receipt) {
       return {
@@ -93,30 +136,64 @@ export const useTimestampContract = (address: string): UseTimestampContract => {
         signatureTimestamp: BigNumber.from(
           receipt.signatureTimestamp._hex,
         ).toNumber(),
+        isAdmittedToSigning: receipt.isAddmitted,
       }
     } else {
       return null
     }
   }
 
+  const getFee = async (overrides?: CallOverrides) => {
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
+    const receipt = overrides
+      ? await _instance.value.fee(overrides)
+      : await _instance.value.fee()
+
+    return receipt ? BigNumber.from(receipt._hex) : null
+  }
+
   const createStamp = async (
-    fileHash: Keccak256Hash,
-    isSign: boolean,
+    publicHash: PromiseOrValue<BytesLike>,
+    isSign: PromiseOrValue<boolean>,
+    indicatedAddresses: PromiseOrValue<string>[],
+    ZKPPointsStruct: ZKPPointsStructType,
+    overrides?: PayableOverrides,
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.createStamp(fileHash, isSign)
+    if (!_instance_rw.value) throw new errors.ContractInstanceUnavailable()
+    const tx = overrides
+      ? await _instance_rw.value.createStamp(
+          publicHash,
+          isSign,
+          indicatedAddresses,
+          ZKPPointsStruct,
+          overrides,
+        )
+      : await _instance_rw.value.createStamp(
+          publicHash,
+          isSign,
+          indicatedAddresses,
+          ZKPPointsStruct,
+        )
+
     return tx ? tx : null
   }
 
   const sign = async (
-    fileHash: Keccak256Hash,
+    publicHash: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> | undefined },
   ): Promise<ContractTransaction | null> => {
-    const tx = await _instance_rw.value?.sign(fileHash)
+    if (!_instance_rw.value) throw new errors.ContractInstanceUnavailable()
+    const tx = overrides
+      ? await _instance_rw.value.sign(publicHash, overrides)
+      : await _instance_rw.value.sign(publicHash)
+
     return tx ? tx : null
   }
 
   return {
     getStampInfoWithPagination,
     getSignerInfo,
+    getFee,
     createStamp,
     sign,
   }

@@ -210,8 +210,9 @@ const cancelFileByName = (fileName: string) => {
   }
 
   @include respond-to(tablet) {
-    padding: 0 toRem(16);
-    height: toRem(76);
+    padding: 0 toRem(12);
+    gap: toRem(8);
+    height: toRem(68);
   }
 }
 
@@ -243,7 +244,7 @@ const cancelFileByName = (fileName: string) => {
   margin-left: auto;
   height: toRem(24);
   width: toRem(24);
-  fill: var(--col-fancy);
+  fill: var(--col-fine);
   flex-shrink: 0;
   color: var(--col-intense);
   transition: var(--transition-duration);

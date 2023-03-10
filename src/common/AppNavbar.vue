@@ -41,6 +41,14 @@ import { ConnectEthereum } from '@/common'
 .app-navbar__logo {
   height: toRem(48);
   width: toRem(48);
+  color: var(--col-intense);
+  fill: var(--col-trendy);
+  transition: var(--transition-duration);
+
+  &:hover {
+    color: var(--col-quiet);
+    fill: var(--col-primary);
+  }
 }
 
 .app-navbar__connect-ethereum {

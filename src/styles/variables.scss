@@ -11,6 +11,7 @@
   --col-grand: #{$grand};
   --col-fine: #{$fine};
   --col-trendy: #{$trendy};
+  --col-stylish: #{$stylish};
   --col-fancy: #{$fancy};
   --col-dense: #{$dense};
   --col-rare: #{$rare};
@@ -74,4 +75,5 @@
   /* App variables */
   --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   --app-font-weight: 500;
+  --transparent: transparent;
 }
