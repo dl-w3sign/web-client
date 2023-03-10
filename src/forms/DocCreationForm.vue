@@ -63,7 +63,7 @@
             <p class="doc-creation-form__fee">
               {{ $t('doc-creation-form.fee-title') }}
               <span class="doc-creation-form__fee-value">
-                {{ formatFee(fee as BigNumber) }}
+                {{ formatFee(fee) }}
               </span>
             </p>
           </div>
@@ -210,7 +210,8 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
   }
 }
 
-const formatFee = (fee: BigNumber) => {
+const formatFee = (fee?: BigNumber | null) => {
+  if (!fee) return ''
   return `${formatEther(fee)} MATIC`.replace('.', ',')
 }
 
