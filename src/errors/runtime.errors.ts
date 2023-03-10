@@ -43,6 +43,8 @@ export class ProviderLimitExceeded extends RuntimeError {}
 
 export class ProviderJsonRpcVersionNotSupported extends RuntimeError {}
 
+export class ContractInstanceUnavailable extends RuntimeError {}
+
 export class FileTypeError extends RuntimeError {}
 
 export class FileSizeError extends RuntimeError {}

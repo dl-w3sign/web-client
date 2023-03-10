@@ -1,5 +1,5 @@
+import { errors } from '@/errors'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref } from 'vue'
 import {
   PoseidonHashContract,
   PoseidonHashContract__factory,
@@ -7,6 +7,7 @@ import {
   BytesLike,
 } from '@/types'
 import { CallOverrides } from 'ethers'
+import { ref } from 'vue'
 
 export type PoseidonHash = string // 0x...
 
@@ -39,6 +40,7 @@ export const usePoseidonHashContract = (
     bytesLike: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides,
   ): Promise<PoseidonHash | undefined> => {
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
     return overrides
       ? _instance.value?.['poseidon(bytes32[1])']([bytesLike], overrides)
       : _instance.value?.['poseidon(bytes32[1])']([bytesLike])
