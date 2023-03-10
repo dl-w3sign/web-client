@@ -132,7 +132,7 @@ import {
   BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -191,7 +191,7 @@ const { isFieldsValid } = useFormValidation(form, {
 const addIndicatedAddress = (address: string) => {
   if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
     form.indicatedAddresses.unshift(address)
-    walletAddress.value = ''
+    nextTick(() => (walletAddress.value = ''))
   }
 }
 watch(
