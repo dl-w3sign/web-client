@@ -1,4 +1,7 @@
-import { ref } from 'vue'
+import { errors } from '@/errors'
+import { getTimestampContractAddressByChainId } from '@/helpers'
+import { useWeb3ProvidersStore } from '@/store'
+import { BigNumber } from '@/utils'
 import {
   TimestampContract,
   TimestampContract__factory,
@@ -6,14 +9,13 @@ import {
   BytesLike,
   ZKPPointsStructType,
 } from '@/types'
-import { BigNumber } from '@/utils'
-import { useWeb3ProvidersStore } from '@/store'
 import {
   ContractTransaction,
   CallOverrides,
   PayableOverrides,
   Overrides,
 } from 'ethers'
+import { computed } from 'vue'
 
 export type SignerInfo = {
   address: string
@@ -54,23 +56,40 @@ export type UseTimestampContract = {
   ) => Promise<ContractTransaction | null>
 }
 
-export const useTimestampContract = (
-  address?: string,
-): UseTimestampContract => {
-  const _instance = ref<TimestampContract | undefined>()
-  const _instance_rw = ref<TimestampContract | undefined>()
-  const { provider } = useWeb3ProvidersStore()
+export const useTimestampContract = (): UseTimestampContract => {
+  const web3Store = useWeb3ProvidersStore()
 
-  if (address && provider.currentProvider && provider.currentSigner) {
-    _instance.value = TimestampContract__factory.connect(
-      address,
-      provider.currentProvider,
+  const _instance = computed<TimestampContract | undefined>(() => {
+    if (!(web3Store.provider.currentProvider && web3Store.provider.chainId))
+      return undefined
+
+    const address = getTimestampContractAddressByChainId(
+      web3Store.provider.chainId,
     )
-    _instance_rw.value = TimestampContract__factory.connect(
-      address,
-      provider.currentSigner,
+
+    if (address)
+      return TimestampContract__factory.connect(
+        address,
+        web3Store.provider.currentProvider,
+      )
+    else return undefined
+  })
+
+  const _instance_rw = computed<TimestampContract | undefined>(() => {
+    if (!(web3Store.provider.currentSigner && web3Store.provider.chainId))
+      return undefined
+
+    const address = getTimestampContractAddressByChainId(
+      web3Store.provider.chainId,
     )
-  }
+
+    if (address)
+      return TimestampContract__factory.connect(
+        address,
+        web3Store.provider.currentSigner,
+      )
+    else return undefined
+  })
 
   const getStampInfoWithPagination = async (
     publicHash: PromiseOrValue<BytesLike>,
@@ -78,7 +97,7 @@ export const useTimestampContract = (
     limit: PromiseOrValue<number>,
     overrides?: CallOverrides,
   ): Promise<StampInfo | null> => {
-    if (!_instance.value) throw new Error('contract instance unavailable')
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
     const receipt = overrides
       ? await _instance.value.getStampInfoWithPagination(
           publicHash,
@@ -120,7 +139,7 @@ export const useTimestampContract = (
     publicHash: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides,
   ): Promise<SignerInfo | null> => {
-    if (!_instance.value) throw new Error('contract instance unavailable')
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
     const receipt = overrides
       ? await _instance.value.getUserInfo(address, publicHash, overrides)
       : await _instance.value.getUserInfo(address, publicHash)
@@ -139,7 +158,7 @@ export const useTimestampContract = (
   }
 
   const getFee = async (overrides?: CallOverrides) => {
-    if (!_instance.value) throw new Error('contract instance unavailable')
+    if (!_instance.value) throw new errors.ContractInstanceUnavailable()
     const receipt = overrides
       ? await _instance.value.fee(overrides)
       : await _instance.value.fee()
@@ -154,7 +173,7 @@ export const useTimestampContract = (
     ZKPPointsStruct: ZKPPointsStructType,
     overrides?: PayableOverrides,
   ): Promise<ContractTransaction | null> => {
-    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    if (!_instance_rw.value) throw new errors.ContractInstanceUnavailable()
     const tx = overrides
       ? await _instance_rw.value.createStamp(
           publicHash,
@@ -177,7 +196,7 @@ export const useTimestampContract = (
     publicHash: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> | undefined },
   ): Promise<ContractTransaction | null> => {
-    if (!_instance_rw.value) throw new Error('contract instance unavailable')
+    if (!_instance_rw.value) throw new errors.ContractInstanceUnavailable()
     const tx = overrides
       ? await _instance_rw.value.sign(publicHash, overrides)
       : await _instance_rw.value.sign(publicHash)

@@ -35,7 +35,7 @@
     </template>
     <template #dropdown="{ selectField }">
       <div
-        id="dropdown"
+        :id="`dropdown-${uid}`"
         class="switch-ethereum__select-dropdown"
         v-show="selectField.isOpen"
       >
@@ -62,8 +62,10 @@ import { SelectField } from '@/fields'
 import { getIconNameByChainId, getTitleByChainId } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { ChainId } from '@/types'
+import { v4 as generateUid } from 'uuid'
 
 const web3Store = useWeb3ProvidersStore()
+const uid = generateUid()
 </script>
 
 <style lang="scss" scoped>

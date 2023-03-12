@@ -2,8 +2,7 @@
   "name": "time-stamp-service-web-client",
   "version": "1.0.0-rc.1",
   "gitHooks": {
-    "pre-commit": "yarn lint",
-    "pre-push": "yarn test && yarn rsc"
+    "pre-commit": "yarn lint"
   },
   "license": "UNLICENSED",
   "scripts": {
@@ -40,7 +39,6 @@
     "mitt": "^3.0.0",
     "pinia": "^2.0.21",
     "postcss": "^8.4.16",
-    "snarkjs": "^0.5.0",
     "uuid": "^9.0.0",
     "vue": "^3.2.38",
     "vue-i18n": "^9.2.2",

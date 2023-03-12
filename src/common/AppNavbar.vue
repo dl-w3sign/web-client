@@ -6,7 +6,7 @@
       </svg>
       <transition name="fade">
         <switch-ethereum
-          v-if="web3Provider?.isConnected"
+          v-if="web3Store.provider.isConnected"
           class="app-navbar__switch-ethereum"
         />
       </transition>
@@ -22,7 +22,7 @@
 import { ConnectEthereum, SwitchEthereum } from '@/common'
 import { useWeb3ProvidersStore } from '@/store'
 
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
 </script>
 
 <style lang="scss" scoped>
@@ -90,7 +90,7 @@ const { provider: web3Provider } = useWeb3ProvidersStore()
   margin-left: auto;
 
   // stylelint-disable-next-line
-  :deep(#dropdown) {
+  :deep([id*='dropdown']) {
     margin-top: toRem(24);
     width: toRem(179);
 

@@ -199,7 +199,7 @@ const switchAndClose = async () => {
 }
 
 .fade-enter-active {
-  animation: fade-in var(--transition-duration);
+  animation: fade-in ease-out var(--transition-duration-slow);
 }
 
 @keyframes fade-in {

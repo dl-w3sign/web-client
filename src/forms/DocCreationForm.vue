@@ -1,7 +1,10 @@
 <template>
   <form class="doc-creation-form" @submit.prevent>
     <transition name="fade" mode="out-in">
-      <div v-if="isSubmitting" class="doc-creation-form__container">
+      <div
+        v-if="isSubmitting || isInitializing"
+        class="doc-creation-form__container"
+      >
         <spinner />
         <h5 class="doc-creation-form__please-wait-msg">
           {{ $t('doc-creation-form.please-wait-msg') }}
@@ -60,7 +63,7 @@
             <p class="doc-creation-form__fee">
               {{ $t('doc-creation-form.fee-title') }}
               <span class="doc-creation-form__fee-value">
-                {{ formatFee(fee as BigNumber) }}
+                {{ formatFee(fee) }}
               </span>
             </p>
             <transition name="fade-in">
@@ -69,12 +72,11 @@
                 class="doc-creation-form__container"
               >
                 <input-field
+                  v-model="walletAddress"
                   :label="$t('doc-creation-form.wallets-addresses-title')"
                   :placeholder="
                     $t('doc-creation-form.wallet-address-placeholder')
                   "
-                  :model-value="walletAddress"
-                  @update:model-value="addIndicatedAddress"
                 />
                 <transition-group name="fade">
                   <textarea-field
@@ -108,7 +110,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, onMounted } from 'vue'
 import { Icon, AppButton, Spinner } from '@/common'
 import {
   useContext,
@@ -116,8 +117,6 @@ import {
   useFormValidation,
   useTimestampContract,
   usePoseidonHashContract,
-  UseTimestampContract,
-  UsePoseidonHashContract,
 } from '@/composables'
 import { RPC_ERROR_MESSAGES } from '@/enums'
 import { errors } from '@/errors'
@@ -127,8 +126,6 @@ import {
   getKeccak256FileHash,
   isAddress,
   generateZKPPointsStructAndPublicHash,
-  getTimestampContractAddressByChainId,
-  getPoseidonHashContractAddressByChainId,
   formatEther,
   getCurrencySymbolByChainId,
 } from '@/helpers'
@@ -141,6 +138,7 @@ import {
   BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -149,18 +147,8 @@ const emit = defineEmits<{
 const { $t } = useContext()
 const web3Store = useWeb3ProvidersStore()
 
-const timestampContractInstance = computed<UseTimestampContract>(() =>
-  useTimestampContract(
-    getTimestampContractAddressByChainId(web3Store.provider.chainId as ChainId),
-  ),
-)
-const poseidonHashContractInstance = computed<UsePoseidonHashContract>(() =>
-  usePoseidonHashContract(
-    getPoseidonHashContractAddressByChainId(
-      web3Store.provider.chainId as ChainId,
-    ),
-  ),
-)
+const timestampContractInstance = useTimestampContract()
+const poseidonHashContractInstance = usePoseidonHashContract()
 
 const {
   isFormDisabled,
@@ -172,8 +160,8 @@ const {
   disableForm,
   enableForm,
 } = useForm()
-isSubmitting.value = true
 
+const isInitializing = ref(true)
 const fee = ref<BigNumber | null>()
 const publicFileHash = ref<BytesLike | null>(null)
 const walletAddress = ref('')
@@ -205,11 +193,13 @@ const { isFieldsValid } = useFormValidation(form, {
 const addIndicatedAddress = (address: string) => {
   if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
     form.indicatedAddresses.unshift(address)
-    setTimeout(() => (walletAddress.value = '')) // TODO: to discuss
+    nextTick(() => (walletAddress.value = ''))
   }
-
-  walletAddress.value = address
 }
+watch(
+  () => walletAddress.value,
+  newValue => addIndicatedAddress(newValue),
+)
 
 const removeIndicatedAddress = (address: string) => {
   form.indicatedAddresses = form.indicatedAddresses.filter(
@@ -228,7 +218,8 @@ const getErrorMessage = (err: unknown): string => {
   }
 }
 
-const formatFee = (fee: BigNumber) => {
+const formatFee = (fee?: BigNumber | null) => {
+  if (!fee) return ''
   return `${formatEther(fee)} ${getCurrencySymbolByChainId(
     web3Store.provider.chainId as ChainId,
   )}`.replace('.', ',')
@@ -244,10 +235,9 @@ const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    const secretFileHash =
-      (await poseidonHashContractInstance.value.getPoseidonHash(
-        (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
-      )) as PoseidonHash
+    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
+      (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
+    )) as PoseidonHash
 
     const { ZKPPointsStruct, publicHash } =
       await generateZKPPointsStructAndPublicHash(
@@ -257,7 +247,7 @@ const submit = async () => {
 
     publicFileHash.value = publicHash
 
-    await timestampContractInstance.value.createStamp(
+    await timestampContractInstance.createStamp(
       publicFileHash.value,
       form.isSign,
       form.isIndicatingAddresses ? form.indicatedAddresses.reverse() : [],
@@ -287,6 +277,7 @@ const reset = () => {
   form.isIndicatingAddresses = false
   form.indicatedAddresses = []
 
+  isInitializing.value = false
   isConfirmationShown.value = false
   isFailureShown.value = false
   isFormDisabled.value = false
@@ -301,13 +292,13 @@ onMounted(async () => {
   }
 
   try {
-    fee.value = await timestampContractInstance.value.getFee()
+    fee.value = await timestampContractInstance.getFee()
   } catch (error) {
     ErrorHandler.process(error)
     emit('cancel')
   }
 
-  isSubmitting.value = false
+  isInitializing.value = false
 })
 </script>
 

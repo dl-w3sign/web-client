@@ -185,8 +185,6 @@ import {
   useTimestampContract,
   usePoseidonHashContract,
   useContext,
-  UseTimestampContract,
-  UsePoseidonHashContract,
 } from '@/composables'
 import { RPC_ERROR_MESSAGES, TIMEZONES } from '@/enums'
 import { errors } from '@/errors'
@@ -197,8 +195,6 @@ import {
   ErrorHandler,
   isAddress,
   generateZKPPointsStructAndPublicHash,
-  getTimestampContractAddressByChainId,
-  getPoseidonHashContractAddressByChainId,
 } from '@/helpers'
 import {
   Keccak256Hash,
@@ -207,7 +203,6 @@ import {
   SignerInfo,
   BytesLike,
   PoseidonHash,
-  ChainId,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
 import { required, maxValue } from '@/validators'
@@ -240,18 +235,8 @@ const { isFieldsValid } = useFormValidation(form, {
   },
 })
 const web3Store = useWeb3ProvidersStore()
-const timestampContractInstance = computed<UseTimestampContract>(() =>
-  useTimestampContract(
-    getTimestampContractAddressByChainId(web3Store.provider.chainId as ChainId),
-  ),
-)
-const poseidonHashContractInstance = computed<UsePoseidonHashContract>(() =>
-  usePoseidonHashContract(
-    getPoseidonHashContractAddressByChainId(
-      web3Store.provider.chainId as ChainId,
-    ),
-  ),
-)
+const timestampContractInstance = useTimestampContract()
+const poseidonHashContractInstance = usePoseidonHashContract()
 
 const {
   isFormDisabled,
@@ -279,7 +264,7 @@ const searchAddress = async (address: string) => {
 
   if (address) {
     if (isAddress(address)) {
-      const signer = await timestampContractInstance.value.getSignerInfo(
+      const signer = await timestampContractInstance.getSignerInfo(
         address,
         publicFileHash.value as BytesLike,
       )
@@ -290,7 +275,7 @@ const searchAddress = async (address: string) => {
     }
   } else if (!address) {
     stampInfo.value =
-      await timestampContractInstance.value.getStampInfoWithPagination(
+      await timestampContractInstance.getStampInfoWithPagination(
         publicFileHash.value as BytesLike,
         0,
         pageLimit.value,
@@ -316,12 +301,11 @@ const onPageChange = async ({
   newItemsOffset,
   pageLimit,
 }: UsePaginationCallbackArg) => {
-  stampInfo.value =
-    await timestampContractInstance.value.getStampInfoWithPagination(
-      publicFileHash.value as BytesLike,
-      newItemsOffset,
-      pageLimit,
-    )
+  stampInfo.value = await timestampContractInstance.getStampInfoWithPagination(
+    publicFileHash.value as BytesLike,
+    newItemsOffset,
+    pageLimit,
+  )
 }
 
 const formatTimestamp = (timestamp: number): string => {
@@ -332,11 +316,10 @@ const formatTimestamp = (timestamp: number): string => {
 
 const updateInfoOfCurrentSigner = async () => {
   if (publicFileHash.value)
-    infoOfCurrentSigner.value =
-      await timestampContractInstance.value.getSignerInfo(
-        web3Store.provider.selectedAddress as string,
-        publicFileHash.value as BytesLike,
-      )
+    infoOfCurrentSigner.value = await timestampContractInstance.getSignerInfo(
+      web3Store.provider.selectedAddress as string,
+      publicFileHash.value as BytesLike,
+    )
 }
 
 const getErrorMessage = (err: unknown) => {
@@ -360,10 +343,9 @@ const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    const secretFileHash =
-      (await poseidonHashContractInstance.value.getPoseidonHash(
-        (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
-      )) as PoseidonHash
+    const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
+      (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
+    )) as PoseidonHash
 
     const { publicHash } = await generateZKPPointsStructAndPublicHash(
       secretFileHash,
@@ -373,7 +355,7 @@ const submitVerification = async () => {
     publicFileHash.value = publicHash
 
     stampInfo.value =
-      await timestampContractInstance.value.getStampInfoWithPagination(
+      await timestampContractInstance.getStampInfoWithPagination(
         publicFileHash.value,
         0,
         pageLimit.value,
@@ -411,9 +393,7 @@ const signOrExit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    await timestampContractInstance.value.sign(
-      publicFileHash.value as BytesLike,
-    )
+    await timestampContractInstance.sign(publicFileHash.value as BytesLike)
 
     infoOfCurrentSigner.value.isAdmittedToSigning = false
     Bus.success($t('doc-verification-form.sign-success-message'))
