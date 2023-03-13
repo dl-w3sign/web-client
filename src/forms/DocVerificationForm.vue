@@ -38,7 +38,7 @@
             </p>
           </div>
           <textarea-field
-            :id-prop="`doc-hash--${uid}`"
+            :label-id="`doc-hash--${uid}`"
             class="doc-verification-form__doc-hash"
             :model-value="publicFileHash as string || ''"
             is-copied
