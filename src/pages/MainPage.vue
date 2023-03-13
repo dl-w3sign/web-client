@@ -19,25 +19,28 @@
     </div>
     <div
       class="main-page__container"
-      :class="{ 'main-page__container--lifted': web3Provider.isConnected }"
+      :class="{
+        'main-page__container--lifted': web3Store.provider.isConnected,
+      }"
     >
       <transition name="fade">
         <div
-          v-show="!web3Provider.isConnected"
+          v-show="!web3Store.provider.isConnected"
           class="main-page__connect-ethereum"
           :class="{
-            'main-page__connect-ethereum--connected': web3Provider?.isConnected,
+            'main-page__connect-ethereum--connected':
+              web3Store.provider.isConnected,
           }"
         >
           <h4 class="main-page__connect-ethereum-message">
             {{
-              web3Provider?.isConnected
+              web3Store.provider.isConnected
                 ? $t('main-page.connected-ethereum-message')
                 : $t('main-page.connect-ethereum-message')
             }}
           </h4>
           <connect-ethereum
-            v-if="!web3Provider?.isConnected"
+            v-if="!web3Store.provider.isConnected"
             class="main-page__connect-ethereum-button"
             preset="primary"
           />
@@ -50,14 +53,14 @@
         <div class="main-page__card-illustration-wrp">
           <doc-creation-illustration
             class="main-page__card-illustration"
-            :is-active="web3Provider.isConnected"
+            :is-active="web3Store.provider.isConnected"
           />
         </div>
         <app-button
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-creation-card-button-text')"
-          :disabled="!web3Provider.isConnected"
+          :disabled="!web3Store.provider.isConnected"
           @click="isDocCreationModalShown = true"
         />
         <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
@@ -69,14 +72,14 @@
         <div class="main-page__card-illustration-wrp">
           <doc-verification-illustration
             class="main-page__card-illustration"
-            :is-active="web3Provider.isConnected"
+            :is-active="web3Store.provider.isConnected"
           />
         </div>
         <app-button
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-verification-card-button-text')"
-          :disabled="!web3Provider.isConnected"
+          :disabled="!web3Store.provider.isConnected"
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
@@ -97,7 +100,7 @@ import { DocCreationModal, DocVerificationModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
 import { ref } from 'vue'
 
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
 
 const isDocCreationModalShown = ref(false)
 const isDocVerificationModalShown = ref(false)
