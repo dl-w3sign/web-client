@@ -3,7 +3,7 @@ import { onBeforeUnmount } from 'vue'
 
 export const useViewportSize = (): { assignVhCssVariable(): void } => {
   const assignVhCssVariable = () => {
-    const vh = window.innerHeight * 0.01
+    const vh = (window.innerHeight * 0.01).toFixed(5)
     document.documentElement.style.setProperty('--vh', `${vh}px`)
   }
 
