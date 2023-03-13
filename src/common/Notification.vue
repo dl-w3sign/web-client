@@ -56,7 +56,7 @@ withDefaults(
 
   @include note;
 
-  @include respond-to(601px) {
+  @include respond-to(small--toast) {
     border-radius: 0;
   }
 }
