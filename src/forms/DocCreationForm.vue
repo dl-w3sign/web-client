@@ -83,7 +83,7 @@
                     v-for="address in form.indicatedAddresses"
                     :key="address"
                     :model-value="address"
-                    @remove="removeIndicatedAddress(address)"
+                    @clear="removeIndicatedAddress(address)"
                     is-removable
                     readonly
                   />

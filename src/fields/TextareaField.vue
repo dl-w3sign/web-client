@@ -27,8 +27,8 @@
       />
       <button
         v-if="isRemovable"
-        class="textarea-field__remove-button"
-        @click="emit('remove')"
+        class="textarea-field__clear-button"
+        @click="emit('clear')"
       >
         <icon class="textarea-field__icon" :name="$icons.xCircle" />
       </button>
@@ -66,7 +66,7 @@ import { v4 as generateUid } from 'uuid'
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void
-  (event: 'remove'): void
+  (event: 'clear'): void
 }>()
 
 const updateModelValue = (event: InputEvent) => {
@@ -140,7 +140,7 @@ const { textarea, resize } = useTextareaAutosize()
   }
 }
 
-.textarea-field__remove-button {
+.textarea-field__clear-button {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -248,7 +248,7 @@ const { textarea, resize } = useTextareaAutosize()
   }
 
   &:read-only {
-    & + .textarea-field__remove-button {
+    & + .textarea-field__clear-button {
       right: toRem(24);
       fill: var(--col-fine);
       color: var(--col-intense);
@@ -277,7 +277,7 @@ const { textarea, resize } = useTextareaAutosize()
   }
 
   &:not(:read-only) {
-    & + .textarea-field__remove-button {
+    & + .textarea-field__clear-button {
       right: toRem(16);
       fill: var(--transparent);
       stroke: var(--col-stylish);
@@ -302,21 +302,21 @@ const { textarea, resize } = useTextareaAutosize()
     }
   }
 
-  &:read-only + .textarea-field__remove-button:hover {
+  &:read-only + .textarea-field__clear-button:hover {
     fill: var(--col-accent);
   }
 
-  &:read-only + .textarea-field__remove-button:active {
+  &:read-only + .textarea-field__clear-button:active {
     fill: var(--col-spot);
   }
 
-  &:not(:read-only) + .textarea-field__remove-button:hover {
+  &:not(:read-only) + .textarea-field__clear-button:hover {
     stroke: var(--col-accent);
     fill: var(--col-accent);
     color: var(--col-intense);
   }
 
-  &:not(:read-only) + .textarea-field__remove-button:active {
+  &:not(:read-only) + .textarea-field__clear-button:active {
     stroke: var(--col-spot);
     fill: var(--col-spot);
     color: var(--col-intense);
