@@ -30,7 +30,7 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
       state.providers.find(
         designatedProvider => designatedProvider.name === PROVIDERS.metamask,
       ),
-    hasValidCurrentChain: state =>
+    isValidChain: state =>
       state.admittedChainIds.includes(
         state.provider.chainId?.toString() as ChainId,
       ),
@@ -92,7 +92,7 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
         if (!this.provider.isConnected) throw new Error('Not connected')
       }
 
-      if (!this.hasValidCurrentChain) {
+      if (!this.isValidChain) {
         this.showInvalidNetworkModal()
         throw new Error('Not admitted chain')
       }

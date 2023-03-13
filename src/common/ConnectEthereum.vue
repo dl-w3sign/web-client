@@ -66,7 +66,7 @@ const connectOrReferToInstallMetamask = async () => {
   if (web3Store.provider.selectedProvider) {
     try {
       await web3Store.provider.connect()
-      if (!web3Store.hasValidCurrentChain) web3Store.showInvalidNetworkModal()
+      if (!web3Store.isValidChain) web3Store.showInvalidNetworkModal()
     } catch (error) {
       error?.constructor === errors.ProviderUserRejectedRequest
         ? ErrorHandler.processWithoutFeedback(error)

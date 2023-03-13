@@ -54,14 +54,14 @@ const init = async () => {
 
   isAppInitialized.value = true
 
-  if (web3Store.provider.isConnected && !web3Store.hasValidCurrentChain)
+  if (web3Store.provider.isConnected && !web3Store.isValidChain)
     web3Store.showInvalidNetworkModal()
 }
 
 init()
 
 watch(
-  () => web3Store.hasValidCurrentChain,
+  () => web3Store.isValidChain,
   newValue => {
     if (!newValue) web3Store.showInvalidNetworkModal()
   },

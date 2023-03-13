@@ -3,7 +3,7 @@
     class="switch-ethereum__select-field"
     :is-waiting="web3Store.isChainSwitching"
     :preset="
-      web3Store.hasValidCurrentChain || web3Store.isChainSwitching
+      web3Store.isValidChain || web3Store.isChainSwitching
         ? 'outline-brittle'
         : 'outline-wise'
     "
