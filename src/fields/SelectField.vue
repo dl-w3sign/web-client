@@ -274,26 +274,22 @@ watch(
 
 @keyframes dropdown {
   from {
-    opacity: 0;
     transform-origin: top;
     transform: scaleY(0);
   }
 
   to {
-    opacity: 1;
     transform-origin: top;
   }
 }
 
 @keyframes dropup {
   from {
-    opacity: 0;
     transform-origin: bottom;
     transform: scaleY(0);
   }
 
   to {
-    opacity: 1;
     transform-origin: bottom;
   }
 }
