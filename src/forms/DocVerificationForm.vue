@@ -135,7 +135,11 @@
             </div>
           </transition>
         </div>
-        <app-button preset="primary" @click="signOrExit">
+        <app-button
+          preset="primary"
+          @click="signOrExit"
+          :disabled="isSignOrExitButtonDisabled"
+        >
           {{
             infoOfCurrentSigner?.isAdmittedToSigning
               ? $t('doc-verification-form.sign-button-text')
@@ -166,7 +170,7 @@
           </app-button>
           <app-button
             preset="primary"
-            :disabled="isFormDisabled || !isFieldsValid"
+            :disabled="isSubmitButtonDisabled"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -207,7 +211,7 @@ import {
 import { useWeb3ProvidersStore } from '@/store'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { debounce } from 'lodash-es'
 import { v4 as generateUid } from 'uuid'
 import { Time } from '@distributedlab/utils'
@@ -333,13 +337,14 @@ const getErrorMessage = (err: unknown) => {
   }
 }
 
+const isSubmitButtonDisabled = computed<boolean>(
+  () =>
+    isFormDisabled.value ||
+    !isFieldsValid.value ||
+    !web3Store.provider.isConnected ||
+    !web3Store.isValidChain,
+)
 const submitVerification = async () => {
-  try {
-    await web3Store.checkConnection()
-  } catch {
-    return
-  }
-
   disableForm()
   isSubmitting.value = true
   try {
@@ -378,15 +383,13 @@ const submitVerification = async () => {
   enableForm()
 }
 
+const isSignOrExitButtonDisabled = computed<boolean>(() => {
+  if (!infoOfCurrentSigner.value?.isAdmittedToSigning) return false
+  else return !web3Store.provider.isConnected || !web3Store.isValidChain
+})
 const signOrExit = async () => {
   if (!infoOfCurrentSigner.value?.isAdmittedToSigning) {
     emit('cancel')
-    return
-  }
-
-  try {
-    await web3Store.checkConnection()
-  } catch {
     return
   }
 
@@ -434,15 +437,6 @@ watch(
   () => web3Store.provider.selectedAddress,
   () => updateInfoOfCurrentSigner(),
 )
-
-onMounted(async () => {
-  try {
-    await web3Store.checkConnection()
-  } catch {
-    emit('cancel')
-    return
-  }
-})
 </script>
 
 <style lang="scss" scoped>

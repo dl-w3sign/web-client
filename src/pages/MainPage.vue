@@ -26,7 +26,7 @@
     >
       <transition name="fade">
         <div
-          v-show="!(web3Store.provider.isConnected && web3Store.isValidChain)"
+          v-show="!web3Store.provider.isConnected || !web3Store.isValidChain"
           class="main-page__connect-ethereum"
           :class="{
             'main-page__connect-ethereum--connected':
@@ -57,9 +57,7 @@
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-creation-card-button-text')"
-          :disabled="
-            !(web3Store.provider.isConnected && web3Store.isValidChain)
-          "
+          :disabled="!web3Store.provider.isConnected || !web3Store.isValidChain"
           @click="isDocCreationModalShown = true"
         />
         <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
@@ -78,9 +76,7 @@
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-verification-card-button-text')"
-          :disabled="
-            !(web3Store.provider.isConnected && web3Store.isValidChain)
-          "
+          :disabled="!web3Store.provider.isConnected || !web3Store.isValidChain"
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal

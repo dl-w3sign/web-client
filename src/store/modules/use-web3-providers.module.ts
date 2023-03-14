@@ -1,8 +1,6 @@
 import { useProvider, useWeb3 } from '@/composables'
 import { config } from '@/config'
 import { ETHEREUM_CHAINS, PROVIDERS } from '@/enums'
-import { errors } from '@/errors'
-import { ErrorHandler } from '@/helpers'
 import { ChainId, DesignatedProvider } from '@/types'
 import { defineStore } from 'pinia'
 
@@ -42,25 +40,8 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
     showInvalidNetworkModal() {
       this.isInvalidNetworkModalShown = true
     },
-    async tryConnectProvider() {
-      try {
-        await this.provider.connect()
-      } catch (error) {
-        error?.constructor === errors.ProviderUserRejectedRequest
-          ? ErrorHandler.processWithoutFeedback(error)
-          : ErrorHandler.process(error)
-      }
-    },
-    async checkConnection() {
-      if (!this.provider.isConnected) {
-        await this.tryConnectProvider()
-        if (!this.provider.isConnected) throw new Error('Not connected')
-      }
-
-      if (!this.isValidChain) {
-        this.showInvalidNetworkModal()
-        throw new Error('Not admitted chain')
-      }
+    hideInvalidNetworkModal() {
+      this.isInvalidNetworkModalShown = false
     },
   },
 })

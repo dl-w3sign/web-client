@@ -98,7 +98,7 @@
           </app-button>
           <app-button
             preset="primary"
-            :disabled="isFormDisabled || !isFieldsValid"
+            :disabled="isSubmitButtonDisabled"
             @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
@@ -138,7 +138,7 @@ import {
   BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -225,13 +225,14 @@ const formatFee = (fee?: BigNumber | null) => {
   )}`.replace('.', ',')
 }
 
+const isSubmitButtonDisabled = computed<boolean>(
+  () =>
+    isFormDisabled.value ||
+    !isFieldsValid.value ||
+    !web3Store.provider.isConnected ||
+    !web3Store.isValidChain,
+)
 const submit = async () => {
-  try {
-    await web3Store.checkConnection()
-  } catch {
-    return
-  }
-
   disableForm()
   isSubmitting.value = true
   try {
@@ -284,13 +285,6 @@ const reset = () => {
 }
 
 onMounted(async () => {
-  try {
-    await web3Store.checkConnection()
-  } catch {
-    emit('cancel')
-    return
-  }
-
   try {
     fee.value = await timestampContractInstance.getFee()
   } catch (error) {

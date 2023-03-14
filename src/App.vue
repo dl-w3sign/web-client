@@ -63,7 +63,9 @@ init()
 watch(
   () => web3Store.isValidChain,
   newValue => {
-    if (!newValue) web3Store.showInvalidNetworkModal()
+    newValue
+      ? web3Store.hideInvalidNetworkModal()
+      : web3Store.showInvalidNetworkModal()
   },
 )
 </script>
