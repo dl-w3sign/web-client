@@ -137,8 +137,8 @@
         </div>
         <app-button
           preset="primary"
-          @click="signOrExit"
           :disabled="isSignOrExitButtonDisabled"
+          @click="signOrExit"
         >
           {{
             infoOfCurrentSigner?.isAdmittedToSigning

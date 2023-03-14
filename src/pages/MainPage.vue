@@ -50,7 +50,9 @@
         <div class="main-page__card-illustration-wrp">
           <doc-creation-illustration
             class="main-page__card-illustration"
-            :is-active="web3Store.provider.isConnected"
+            :is-active="
+              web3Store.provider.isConnected && web3Store.isValidChain
+            "
           />
         </div>
         <app-button
@@ -69,7 +71,9 @@
         <div class="main-page__card-illustration-wrp">
           <doc-verification-illustration
             class="main-page__card-illustration"
-            :is-active="web3Store.provider.isConnected"
+            :is-active="
+              web3Store.provider.isConnected && web3Store.isValidChain
+            "
           />
         </div>
         <app-button
