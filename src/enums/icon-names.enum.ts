@@ -24,6 +24,7 @@ export enum ICON_NAMES {
   fileCsv = 'file-csv',
   fileDoc = 'file-doc',
   fileJpg = 'file-jpg',
+  fileJson = 'file-json',
   filePdf = 'file-pdf',
   filePng = 'file-png',
   fileXls = 'file-xls',

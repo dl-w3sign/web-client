@@ -10,6 +10,8 @@ export function getFileIconName(file: File): ICON_NAMES {
       return ICON_NAMES.fileDoc
     case FILE_TYPES.jpg:
       return ICON_NAMES.fileJpg
+    case FILE_TYPES.json:
+      return ICON_NAMES.fileJson
     case FILE_TYPES.pdf:
       return ICON_NAMES.filePdf
     case FILE_TYPES.png:
