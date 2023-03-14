@@ -11,7 +11,7 @@ import {
 } from '@/types'
 import { errors } from '@/errors'
 import { ethers } from 'ethers'
-import { ErrorHandler } from '@/helpers'
+import { ErrorHandler, getNetworkConfigByChainId, sleep } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 
 export interface UseProvider {
@@ -23,12 +23,15 @@ export interface UseProvider {
   selectedAddress: ComputedRef<string | undefined>
   isConnected: ComputedRef<boolean>
   isConnecting: Ref<boolean>
+  isChainSwitching: Ref<boolean>
+  chainIdOnSwitching: Ref<ChainId | undefined>
 
   init: (provider: DesignatedProvider) => Promise<void>
   connect: () => Promise<void>
   disconnect: () => Promise<void>
   switchChain: (chainId: ChainId) => Promise<void>
   addChain: (networkConfig: AddEthereumChainParameter) => Promise<void>
+  trySwitchOrAddChain: (chainId: ChainId) => Promise<void>
   signAndSendTx: (txRequestBody: TxRequestBody) => Promise<TransactionResponse>
   getHashFromTxResponse: (txResponse: TransactionResponse) => string
   getTxUrl: (explorerUrl: string, txHash: string) => string
@@ -61,6 +64,9 @@ export const useProvider = (): UseProvider => {
     Boolean(chainId.value && selectedAddress.value),
   )
   const isConnecting = ref(false)
+
+  const isChainSwitching = ref(false)
+  const chainIdOnSwitching = ref<ChainId>()
 
   const init = async (provider: DesignatedProvider) => {
     switch (provider.name as PROVIDERS) {
@@ -135,6 +141,40 @@ export const useProvider = (): UseProvider => {
     await providerWrp.value.addChain(networkConfig)
   }
 
+  const trySwitchOrAddChain = async (chainId: ChainId) => {
+    isChainSwitching.value = true
+    chainIdOnSwitching.value = chainId
+
+    try {
+      await switchChain(chainId)
+      await sleep(1000)
+    } catch (error) {
+      switch (true) {
+        case error?.constructor === errors.ProviderUserRejectedRequest:
+          ErrorHandler.processWithoutFeedback(error)
+          break
+
+        // error.code 4902 isn't supported in mobile metamask browser
+        default:
+          try {
+            const networkConfig = getNetworkConfigByChainId(chainId)
+            if (networkConfig) await addChain(networkConfig)
+            await sleep(1000)
+          } catch (error) {
+            if (error?.constructor === errors.ProviderUserRejectedRequest) {
+              ErrorHandler.processWithoutFeedback(error)
+              break
+            }
+            ErrorHandler.process(error)
+          }
+          break
+      }
+    }
+
+    chainIdOnSwitching.value = undefined
+    isChainSwitching.value = false
+  }
+
   const signAndSendTx = async (
     txRequestBody: TxRequestBody,
   ): Promise<TransactionResponse> => {
@@ -174,12 +214,15 @@ export const useProvider = (): UseProvider => {
     selectedAddress,
     isConnected,
     isConnecting,
+    isChainSwitching,
+    chainIdOnSwitching,
 
     init,
     connect,
     disconnect,
     switchChain,
     addChain,
+    trySwitchOrAddChain,
     signAndSendTx,
     getHashFromTxResponse,
     getTxUrl,

@@ -1,14 +1,14 @@
 <template>
   <select-field
     class="switch-ethereum__select-field"
-    :is-waiting="web3Store.isChainSwitching"
+    :is-waiting="web3Store.provider.isChainSwitching"
     :preset="
-      web3Store.isValidChain || web3Store.isChainSwitching
+      web3Store.isValidChain || web3Store.provider.isChainSwitching
         ? 'outline-brittle'
         : 'outline-wise'
     "
     :model-value="web3Store.provider.chainId"
-    @update:model-value="web3Store.trySwitchOrAddChain"
+    @update:model-value="web3Store.provider.trySwitchOrAddChain"
   >
     <template #head>
       <div class="switch-ethereum__select-head">
@@ -16,8 +16,8 @@
           class="switch-ethereum__button-icon"
           :name="
             getIconNameByChainId(
-              web3Store.isChainSwitching
-                ? (web3Store.chainIdOnSwitching as ChainId)
+              web3Store.provider.isChainSwitching
+                ? (web3Store.provider.chainIdOnSwitching as ChainId)
                 : (web3Store.provider.chainId as ChainId),
             )
           "
@@ -25,8 +25,8 @@
         <p class="switch-ethereum__chain-title">
           {{
             getTitleByChainId(
-              web3Store.isChainSwitching
-                ? (web3Store.chainIdOnSwitching as ChainId)
+              web3Store.provider.isChainSwitching
+                ? (web3Store.provider.chainIdOnSwitching as ChainId)
                 : (web3Store.provider.chainId as ChainId),
             )
           }}

@@ -91,7 +91,7 @@ const chainId = ref<ChainId>(web3Store.admittedChainIds[0])
 const isSwitchingOrAddingChain = ref(false)
 const switchAndClose = async () => {
   isSwitchingOrAddingChain.value = true
-  await web3Store.trySwitchOrAddChain(chainId.value)
+  await web3Store.provider.trySwitchOrAddChain(chainId.value)
   if (web3Store.isValidChain) emit('update:is-shown', false)
   isSwitchingOrAddingChain.value = false
 }

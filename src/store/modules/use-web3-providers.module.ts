@@ -2,7 +2,7 @@ import { useProvider, useWeb3 } from '@/composables'
 import { config } from '@/config'
 import { ETHEREUM_CHAINS, PROVIDERS } from '@/enums'
 import { errors } from '@/errors'
-import { ErrorHandler, getNetworkConfigByChainId, sleep } from '@/helpers'
+import { ErrorHandler } from '@/helpers'
 import { ChainId, DesignatedProvider } from '@/types'
 import { defineStore } from 'pinia'
 
@@ -22,8 +22,6 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
           ETHEREUM_CHAINS.qTestnet,
         ] as ChainId[]),
     isInvalidNetworkModalShown: false,
-    isChainSwitching: false,
-    chainIdOnSwitching: undefined as ChainId | undefined,
   }),
   getters: {
     metamask: (state): DesignatedProvider | undefined =>
@@ -52,39 +50,6 @@ export const useWeb3ProvidersStore = defineStore('web3-providers-store', {
           ? ErrorHandler.processWithoutFeedback(error)
           : ErrorHandler.process(error)
       }
-    },
-    async trySwitchOrAddChain(chainId: ChainId) {
-      this.isChainSwitching = true
-      this.chainIdOnSwitching = chainId
-
-      try {
-        await this.provider.switchChain(chainId)
-        await sleep(1000)
-      } catch (error) {
-        switch (true) {
-          case error?.constructor === errors.ProviderUserRejectedRequest:
-            ErrorHandler.processWithoutFeedback(error)
-            break
-
-          // error.code 4902 isn't supported in mobile metamask browser
-          default:
-            try {
-              const networkConfig = getNetworkConfigByChainId(chainId)
-              if (networkConfig) await this.provider.addChain(networkConfig)
-              await sleep(1000)
-            } catch (error) {
-              if (error?.constructor === errors.ProviderUserRejectedRequest) {
-                ErrorHandler.processWithoutFeedback(error)
-                break
-              }
-              ErrorHandler.process(error)
-            }
-            break
-        }
-      }
-
-      this.chainIdOnSwitching = undefined
-      this.isChainSwitching = false
     },
     async checkConnection() {
       if (!this.provider.isConnected) {
