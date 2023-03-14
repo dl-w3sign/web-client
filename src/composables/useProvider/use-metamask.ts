@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import {
   connectEthAccounts,
   getEthExplorerAddressUrl,
@@ -27,10 +27,7 @@ export const useMetamask = (provider: ProviderInstance): ProviderWrapper => {
 
   const currentProvider = computed(
     () =>
-      new ethers.providers.Web3Provider(
-        provider as ethers.providers.ExternalProvider,
-        'any',
-      ),
+      new providers.Web3Provider(provider as providers.ExternalProvider, 'any'),
   )
   const currentSigner = computed(() => currentProvider.value.getSigner())
 

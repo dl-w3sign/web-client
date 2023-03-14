@@ -10,13 +10,13 @@ import {
   AddEthereumChainParameter,
 } from '@/types'
 import { errors } from '@/errors'
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import { ErrorHandler, getNetworkConfigByChainId, sleep } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 
 export interface UseProvider {
-  currentProvider: ComputedRef<ethers.providers.Web3Provider | undefined>
-  currentSigner: ComputedRef<ethers.providers.JsonRpcSigner | undefined>
+  currentProvider: ComputedRef<providers.Web3Provider | undefined>
+  currentSigner: ComputedRef<providers.JsonRpcSigner | undefined>
 
   selectedProvider: Ref<PROVIDERS | undefined>
   chainId: ComputedRef<ChainId | undefined>
@@ -43,13 +43,11 @@ export const useProvider = (): UseProvider => {
 
   const currentProvider = computed(
     () =>
-      providerWrp.value
-        ?.currentProvider as unknown as ethers.providers.Web3Provider,
+      providerWrp.value?.currentProvider as unknown as providers.Web3Provider,
   )
   const currentSigner = computed(
     () =>
-      providerWrp.value
-        ?.currentSigner as unknown as ethers.providers.JsonRpcSigner,
+      providerWrp.value?.currentSigner as unknown as providers.JsonRpcSigner,
   )
 
   const selectedProvider = ref<PROVIDERS | undefined>()

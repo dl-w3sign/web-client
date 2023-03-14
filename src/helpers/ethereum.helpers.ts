@@ -20,27 +20,25 @@ import {
   EthProviderRpcError,
   BigNumberish,
 } from '@/types'
-import { ethers } from 'ethers'
+import { providers, utils } from 'ethers'
 
 const { t } = i18n.global
 
-export const connectEthAccounts = async (
-  provider: ethers.providers.Web3Provider,
-) => {
+export const connectEthAccounts = async (provider: providers.Web3Provider) => {
   await provider.send('eth_requestAccounts', [])
 }
 
 export async function requestSwitchEthChain(
-  provider: ethers.providers.Web3Provider,
+  provider: providers.Web3Provider,
   chainId: number,
 ) {
   await provider.send('wallet_switchEthereumChain', [
-    { chainId: ethers.utils.hexValue(chainId) },
+    { chainId: utils.hexValue(chainId) },
   ])
 }
 
 export async function requestAddEthChain(
-  provider: ethers.providers.Web3Provider,
+  provider: providers.Web3Provider,
   networkConfig: AddEthereumChainParameter,
 ) {
   await provider.send('wallet_addEthereumChain', [networkConfig])
@@ -96,11 +94,11 @@ export function getEthExplorerAddressUrl(explorerUrl: string, address: string) {
 }
 
 export function isAddress(address: string) {
-  return ethers.utils.isAddress(address)
+  return utils.isAddress(address)
 }
 
 export function formatEther(wei: BigNumberish) {
-  return ethers.utils.formatEther(wei)
+  return utils.formatEther(wei)
 }
 
 export function getNetworkConfigByChainId(

@@ -26,6 +26,13 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       target: 'esnext',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            lottie: ['lottie-web-vue'],
+          },
+        },
+      },
     },
     optimizeDeps: {
       esbuildOptions: {

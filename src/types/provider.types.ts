@@ -5,7 +5,7 @@ import {
   Transaction as SolTransaction,
   TransactionSignature,
 } from '@solana/web3.js'
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 
 import { PROVIDERS } from '@/enums'
 import { EthereumProvider } from '@/types/ethereum.types'
@@ -38,7 +38,7 @@ export type TxRequestBody =
   | string
   | unknown
 
-export type EthTransactionResponse = ethers.providers.TransactionResponse
+export type EthTransactionResponse = providers.TransactionResponse
 
 export type SolanaTransactionResponse = TransactionSignature
 
@@ -52,8 +52,8 @@ export type TransactionResponse =
  * which we can use to solve user needs
  */
 export interface ProviderWrapper {
-  currentProvider?: ComputedRef<ethers.providers.Web3Provider>
-  currentSigner?: ComputedRef<ethers.providers.JsonRpcSigner>
+  currentProvider?: ComputedRef<providers.Web3Provider>
+  currentSigner?: ComputedRef<providers.JsonRpcSigner>
 
   chainId: Ref<ChainId>
   selectedAddress: Ref<string>
