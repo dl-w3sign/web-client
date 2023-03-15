@@ -82,7 +82,7 @@
   "file-field": {
     "title": "Drag and drop files or",
     "open-dialog-button-text": "Browse",
-    "require": "JPG, PNG, file size no more than 2 MB",
+    "require": "CSV, DOC(X), JPG, JSON, PDF, PNG, XLS,\nfile size no more than 2 MB",
     "error-uncorrected-file-type": "Uncorrected file type",
     "error-exceeded-file-size": "File size exceeded"
   },
@@ -102,7 +102,7 @@
     "provider-invalid-params": "Invalid method parameters standard",
     "provider-internal-error": "Internal JSON-RPC error standard",
     "provider-invalid-input": "Missing or invalid parameters non-standard",
-    "provider-resource-not-found": "equested resource not found non-standard",
+    "provider-resource-not-found": "requested resource not found non-standard",
     "provider-resource-unavailable": "MetaMask is busy",
     "provider-transaction-rejected": "Transaction creation failed non-standard",
     "provider-method-not-supported": "Method is not implemented non-standard",

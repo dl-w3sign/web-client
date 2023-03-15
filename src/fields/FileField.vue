@@ -374,6 +374,7 @@ const cancelFileByName = (fileName: string) => {
   color: var(--col-fine);
   margin-top: toRem(8);
   text-align: center;
+  white-space: pre-line;
 
   @include body-large-inter;
 }
