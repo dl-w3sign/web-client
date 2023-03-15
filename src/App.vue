@@ -16,45 +16,63 @@
           </div>
         </transition>
       </router-view>
+      <invalid-network-modal
+        :is-shown="web3Store.isInvalidNetworkModalShown"
+        @update:is-shown="web3Store.isInvalidNetworkModalShown = false"
+      />
     </div>
   </transition>
 </template>
 
 <script lang="ts" setup>
 import { AppNavbar, Animation } from '@/common'
-import { useNotifications, useContext } from '@/composables'
+import { useViewportSize, useNotifications, useContext } from '@/composables'
 import { ErrorHandler } from '@/helpers'
+import { InvalidNetworkModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
-import { DesignatedProvider } from '@/types'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import LoaderJSON from '../loader.json'
 
 const web3Store = useWeb3ProvidersStore()
-const { provider: web3Provider } = useWeb3ProvidersStore()
 const { $config } = useContext()
+const { assignVhCssVariable } = useViewportSize()
 
 const isAppInitialized = ref(false)
 const init = async () => {
   try {
+    assignVhCssVariable()
     useNotifications()
 
     await web3Store.detectProviders()
 
-    if (web3Store.metamask)
-      await web3Provider.init(web3Store.metamask as DesignatedProvider)
+    if (web3Store.metamask) await web3Store.provider.init(web3Store.metamask)
 
     document.title = $config.APP_NAME
   } catch (error) {
     ErrorHandler.process(error)
   }
+
   isAppInitialized.value = true
+
+  if (web3Store.provider.isConnected && !web3Store.isValidChain)
+    web3Store.showInvalidNetworkModal()
 }
 
 init()
+
+watch(
+  () => web3Store.isValidChain,
+  newValue => {
+    newValue
+      ? web3Store.hideInvalidNetworkModal()
+      : web3Store.showInvalidNetworkModal()
+  },
+)
 </script>
 
 <style lang="scss" scoped>
 .app__wrapper {
+  position: relative;
   min-width: toRem(375);
 }
 
@@ -68,10 +86,10 @@ init()
 
 .app__main {
   overflow-y: scroll;
-  height: calc(100vh - toRem(80));
+  height: calc(vh(100) - toRem(80));
 
   @include respond-to(tablet) {
-    height: calc(100vh - toRem(72));
+    height: calc(vh(100) - toRem(72));
   }
 
   @include respond-to(375px) {

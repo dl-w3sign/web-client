@@ -46,7 +46,7 @@
       </div>
       <div v-else class="doc-creation-form__container">
         <file-field v-model="form.files" />
-        <transition name="fade" mode="out-in">
+        <transition name="fade-in">
           <div v-show="form.files" class="doc-creation-form__container">
             <div class="doc-creation-form__checkboxes">
               <checkbox-field
@@ -66,26 +66,30 @@
                 {{ formatFee(fee) }}
               </span>
             </p>
-          </div>
-        </transition>
-        <transition name="fade" mode="out-in">
-          <div
-            v-show="form.files && form.isIndicatingAddresses"
-            class="doc-creation-form__container"
-          >
-            <input-field
-              v-model="walletAddress"
-              :label="$t('doc-creation-form.wallets-addresses-title')"
-              :placeholder="$t('doc-creation-form.wallet-address-placeholder')"
-            />
-            <textarea-field
-              v-for="address in form.indicatedAddresses"
-              :key="address"
-              :model-value="address"
-              @remove="removeIndicatedAddress(address)"
-              is-removable
-              readonly
-            />
+            <transition name="fade-in">
+              <div
+                v-show="form.isIndicatingAddresses"
+                class="doc-creation-form__container"
+              >
+                <input-field
+                  v-model="walletAddress"
+                  :label="$t('doc-creation-form.wallets-addresses-title')"
+                  :placeholder="
+                    $t('doc-creation-form.wallet-address-placeholder')
+                  "
+                />
+                <transition-group name="fade">
+                  <textarea-field
+                    v-for="address in form.indicatedAddresses"
+                    :key="address"
+                    :model-value="address"
+                    @clear="removeIndicatedAddress(address)"
+                    is-removable
+                    readonly
+                  />
+                </transition-group>
+              </div>
+            </transition>
           </div>
         </transition>
         <div class="doc-creation-form__buttons">
@@ -94,7 +98,7 @@
           </app-button>
           <app-button
             preset="primary"
-            :disabled="isFormDisabled || !isFieldsValid"
+            :disabled="isSubmitButtonDisabled"
             @click="submit"
           >
             {{ $t('doc-creation-form.submit-button-text') }}
@@ -115,6 +119,7 @@ import {
   usePoseidonHashContract,
 } from '@/composables'
 import { RPC_ERROR_MESSAGES } from '@/enums'
+import { errors } from '@/errors'
 import { FileField, TextareaField, CheckboxField, InputField } from '@/fields'
 import {
   ErrorHandler,
@@ -122,24 +127,25 @@ import {
   isAddress,
   generateZKPPointsStructAndPublicHash,
   formatEther,
+  getCurrencySymbolByChainId,
 } from '@/helpers'
 import { required, maxValue, requiredIf } from '@/validators'
 import {
-  EthProviderRpcError,
   Keccak256Hash,
   PoseidonHash,
   BytesLike,
+  ChainId,
   BigNumber,
 } from '@/types'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 
 const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
-const { $t, $config } = useContext()
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const { $t } = useContext()
+const web3Store = useWeb3ProvidersStore()
 
 const timestampContractInstance = useTimestampContract()
 const poseidonHashContractInstance = usePoseidonHashContract()
@@ -201,10 +207,12 @@ const removeIndicatedAddress = (address: string) => {
   )
 }
 
-const getErrorMessage = (error: EthProviderRpcError): string => {
-  switch (error.message) {
-    case RPC_ERROR_MESSAGES.hashCollision:
+const getErrorMessage = (err: unknown): string => {
+  switch (true) {
+    case err?.reason === RPC_ERROR_MESSAGES.hashCollision:
       return $t('doc-creation-form.error-hash-collision')
+    case err?.constructor === TypeError:
+      return $t('doc-creation-form.error-failed-to-fetch')
     default:
       return $t('doc-creation-form.error-default')
   }
@@ -212,16 +220,22 @@ const getErrorMessage = (error: EthProviderRpcError): string => {
 
 const formatFee = (fee?: BigNumber | null) => {
   if (!fee) return ''
-  return `${formatEther(fee)} MATIC`.replace('.', ',')
+  return `${formatEther(fee)} ${getCurrencySymbolByChainId(
+    web3Store.provider.chainId as ChainId,
+  )}`.replace('.', ',')
 }
 
+const isSubmitButtonDisabled = computed<boolean>(
+  () =>
+    isFormDisabled.value ||
+    !isFieldsValid.value ||
+    !web3Store.provider.isConnected ||
+    !web3Store.isValidChain,
+)
 const submit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
-
     const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
       (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
     )) as PoseidonHash
@@ -229,7 +243,7 @@ const submit = async () => {
     const { ZKPPointsStruct, publicHash } =
       await generateZKPPointsStructAndPublicHash(
         secretFileHash,
-        web3Provider.selectedAddress as string,
+        web3Store.provider.selectedAddress as string,
       )
 
     publicFileHash.value = publicHash
@@ -246,11 +260,9 @@ const submit = async () => {
 
     showConfirmation()
   } catch (err) {
-    if (err?.error)
-      errorMessage.value = getErrorMessage(err.error as EthProviderRpcError)
-    else errorMessage.value = $t('doc-creation-form.error-default')
+    errorMessage.value = getErrorMessage(err)
 
-    showFailure()
+    if (err?.code !== errors.ACTION_REJECTED) showFailure()
     ErrorHandler.processWithoutFeedback(err)
   }
   isSubmitting.value = false
@@ -361,10 +373,15 @@ onMounted(async () => {
   }
 }
 
+.fade-in-leave-active {
+  display: none;
+}
+
 .fade-leave-active {
   animation: fade-in ease-out var(--transition-duration) reverse;
 }
 
+.fade-in-enter-active,
 .fade-enter-active {
   animation: fade-in ease-out var(--transition-duration-slow);
 }

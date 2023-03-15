@@ -4,6 +4,12 @@
       <svg class="app-navbar__logo">
         <use href="/branding/logo.svg#logo" />
       </svg>
+      <transition name="fade">
+        <switch-ethereum
+          v-if="web3Store.provider.isConnected"
+          class="app-navbar__switch-ethereum"
+        />
+      </transition>
       <connect-ethereum
         class="app-navbar__connect-ethereum"
         preset="outline-brittle"
@@ -13,7 +19,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ConnectEthereum } from '@/common'
+import { ConnectEthereum, SwitchEthereum } from '@/common'
+import { useWeb3ProvidersStore } from '@/store'
+
+const web3Store = useWeb3ProvidersStore()
 </script>
 
 <style lang="scss" scoped>
@@ -29,11 +38,13 @@ import { ConnectEthereum } from '@/common'
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: toRem(16);
   padding: 0 6.7%;
   width: 100%;
   max-width: toRem(1440);
 
   @include respond-to(tablet) {
+    gap: toRem(8);
     padding: 0 4.5%;
   }
 }
@@ -41,24 +52,80 @@ import { ConnectEthereum } from '@/common'
 .app-navbar__logo {
   height: toRem(48);
   width: toRem(48);
-  color: var(--col-intense);
-  fill: var(--col-trendy);
-  transition: var(--transition-duration);
+  color: var(--col-peaceful);
+  fill: var(--col-primary);
+  transition-property: color, fill;
+  transition-duration: var(--transition-duration);
 
   &:hover {
     color: var(--col-quiet);
-    fill: var(--col-primary);
+    fill: var(--col-basic);
+  }
+
+  &:active {
+    fill: var(--col-initial);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(44);
+    width: toRem(44);
   }
 }
 
 .app-navbar__connect-ethereum {
   height: toRem(48);
-  width: toRem(226);
+  width: toRem(218);
   font-size: toRem(14);
   line-height: toRem(20);
 
   @include respond-to(tablet) {
-    width: toRem(216);
+    width: toRem(208);
+  }
+}
+
+.app-navbar__switch-ethereum {
+  z-index: var(--z-layer-1000);
+  height: toRem(48);
+  width: toRem(179);
+  margin-left: auto;
+
+  // stylelint-disable-next-line
+  :deep([id*='dropdown']) {
+    margin-top: toRem(24);
+    width: toRem(179);
+
+    @include respond-to(tablet) {
+      margin-top: toRem(16);
+    }
+
+    @include respond-to(small) {
+      position: absolute;
+      top: toRem(80);
+      right: toRem(16);
+      margin-top: 0;
+    }
+  }
+
+  @include respond-to(small) {
+    width: toRem(64);
+  }
+}
+
+.fade-enter-active {
+  animation: fade-in var(--transition-duration-slow);
+}
+
+.fade-leave-active {
+  animation: fade-in var(--transition-duration-slow) reverse;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 </style>

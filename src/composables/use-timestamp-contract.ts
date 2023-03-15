@@ -1,5 +1,5 @@
-import { config } from '@/config'
 import { errors } from '@/errors'
+import { getTimestampContractAddressByChainId } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import { BigNumber } from '@/utils'
 import {
@@ -59,23 +59,37 @@ export type UseTimestampContract = {
 export const useTimestampContract = (): UseTimestampContract => {
   const web3Store = useWeb3ProvidersStore()
 
-  const _instance = computed<TimestampContract | undefined>(
-    () =>
-      web3Store.provider.currentProvider &&
-      TimestampContract__factory.connect(
-        config.CTR_ADDRESS_TIMESTAMP,
-        web3Store.provider.currentProvider,
-      ),
-  )
+  const _instance = computed<TimestampContract | undefined>(() => {
+    if (!(web3Store.provider.currentProvider && web3Store.provider.chainId))
+      return undefined
 
-  const _instance_rw = computed<TimestampContract | undefined>(
-    () =>
-      web3Store.provider.currentSigner &&
-      TimestampContract__factory.connect(
-        config.CTR_ADDRESS_TIMESTAMP,
+    const address = getTimestampContractAddressByChainId(
+      web3Store.provider.chainId,
+    )
+
+    if (address)
+      return TimestampContract__factory.connect(
+        address,
+        web3Store.provider.currentProvider,
+      )
+    else return undefined
+  })
+
+  const _instance_rw = computed<TimestampContract | undefined>(() => {
+    if (!(web3Store.provider.currentSigner && web3Store.provider.chainId))
+      return undefined
+
+    const address = getTimestampContractAddressByChainId(
+      web3Store.provider.chainId,
+    )
+
+    if (address)
+      return TimestampContract__factory.connect(
+        address,
         web3Store.provider.currentSigner,
-      ),
-  )
+      )
+    else return undefined
+  })
 
   const getStampInfoWithPagination = async (
     publicHash: PromiseOrValue<BytesLike>,

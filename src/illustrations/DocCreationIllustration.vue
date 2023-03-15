@@ -209,6 +209,7 @@ const getStatusIconName = (n: number) => {
     width: toRem(19.2);
     margin-left: toRem(4.8);
     border-radius: toRem(4);
+    background: var(--col-mild);
   }
 
   &--wide {
@@ -217,6 +218,7 @@ const getStatusIconName = (n: number) => {
     width: toRem(56.3);
     border-radius: toRem(4);
     margin-top: toRem(6);
+    background: var(--col-mild);
   }
 
   &--wider {
@@ -225,6 +227,7 @@ const getStatusIconName = (n: number) => {
     width: toRem(82.62);
     border-radius: toRem(4);
     margin-top: toRem(6);
+    background: var(--col-mild);
   }
 
   &--widest {
@@ -232,6 +235,7 @@ const getStatusIconName = (n: number) => {
     width: toRem(115);
     border-radius: toRem(4);
     margin-top: toRem(6);
+    background: var(--col-mild);
   }
 
   &--large {

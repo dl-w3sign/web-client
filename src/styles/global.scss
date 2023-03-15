@@ -19,7 +19,7 @@ body, #app {
   flex-direction: column;
   flex: 1;
   color: var(--col-trendy);
-  max-height: 100vh;
+  max-height: vh(100);
   background: var(--col-rich);
 
   &::-webkit-scrollbar-track,
@@ -35,17 +35,18 @@ body, #app {
 input,
 select,
 textarea {
-  color: var(--col-fancy);
+  color: var(--col-trendy);
   border-radius: var(--border-radius);
   resize: none;
   transition-property: border-color, background-color;
   transition-duration: var(--transition-duration);
 
   &::placeholder {
-    color: var(--col-fine);
+    color: var(--col-fancy);
   }
 
   &:read-only {
+    color: var(--col-fancy);
     border: none;
     background: var(--col-great);
     padding: toRem(16) toRem(24);
@@ -81,7 +82,6 @@ textarea {
   }
 
   &:not(:read-only):focus {
-    outline: 0;
     border-color: var(--col-primary);
   }
 

@@ -1,6 +1,6 @@
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 
-export interface EthereumProvider extends ethers.providers.ExternalProvider {
+export interface EthereumProvider extends providers.ExternalProvider {
   providers?: unknown[]
 }
 

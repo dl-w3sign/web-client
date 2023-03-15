@@ -42,11 +42,15 @@
   --col-wise: #{$wise};
   --col-weak: #{$weak};
   --col-flabby: #{$flabby};
+  --col-vague: #{$vague};
+  --col-elusive: #{$elusive};
   --col-simple: #{$simple};
   --col-soft: #{$soft};
   --col-glossy: #{$glossy};
   --col-crude: #{$crude};
+  --col-raw: #{$raw};
   --col-mild: #{$mild};
+  --col-modest: #{$modest};
   --col-calm: #{$calm};
   --col-smart: #{$smart};
   --col-creative: #{$creative};
@@ -70,6 +74,7 @@
   --z-layer-1: 1;
   --z-layer-20: 20;
   --z-layer-100: 100;
+  --z-layer-1000: 1000;
   --z-layer-1300: 1300;
 
   /* App variables */

@@ -1,5 +1,5 @@
-import { config } from '@/config'
 import { errors } from '@/errors'
+import { getPoseidonHashContractAddressByChainId } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 import {
   PoseidonHashContract,
@@ -22,14 +22,21 @@ export interface IUsePoseidonHashContract {
 export const usePoseidonHashContract = (): IUsePoseidonHashContract => {
   const web3Store = useWeb3ProvidersStore()
 
-  const _instance = computed<PoseidonHashContract | undefined>(
-    () =>
-      web3Store.provider.currentProvider &&
-      PoseidonHashContract__factory.connect(
-        config.CTR_ADDRESS_POSEIDON_HASH,
+  const _instance = computed<PoseidonHashContract | undefined>(() => {
+    if (!(web3Store.provider.currentProvider && web3Store.provider.chainId))
+      return undefined
+
+    const address = getPoseidonHashContractAddressByChainId(
+      web3Store.provider.chainId,
+    )
+
+    if (address)
+      return PoseidonHashContract__factory.connect(
+        address,
         web3Store.provider.currentProvider,
-      ),
-  )
+      )
+    else return undefined
+  })
 
   const getPoseidonHash = async (
     bytesLike: PromiseOrValue<BytesLike>,

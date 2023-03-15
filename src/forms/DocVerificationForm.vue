@@ -2,22 +2,28 @@
   <form
     class="doc-verification-form"
     :class="{
-      'doc-verification-form--confirmation-hidden': !isConfirmationShown,
+      'doc-verification-form--confirmation-shown': isConfirmationShown,
     }"
     @submit.prevent
   >
     <transition name="fade" mode="out-in">
-      <div v-if="isSubmitting">
-        <spinner class="doc-verification-form__loader" />
+      <div v-if="isSubmitting" class="doc-verification-form__container">
+        <spinner />
         <h5 class="doc-verification-form__please-wait-msg">
           {{ $t('doc-verification-form.please-wait-msg') }}
         </h5>
       </div>
-      <div v-else-if="isConfirmationShown">
+      <div
+        v-else-if="isConfirmationShown"
+        class="doc-verification-form__container"
+      >
         <div class="doc-verification-form__doc-info">
-          <h5 class="doc-verification-form__doc-hash-title">
-            {{ $t('doc-verification-form.document-hash-title') }}
-          </h5>
+          <label
+            class="doc-verification-form__doc-hash-label"
+            :for="`doc-hash--${uid}`"
+          >
+            {{ $t('doc-verification-form.document-hash-label') }}
+          </label>
           <div
             :class="[
               'doc-verification-form__timestamp-info',
@@ -31,12 +37,14 @@
               {{ formatTimestamp(stampInfo?.docTimestamp as number) }}
             </p>
           </div>
+          <textarea-field
+            :label-id="`doc-hash--${uid}`"
+            class="doc-verification-form__doc-hash"
+            :model-value="publicFileHash as string || ''"
+            is-copied
+            readonly
+          />
         </div>
-        <textarea-field
-          :model-value="publicFileHash as string || ''"
-          is-copyable
-          readonly
-        />
         <div
           :class="[
             'doc-verification-form__note',
@@ -55,19 +63,21 @@
             }}
           </p>
         </div>
-        <div v-if="isSignedBySomeone">
-          <h4 class="doc-verification-form__list-title">
-            {{ $t('doc-verification-form.list-title') }}
-          </h4>
-          <input-field
-            :model-value="addressToSearch"
-            @update:model-value="onUpdateAddressToSearch"
-            class="doc-verification-form__search-input"
-            :placeholder="$t('doc-verification-form.search-placeholder')"
-            :left-icon-name="$icons.search"
-          />
+        <div v-if="isSignedBySomeone" class="doc-verification-form__container">
+          <div>
+            <h4 class="doc-verification-form__list-title">
+              {{ $t('doc-verification-form.list-title') }}
+            </h4>
+            <input-field
+              :model-value="addressToSearch"
+              @update:model-value="onUpdateAddressToSearch"
+              class="doc-verification-form__search-input"
+              :placeholder="$t('doc-verification-form.search-placeholder')"
+              :left-icon-name="$icons.search"
+            />
+          </div>
           <transition name="fade-in">
-            <spinner v-if="isSearching" class="doc-verification-form__loader" />
+            <spinner v-if="isSearching" />
             <div
               v-else-if="errorMessage"
               :class="[
@@ -83,35 +93,41 @@
                 {{ errorMessage }}
               </p>
             </div>
-            <div v-else-if="stampInfo?.signers">
-              <div v-for="signer in stampInfo.signers" :key="signer.address">
-                <textarea-field
-                  class="doc-verification-form__address"
-                  :model-value="signer.address"
-                  :right-icon-name="
-                    signer.signatureTimestamp ? $icons.checkCircle : undefined
-                  "
-                  readonly
-                />
-                <div class="doc-verification-form__timestamp-info">
-                  <p
-                    class="doc-verification-form__timestamp-title"
-                    v-if="signer.signatureTimestamp"
-                  >
-                    {{ $t('doc-verification-form.signature-timestamp-title') }}
-                  </p>
-                  <p class="doc-verification-form__timestamp">
-                    {{
-                      signer.signatureTimestamp
-                        ? formatTimestamp(signer.signatureTimestamp)
-                        : $t('doc-verification-form.not-signed-yet-message')
-                    }}
-                  </p>
+            <div
+              v-else-if="stampInfo?.signers"
+              class="doc-verification-form__container"
+            >
+              <transition-group name="fade-in">
+                <div v-for="signer in stampInfo.signers" :key="signer.address">
+                  <textarea-field
+                    class="doc-verification-form__address"
+                    :model-value="signer.address"
+                    :right-icon-name="
+                      signer.signatureTimestamp ? $icons.checkCircle : undefined
+                    "
+                    readonly
+                  />
+                  <div class="doc-verification-form__timestamp-info">
+                    <p
+                      class="doc-verification-form__timestamp-title"
+                      v-if="signer.signatureTimestamp"
+                    >
+                      {{
+                        $t('doc-verification-form.signature-timestamp-title')
+                      }}
+                    </p>
+                    <p class="doc-verification-form__timestamp">
+                      {{
+                        signer.signatureTimestamp
+                          ? formatTimestamp(signer.signatureTimestamp)
+                          : $t('doc-verification-form.not-signed-yet-message')
+                      }}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </transition-group>
               <pagination-control
                 v-if="!addressToSearch && stampInfo.signers.length"
-                class="doc-verification-form__pagination-control"
                 :items-count="stampInfo.signersTotalCount"
                 :page-limit="pageLimit"
                 :on-page-change="onPageChange"
@@ -119,7 +135,11 @@
             </div>
           </transition>
         </div>
-        <app-button preset="primary" @click="signOrExit">
+        <app-button
+          preset="primary"
+          :disabled="isSignOrExitButtonDisabled"
+          @click="signOrExit"
+        >
           {{
             infoOfCurrentSigner?.isAdmittedToSigning
               ? $t('doc-verification-form.sign-button-text')
@@ -127,7 +147,7 @@
           }}
         </app-button>
       </div>
-      <div v-else-if="isFailureShown">
+      <div v-else-if="isFailureShown" class="doc-verification-form__container">
         <file-field :model-value="form.files" readonly />
         <div
           class="doc-verification-form__note doc-verification-form__note--error"
@@ -142,7 +162,7 @@
           {{ $t('doc-verification-form.reset-button-text') }}
         </app-button>
       </div>
-      <div v-else>
+      <div v-else class="doc-verification-form__container">
         <file-field v-model="form.files" />
         <div class="doc-verification-form__buttons">
           <app-button preset="outline-brittle" @click="emit('cancel')">
@@ -150,7 +170,7 @@
           </app-button>
           <app-button
             preset="primary"
-            :disabled="isFormDisabled || !isFieldsValid"
+            :disabled="isSubmitButtonDisabled"
             @click="submitVerification"
           >
             {{ $t('doc-verification-form.submit-button-text') }}
@@ -171,6 +191,7 @@ import {
   useContext,
 } from '@/composables'
 import { RPC_ERROR_MESSAGES, TIMEZONES } from '@/enums'
+import { errors } from '@/errors'
 import { FileField, InputField, TextareaField } from '@/fields'
 import {
   getKeccak256FileHash,
@@ -187,12 +208,15 @@ import {
   BytesLike,
   PoseidonHash,
 } from '@/types'
+import { useWeb3ProvidersStore } from '@/store'
 import { required, maxValue } from '@/validators'
 import { useWindowSize } from '@vueuse/core'
-import { useWeb3ProvidersStore } from '@/store'
 import { ref, reactive, computed, watch } from 'vue'
 import { debounce } from 'lodash-es'
+import { v4 as generateUid } from 'uuid'
 import { Time } from '@distributedlab/utils'
+
+const uid = generateUid()
 
 const emit = defineEmits<{
   (event: 'cancel'): void
@@ -202,7 +226,7 @@ const form = reactive({
   files: null as File[] | null,
 })
 
-const { $t, $config } = useContext()
+const { $t } = useContext()
 const { isFieldsValid } = useFormValidation(form, {
   files: {
     0: {
@@ -214,7 +238,7 @@ const { isFieldsValid } = useFormValidation(form, {
     },
   },
 })
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
 const timestampContractInstance = useTimestampContract()
 const poseidonHashContractInstance = usePoseidonHashContract()
 
@@ -291,23 +315,46 @@ const onPageChange = async ({
 const formatTimestamp = (timestamp: number): string => {
   return new Time(timestamp, 'X')
     .tz(TIMEZONES.CET)
-    .format('hh:mm A MMMM YYYY [CET]')
+    .format('hh:mm A MMM YYYY [CET]')
 }
 
+const updateInfoOfCurrentSigner = async () => {
+  if (publicFileHash.value)
+    infoOfCurrentSigner.value = await timestampContractInstance.getSignerInfo(
+      web3Store.provider.selectedAddress as string,
+      publicFileHash.value as BytesLike,
+    )
+}
+
+const getErrorMessage = (err: unknown) => {
+  switch (true) {
+    case stampInfo.value?.docTimestamp === 0:
+      return $t('doc-verification-form.error-doc-not-found')
+    case err?.constructor === TypeError:
+      return $t('doc-verification-form.error-failed-to-fetch')
+    default:
+      return $t('doc-verification-form.error-default')
+  }
+}
+
+const isSubmitButtonDisabled = computed<boolean>(
+  () =>
+    isFormDisabled.value ||
+    !isFieldsValid.value ||
+    !web3Store.provider.isConnected ||
+    !web3Store.isValidChain,
+)
 const submitVerification = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
-
     const secretFileHash = (await poseidonHashContractInstance.getPoseidonHash(
       (await getKeccak256FileHash(form.files?.[0] as File)) as Keccak256Hash,
     )) as PoseidonHash
 
     const { publicHash } = await generateZKPPointsStructAndPublicHash(
       secretFileHash,
-      web3Provider.selectedAddress as string,
+      web3Store.provider.selectedAddress as string,
     )
 
     publicFileHash.value = publicHash
@@ -322,20 +369,13 @@ const submitVerification = async () => {
       throw new Error('Document not found')
 
     if (stampInfo.value?.signers.length) {
-      infoOfCurrentSigner.value = await timestampContractInstance.getSignerInfo(
-        web3Provider?.selectedAddress as string,
-        publicFileHash.value,
-      )
-
       isSignedBySomeone.value = true
+      await updateInfoOfCurrentSigner()
     }
 
     showConfirmation()
   } catch (err) {
-    stampInfo.value?.docTimestamp === 0
-      ? (errorMessage.value = $t('doc-verification-form.error-doc-not-found'))
-      : (errorMessage.value = $t('doc-verification-form.error-default'))
-
+    errorMessage.value = getErrorMessage(err)
     ErrorHandler.processWithoutFeedback(err)
     showFailure()
   }
@@ -343,6 +383,10 @@ const submitVerification = async () => {
   enableForm()
 }
 
+const isSignOrExitButtonDisabled = computed<boolean>(() => {
+  if (!infoOfCurrentSigner.value?.isAdmittedToSigning) return false
+  else return !web3Store.provider.isConnected || !web3Store.isValidChain
+})
 const signOrExit = async () => {
   if (!infoOfCurrentSigner.value?.isAdmittedToSigning) {
     emit('cancel')
@@ -352,20 +396,24 @@ const signOrExit = async () => {
   disableForm()
   isSubmitting.value = true
   try {
-    if (web3Provider.chainId !== $config.CHAIN_ID)
-      await web3Provider.switchChain($config.CHAIN_ID)
-
     await timestampContractInstance.sign(publicFileHash.value as BytesLike)
 
     infoOfCurrentSigner.value.isAdmittedToSigning = false
     Bus.success($t('doc-verification-form.sign-success-message'))
   } catch (error) {
-    if (error?.reason === RPC_ERROR_MESSAGES.alreadySigned) {
-      Bus.info($t('doc-verification-form.already-signed-message'))
-      infoOfCurrentSigner.value.isAdmittedToSigning = false
-      ErrorHandler.processWithoutFeedback(error)
-    } else {
-      ErrorHandler.process(error)
+    switch (true) {
+      case error?.reason === RPC_ERROR_MESSAGES.alreadySigned:
+        Bus.info($t('doc-verification-form.already-signed-message'))
+        infoOfCurrentSigner.value.isAdmittedToSigning = false
+        ErrorHandler.processWithoutFeedback(error)
+        break
+
+      case error?.code === errors.ACTION_REJECTED:
+        ErrorHandler.processWithoutFeedback(error)
+        break
+
+      default:
+        ErrorHandler.process(error)
     }
   }
 
@@ -384,13 +432,36 @@ const reset = () => {
   isSearching.value = false
   resetState()
 }
+
+watch(
+  () => web3Store.provider.selectedAddress,
+  () => updateInfoOfCurrentSigner(),
+)
 </script>
 
 <style lang="scss" scoped>
 .doc-verification-form {
-  &--confirmation-hidden {
-    @include respond-to(tablet) {
-      margin-top: toRem(16);
+  margin-top: toRem(24);
+
+  @include respond-to(tablet) {
+    margin-top: toRem(16);
+
+    &--confirmation-shown {
+      margin-top: toRem(12);
+    }
+  }
+}
+
+.doc-verification-form__container {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(24);
+
+  @include respond-to(tablet) {
+    gap: toRem(16);
+
+    .doc-verification-form--confirmation-shown & {
+      gap: toRem(12);
     }
   }
 }
@@ -398,19 +469,9 @@ const reset = () => {
 .doc-verification-form__buttons {
   display: flex;
   gap: toRem(16);
-  margin-top: toRem(24);
 
   @include respond-to(tablet) {
     gap: toRem(8);
-    margin-top: toRem(16);
-  }
-}
-
-.doc-verification-form__loader {
-  margin: toRem(24) 0;
-
-  @include respond-to(tablet) {
-    margin: toRem(16) 0;
   }
 }
 
@@ -421,18 +482,28 @@ const reset = () => {
 .doc-verification-form__doc-info {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: toRem(8);
-
-  @include respond-to(tablet) {
-    margin-bottom: toRem(4);
-  }
 }
 
-.doc-verification-form__doc-hash-title {
+.doc-verification-form__doc-hash-label {
   @include body-large;
 
   @include respond-to(tablet) {
     margin-bottom: toRem(8);
+  }
+}
+
+.doc-verification-form__doc-hash {
+  width: 100%;
+  margin-top: toRem(8);
+
+  @include respond-to(tablet) {
+    margin-top: toRem(4);
+  }
+}
+
+.doc-verification-form__list-title {
+  @include respond-to(tablet) {
+    @include body-large;
   }
 }
 
@@ -450,27 +521,16 @@ const reset = () => {
 }
 
 .doc-verification-form__search-input {
-  margin: toRem(8) 0 toRem(24);
-  stroke: var(--col-brittle);
-
-  &:hover {
-    stroke: var(--col-flexible);
-  }
-
-  &:focus-within {
-    stroke: var(--col-primary);
-  }
-
-  @include respond-to(tablet) {
-    margin: toRem(8) 0 toRem(12);
-  }
+  margin-top: toRem(8);
+  stroke: var(--col-fine);
+  stroke-width: toRem(1.5);
 }
 
 .doc-verification-form__timestamp-info {
   display: flex;
   justify-content: end;
   gap: toRem(11);
-  margin: toRem(8) auto toRem(24);
+  margin-top: toRem(8);
 
   &--top {
     margin: 0 0 0 auto;
@@ -479,10 +539,6 @@ const reset = () => {
 
   @include respond-to(tablet) {
     gap: toRem(4);
-
-    &:not(.doc-verification-form__timestamp-info--top) {
-      margin-bottom: toRem(12);
-    }
   }
 
   @include body-medium;
@@ -504,32 +560,17 @@ const reset = () => {
   }
 }
 
-.doc-verification-form__list-title {
-  margin-bottom: toRem(8);
-
-  @include respond-to(tablet) {
-    @include body-large;
-  }
-}
-
 .doc-verification-form__note {
-  margin: toRem(24) 0;
-
   &--success {
     @include note-success;
 
     @include respond-to(tablet) {
-      margin: toRem(12) 0;
       white-space: pre-line;
     }
   }
 
   &--error {
     @include note-error;
-
-    @include respond-to(tablet) {
-      margin: toRem(16) 0;
-    }
   }
 
   @include note;

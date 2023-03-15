@@ -7,31 +7,31 @@ import {
   ProviderWrapper,
   TransactionResponse,
   TxRequestBody,
+  AddEthereumChainParameter,
 } from '@/types'
 import { errors } from '@/errors'
-import { ethers } from 'ethers'
-import { ErrorHandler } from '@/helpers'
+import { providers } from 'ethers'
+import { ErrorHandler, getNetworkConfigByChainId, sleep } from '@/helpers'
 import { useWeb3ProvidersStore } from '@/store'
 
 export interface UseProvider {
-  currentProvider: ComputedRef<ethers.providers.Web3Provider | undefined>
-  currentSigner: ComputedRef<ethers.providers.JsonRpcSigner | undefined>
+  currentProvider: ComputedRef<providers.Web3Provider | undefined>
+  currentSigner: ComputedRef<providers.JsonRpcSigner | undefined>
 
   selectedProvider: Ref<PROVIDERS | undefined>
   chainId: ComputedRef<ChainId | undefined>
   selectedAddress: ComputedRef<string | undefined>
   isConnected: ComputedRef<boolean>
   isConnecting: Ref<boolean>
+  isChainSwitching: Ref<boolean>
+  chainIdOnSwitching: Ref<ChainId | undefined>
 
   init: (provider: DesignatedProvider) => Promise<void>
   connect: () => Promise<void>
   disconnect: () => Promise<void>
   switchChain: (chainId: ChainId) => Promise<void>
-  addChain: (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => Promise<void>
+  addChain: (networkConfig: AddEthereumChainParameter) => Promise<void>
+  trySwitchOrAddChain: (chainId: ChainId) => Promise<void>
   signAndSendTx: (txRequestBody: TxRequestBody) => Promise<TransactionResponse>
   getHashFromTxResponse: (txResponse: TransactionResponse) => string
   getTxUrl: (explorerUrl: string, txHash: string) => string
@@ -43,13 +43,11 @@ export const useProvider = (): UseProvider => {
 
   const currentProvider = computed(
     () =>
-      providerWrp.value
-        ?.currentProvider as unknown as ethers.providers.Web3Provider,
+      providerWrp.value?.currentProvider as unknown as providers.Web3Provider,
   )
   const currentSigner = computed(
     () =>
-      providerWrp.value
-        ?.currentSigner as unknown as ethers.providers.JsonRpcSigner,
+      providerWrp.value?.currentSigner as unknown as providers.JsonRpcSigner,
   )
 
   const selectedProvider = ref<PROVIDERS | undefined>()
@@ -64,6 +62,9 @@ export const useProvider = (): UseProvider => {
     Boolean(chainId.value && selectedAddress.value),
   )
   const isConnecting = ref(false)
+
+  const isChainSwitching = ref(false)
+  const chainIdOnSwitching = ref<ChainId>()
 
   const init = async (provider: DesignatedProvider) => {
     switch (provider.name as PROVIDERS) {
@@ -131,15 +132,45 @@ export const useProvider = (): UseProvider => {
     await providerWrp.value.switchChain(chainId)
   }
 
-  const addChain = async (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => {
+  const addChain = async (networkConfig: AddEthereumChainParameter) => {
     if (!providerWrp.value || !providerWrp.value?.addChain)
       throw new errors.ProviderWrapperMethodNotFoundError()
 
-    await providerWrp.value.addChain(chainId, chainName, chainRpcUrl)
+    await providerWrp.value.addChain(networkConfig)
+  }
+
+  const trySwitchOrAddChain = async (chainId: ChainId) => {
+    isChainSwitching.value = true
+    chainIdOnSwitching.value = chainId
+
+    try {
+      await switchChain(chainId)
+      await sleep(1000)
+    } catch (error) {
+      switch (true) {
+        case error?.constructor === errors.ProviderUserRejectedRequest:
+          ErrorHandler.processWithoutFeedback(error)
+          break
+
+        // error.code 4902 isn't supported in mobile metamask browser
+        default:
+          try {
+            const networkConfig = getNetworkConfigByChainId(chainId)
+            if (networkConfig) await addChain(networkConfig)
+            await sleep(1000)
+          } catch (error) {
+            if (error?.constructor === errors.ProviderUserRejectedRequest) {
+              ErrorHandler.processWithoutFeedback(error)
+              break
+            }
+            ErrorHandler.process(error)
+          }
+          break
+      }
+    }
+
+    chainIdOnSwitching.value = undefined
+    isChainSwitching.value = false
   }
 
   const signAndSendTx = async (
@@ -181,12 +212,15 @@ export const useProvider = (): UseProvider => {
     selectedAddress,
     isConnected,
     isConnecting,
+    isChainSwitching,
+    chainIdOnSwitching,
 
     init,
     connect,
     disconnect,
     switchChain,
     addChain,
+    trySwitchOrAddChain,
     signAndSendTx,
     getHashFromTxResponse,
     getTxUrl,

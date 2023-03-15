@@ -24,11 +24,6 @@ import { DocVerificationForm } from '@/forms'
   align-items: center;
   justify-content: center;
   gap: toRem(16);
-  margin-bottom: toRem(24);
-
-  @include respond-to(tablet) {
-    margin-bottom: toRem(12);
-  }
 }
 
 .doc-verification-modal__title-icon {

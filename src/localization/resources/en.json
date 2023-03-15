@@ -5,11 +5,18 @@
     "connect-button-text-install-provider": "Install MetaMask",
     "connect-button-text-go-to-metamask-app": "Go To MetaMask"
   },
+  "switch-ethereum": {
+    "ethereum-chain-title": "Ethereum",
+    "polygon-chain-title": "Polygon",
+    "q-chain-title": "Q",
+    "unknown-chain-title": "Unknown"
+  },
   "main-page": {
     "welcome-beginning": "Welcome to",
     "welcome-continuing": "Documents Timestamping Service",
     "description": "Engine for private document management. Upload the document, sign it with digital key and verify its authenticity directly from the blockchain. No sensitive data stored on-chain or by the trusted mediator.",
     "connect-ethereum-message": "Connect to MetaMask\nto start work",
+    "switch-ethereum-message": "Please, switch to the supported network to continue",
     "connected-ethereum-message": "You connected with a MetaMask!",
     "doc-creation-card-title": "CREATE DOCUMENT",
     "doc-creation-card-button-text": "Create document",
@@ -29,6 +36,12 @@
   "doc-verification-modal": {
     "title": "Document Verification"
   },
+  "invalid-network-modal": {
+    "title": "Invalid network",
+    "message": "Your MetaMask is connected to an unsupported chain.\nPlease, switch to another network:",
+    "button-text": "Switch network",
+    "please-wait-msg": "Please, wait a moment..."
+  },
   "doc-creation-form": {
     "checkbox-is-sign": "Sign a document",
     "checkbox-is-indicating-addresses": "Indicate the wallet address",
@@ -41,7 +54,8 @@
     "please-wait-msg": "Please, wait a moment...",
     "success-msg": "Your document was successfully created",
     "error-default": "Something went wrong",
-    "error-hash-collision": "This document has already been uploaded and sent for signatures before"
+    "error-hash-collision": "This document has already been uploaded and sent for signatures before",
+    "error-failed-to-fetch": "Network error, it may have happened due to an ad blocker, try disabling it and try again"
   },
   "doc-verification-form": {
     "cancel-button-text": "Cancel",
@@ -53,7 +67,7 @@
     "success-msg-public": "The document was found",
     "success-msg-not-public": "The document was found\n(with indicated wallet addresses)",
     "search-placeholder": "Search by address",
-    "document-hash-title": "Document Hash",
+    "document-hash-label": "Document Hash",
     "doc-timestamp-title": "Document Creation Date:",
     "signature-timestamp-title": "Signed",
     "not-signed-yet-message":  "The document has not been signed yet",
@@ -62,7 +76,8 @@
     "already-signed-message": "You signed this document before",
     "not-an-address-message": "The entered data is not an address",
     "error-default": "Something went wrong",
-    "error-doc-not-found": "This document has not been uploaded yet"
+    "error-doc-not-found": "This document has not been uploaded yet",
+    "error-failed-to-fetch": "Network error, it may have happened due to an ad blocker, try disabling it and try again"
   },
   "file-field": {
     "title": "Drag and drop files or",
@@ -88,7 +103,7 @@
     "provider-internal-error": "Internal JSON-RPC error standard",
     "provider-invalid-input": "Missing or invalid parameters non-standard",
     "provider-resource-not-found": "equested resource not found non-standard",
-    "provider-resource-unavailable": "Requested resource not available non-standard",
+    "provider-resource-unavailable": "MetaMask is busy",
     "provider-transaction-rejected": "Transaction creation failed non-standard",
     "provider-method-not-supported": "Method is not implemented non-standard",
     "provider-limit-exceeded": "Request exceeds defined limit non-standard",

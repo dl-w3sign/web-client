@@ -1,8 +1,10 @@
 <template>
   <app-button
     class="connect-ethereum__connect-button"
-    :disabled="web3Provider.isConnected || web3Provider.isConnecting"
-    :is-waiting="web3Provider.isConnecting"
+    :disabled="
+      web3Store.provider.isConnected || web3Store.provider.isConnecting
+    "
+    :is-waiting="web3Store.provider.isConnecting"
     @click.prevent="connectOrReferToInstallMetamask"
   >
     {{ buttonText }}
@@ -20,18 +22,18 @@ import { router } from '@/router'
 import { useWeb3ProvidersStore } from '@/store'
 
 const { $t, $config } = useContext()
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
 
 const buttonText = computed<string>(() => {
   switch (true) {
-    case !web3Provider?.selectedProvider && isMobile():
+    case !web3Store.provider.selectedProvider && isMobile():
       return $t('connect-ethereum.connect-button-text-go-to-metamask-app')
-    case !web3Provider?.selectedProvider:
+    case !web3Store.provider.selectedProvider:
       return $t('connect-ethereum.connect-button-text-install-provider')
-    case web3Provider?.isConnecting:
+    case web3Store.provider.isConnecting:
       return $t('connect-ethereum.connect-button-text-connecting')
-    case !!web3Provider?.selectedAddress:
-      return abbrCenter(web3Provider.selectedAddress as string)
+    case !!web3Store.provider.selectedAddress:
+      return abbrCenter(web3Store.provider.selectedAddress as string)
     default:
       return $t('connect-ethereum.connect-button-text')
   }
@@ -46,9 +48,9 @@ const redirect = () => {
   }
 }
 
-const handleMobileVersion = () => {
+const handleMobileVersion = async () => {
   if (navigator.userAgent.includes('MetaMask')) {
-    web3Provider?.connect()
+    await web3Store.provider.connect()
     return
   }
 
@@ -57,16 +59,14 @@ const handleMobileVersion = () => {
 
 const connectOrReferToInstallMetamask = async () => {
   if (isMobile()) {
-    handleMobileVersion()
+    await handleMobileVersion()
     return
   }
 
-  if (web3Provider?.selectedProvider) {
+  if (web3Store.provider.selectedProvider) {
     try {
-      await web3Provider.connect()
-
-      if (web3Provider.chainId !== $config.CHAIN_ID)
-        await web3Provider.switchChain($config.CHAIN_ID)
+      await web3Store.provider.connect()
+      if (!web3Store.isValidChain) web3Store.showInvalidNetworkModal()
     } catch (error) {
       error?.constructor === errors.ProviderUserRejectedRequest
         ? ErrorHandler.processWithoutFeedback(error)

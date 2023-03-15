@@ -188,6 +188,7 @@ withDefaults(
     height: toRem(6);
     width: toRem(40.7);
     border-radius: toRem(3);
+    background: var(--col-great);
   }
 
   &--small-short {
@@ -200,6 +201,7 @@ withDefaults(
     height: toRem(6);
     width: toRem(56.3);
     border-radius: toRem(3);
+    background: var(--col-great);
   }
 
   &--large {

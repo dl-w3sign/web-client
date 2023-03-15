@@ -19,25 +19,25 @@
     </div>
     <div
       class="main-page__container"
-      :class="{ 'main-page__container--lifted': web3Provider.isConnected }"
+      :class="{
+        'main-page__container--lifted':
+          web3Store.provider.isConnected && web3Store.isValidChain,
+      }"
     >
       <transition name="fade">
         <div
-          v-show="!web3Provider.isConnected"
+          v-show="!web3Store.provider.isConnected || !web3Store.isValidChain"
           class="main-page__connect-ethereum"
           :class="{
-            'main-page__connect-ethereum--connected': web3Provider?.isConnected,
+            'main-page__connect-ethereum--connected':
+              web3Store.provider.isConnected,
           }"
         >
           <h4 class="main-page__connect-ethereum-message">
-            {{
-              web3Provider?.isConnected
-                ? $t('main-page.connected-ethereum-message')
-                : $t('main-page.connect-ethereum-message')
-            }}
+            {{ ethereumMessage }}
           </h4>
           <connect-ethereum
-            v-if="!web3Provider?.isConnected"
+            v-if="!web3Store.provider.isConnected"
             class="main-page__connect-ethereum-button"
             preset="primary"
           />
@@ -50,14 +50,16 @@
         <div class="main-page__card-illustration-wrp">
           <doc-creation-illustration
             class="main-page__card-illustration"
-            :is-active="web3Provider.isConnected"
+            :is-active="
+              web3Store.provider.isConnected && web3Store.isValidChain
+            "
           />
         </div>
         <app-button
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-creation-card-button-text')"
-          :disabled="!web3Provider.isConnected"
+          :disabled="!web3Store.provider.isConnected || !web3Store.isValidChain"
           @click="isDocCreationModalShown = true"
         />
         <doc-creation-modal v-model:is-shown="isDocCreationModalShown" />
@@ -69,14 +71,16 @@
         <div class="main-page__card-illustration-wrp">
           <doc-verification-illustration
             class="main-page__card-illustration"
-            :is-active="web3Provider.isConnected"
+            :is-active="
+              web3Store.provider.isConnected && web3Store.isValidChain
+            "
           />
         </div>
         <app-button
           class="main-page__card-button"
           preset="primary"
           :text="$t('main-page.doc-verification-card-button-text')"
-          :disabled="!web3Provider.isConnected"
+          :disabled="!web3Store.provider.isConnected || !web3Store.isValidChain"
           @click="isDocVerificationModalShown = true"
         />
         <doc-verification-modal
@@ -89,18 +93,31 @@
 
 <script lang="ts" setup>
 import { AppButton, Icon, ConnectEthereum } from '@/common'
+import { useContext } from '@/composables'
 import {
   DocCreationIllustration,
   DocVerificationIllustration,
 } from '@/illustrations'
 import { DocCreationModal, DocVerificationModal } from '@/modals'
 import { useWeb3ProvidersStore } from '@/store'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const { provider: web3Provider } = useWeb3ProvidersStore()
+const web3Store = useWeb3ProvidersStore()
+const { $t } = useContext()
 
 const isDocCreationModalShown = ref(false)
 const isDocVerificationModalShown = ref(false)
+
+const ethereumMessage = computed(() => {
+  switch (true) {
+    case !web3Store.provider.isConnected:
+      return $t('main-page.connect-ethereum-message')
+    case !web3Store.isValidChain:
+      return $t('main-page.switch-ethereum-message')
+    default:
+      return $t('main-page.connected-ethereum-message')
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -108,7 +125,7 @@ const isDocVerificationModalShown = ref(false)
   margin: 0 auto;
   padding: toRem(44) toRem(44) toRem(28);
   fill: var(--col-peaceful);
-  transition: var(--transition-duration-slow);
+  transition: fill var(--transition-duration-slow);
   max-width: max-content;
   text-align: center;
 
@@ -135,7 +152,7 @@ const isDocVerificationModalShown = ref(false)
   padding: 0 toRem(28) toRem(23);
 
   @include respond-to(xmedium) {
-    padding-bottom: toRem(18);
+    padding-bottom: toRem(19);
   }
 }
 
@@ -186,6 +203,14 @@ const isDocVerificationModalShown = ref(false)
 
   @include respond-to(xmedium) {
     height: toRem(44);
+  }
+
+  @include respond-to(medium) {
+    height: toRem(40);
+  }
+
+  @include respond-to(tablet) {
+    height: toRem(38);
   }
 }
 

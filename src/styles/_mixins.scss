@@ -3,6 +3,7 @@
 $media-breakpoints: (
   xsmall: 480px,
   small: 600px,
+  small--toast: 601px,
   tablet: 868px,
   medium: 1024px,
   xmedium: 1280px,
@@ -90,6 +91,33 @@ $media-breakpoints: (
 
   &:hover {
     background: var(--col-flabby);
+  }
+}
+
+@mixin outline-brittle-dropdown {
+  background: var(--col-intense);
+  border: toRem(1) solid var(--col-brittle);
+  border-radius: var(--border-radius);
+  padding: toRem(3) 0;
+  transition-property: transform, border-color;
+  transition-duration: var(--transition-duration);
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--col-flexible);
+  }
+}
+
+@mixin outline-brittle-dropdown-item {
+  width: 100%;
+  transition: background-color var(--transition-duration);
+
+  &:hover {
+    background: var(--col-grand);
+  }
+
+  &:active {
+    background: var(--col-brittle);
   }
 }
 

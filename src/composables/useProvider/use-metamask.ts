@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import {
   connectEthAccounts,
   getEthExplorerAddressUrl,
@@ -16,6 +16,7 @@ import {
   ProviderWrapper,
   TransactionResponse,
   TxRequestBody,
+  AddEthereumChainParameter,
 } from '@/types'
 import { Deferrable } from '@ethersproject/properties'
 import { TransactionRequest } from '@ethersproject/abstract-provider'
@@ -26,10 +27,7 @@ export const useMetamask = (provider: ProviderInstance): ProviderWrapper => {
 
   const currentProvider = computed(
     () =>
-      new ethers.providers.Web3Provider(
-        provider as ethers.providers.ExternalProvider,
-        'any',
-      ),
+      new providers.Web3Provider(provider as providers.ExternalProvider, 'any'),
   )
   const currentSigner = computed(() => currentProvider.value.getSigner())
 
@@ -86,18 +84,9 @@ export const useMetamask = (provider: ProviderInstance): ProviderWrapper => {
     }
   }
 
-  const addChain = async (
-    chainId: ChainId,
-    chainName: string,
-    chainRpcUrl: string,
-  ) => {
+  const addChain = async (networkConfig: AddEthereumChainParameter) => {
     try {
-      await requestAddEthChain(
-        currentProvider.value,
-        Number(chainId),
-        chainName,
-        chainRpcUrl,
-      )
+      await requestAddEthChain(currentProvider.value, networkConfig)
     } catch (error) {
       handleEthError(error as EthProviderRpcError)
     }
