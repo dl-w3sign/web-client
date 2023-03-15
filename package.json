@@ -5,6 +5,7 @@
     "pre-commit": "yarn lint"
   },
   "license": "Apache-2.0",
+  "author": "Distributed Lab",
   "scripts": {
     "vite-dev-server": "vite",
     "vite-build": "vite build",
