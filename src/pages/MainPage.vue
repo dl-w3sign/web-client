@@ -142,17 +142,30 @@ const ethereumMessage = computed(() => {
   }
 
   @include respond-to(tablet) {
-    padding: toRem(24) toRem(16) toRem(40);
+    padding: toRem(24) toRem(16) toRem(30);
   }
 }
 
 .main-page__welcome {
   position: relative;
   z-index: var(--z-layer-20);
-  padding: 0 toRem(28) toRem(23);
+  padding-bottom: toRem(22);
+  width: toRem(822);
 
   @include respond-to(xmedium) {
-    padding-bottom: toRem(19);
+    width: toRem(738);
+  }
+
+  @include respond-to(medium) {
+    width: toRem(682);
+  }
+
+  @include respond-to(tablet) {
+    width: toRem(564);
+  }
+
+  @include respond-to(small) {
+    width: 100%;
   }
 }
 
@@ -162,14 +175,6 @@ const ethereumMessage = computed(() => {
   justify-content: center;
   gap: toRem(16);
   margin-bottom: toRem(7);
-
-  @include respond-to(medium) {
-    margin-bottom: toRem(3);
-  }
-
-  @include respond-to(tablet) {
-    margin-bottom: 0;
-  }
 }
 
 .main-page__welcome-top-icon {
@@ -199,18 +204,18 @@ const ethereumMessage = computed(() => {
   left: toRem(0);
   z-index: var(--z-layer-negative-10);
   height: toRem(51);
-  width: 99.1%;
+  width: 100%;
 
   @include respond-to(xmedium) {
-    height: toRem(44);
+    height: toRem(46);
   }
 
   @include respond-to(medium) {
-    height: toRem(40);
+    height: toRem(43);
   }
 
   @include respond-to(tablet) {
-    height: toRem(38);
+    height: toRem(36);
   }
 }
 
@@ -219,12 +224,16 @@ const ethereumMessage = computed(() => {
   max-width: toRem(698);
   margin: 0 auto;
 
-  @include respond-to(xmedium) {
+  @include respond-to(medium) {
     max-width: toRem(650);
   }
 
-  @include respond-to(medium) {
-    max-width: toRem(580);
+  @include respond-to(tablet) {
+    max-width: toRem(520);
+  }
+
+  @include respond-to(small) {
+    max-width: 100%;
   }
 }
 

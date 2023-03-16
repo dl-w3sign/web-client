@@ -156,6 +156,11 @@ h1 {
   }
 
   @include respond-to(tablet) {
+    font-size: toRem(36);
+    line-height: toRem(44);
+  }
+
+  @include respond-to(small) {
     font-size: toRem(32);
     line-height: toRem(40);
     font-weight: 500;
