@@ -192,7 +192,10 @@ const { isFieldsValid } = useFormValidation(form, {
 
 const addIndicatedAddress = (address: string) => {
   if (isAddress(address) && !form.indicatedAddresses.includes(address)) {
-    form.indicatedAddresses.unshift(address)
+    form.indicatedAddresses.unshift(
+      address.startsWith('0x') ? address : `0x${address}`,
+    )
+
     nextTick(() => (walletAddress.value = ''))
   }
 }
