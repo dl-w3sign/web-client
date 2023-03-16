@@ -1,6 +1,6 @@
 {
-  "name": "time-stamp-service",
-  "short_name": "time-stamp-service",
+  "name": "web3-sign-app",
+  "short_name": "web3-sign-app",
   "icons": [
     {
       "src": "/branding/android-chrome-192x192.png",
