@@ -34,6 +34,5 @@ export enum ICON_NAMES {
   polygon = 'polygon',
   q = 'q',
   search = 'search',
-  wavingHand = 'waving-hand',
   xCircle = 'x-circle',
 }

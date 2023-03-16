@@ -4,7 +4,6 @@
       <div class="main-page__welcome">
         <h1 class="main-page__welcome-top">
           {{ $t('main-page.welcome-beginning') }}
-          <icon class="main-page__welcome-top-icon" :name="$icons.wavingHand" />
         </h1>
         <h1>
           {{ $t('main-page.welcome-continuing') }}
@@ -92,7 +91,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AppButton, Icon, ConnectEthereum } from '@/common'
+import { AppButton, ConnectEthereum } from '@/common'
 import { useContext } from '@/composables'
 import {
   DocCreationIllustration,
@@ -175,27 +174,6 @@ const ethereumMessage = computed(() => {
   justify-content: center;
   gap: toRem(16);
   margin-bottom: toRem(7);
-}
-
-.main-page__welcome-top-icon {
-  height: toRem(72);
-  width: toRem(72);
-  flex-shrink: 0;
-
-  @include respond-to(xmedium) {
-    height: toRem(62);
-    width: toRem(62);
-  }
-
-  @include respond-to(medium) {
-    height: toRem(54);
-    width: toRem(54);
-  }
-
-  @include respond-to(tablet) {
-    height: toRem(46);
-    width: toRem(46);
-  }
 }
 
 .main-page__welcome-background-img {
