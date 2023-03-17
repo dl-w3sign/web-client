@@ -8,7 +8,7 @@ metadata:
 data:
   {{ .Values.config.name  }}: |
                               document.ENV = {
-                                VITE_APP_NAME: 'Web3 sign app',
+                                VITE_APP_NAME: 'w3sign',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_ETHEREUM: '0x320315E5DC678b3C6ED0A1EBb7B7577d4a518e64',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_POLYGON: '0x79e3D72AD58853957BCF13c104DD872Da5b5687C',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_Q: '0x81c7a9A6AC408394592bD9f714453F8f1Dc2D1F2',
