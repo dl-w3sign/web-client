@@ -2,11 +2,8 @@
   <div class="main-page">
     <div class="main-page__introduction">
       <div class="main-page__welcome">
-        <h1 class="main-page__welcome-top">
-          {{ $t('main-page.welcome-beginning') }}
-        </h1>
         <h1>
-          {{ $t('main-page.welcome-continuing') }}
+          {{ $t('main-page.welcome-message') }}
         </h1>
         <svg class="main-page__welcome-background-img">
           <use href="/branding/ribbon.svg#ribbon" />
@@ -166,14 +163,6 @@ const ethereumMessage = computed(() => {
   @include respond-to(small) {
     width: 100%;
   }
-}
-
-.main-page__welcome-top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: toRem(16);
-  margin-bottom: toRem(7);
 }
 
 .main-page__welcome-background-img {

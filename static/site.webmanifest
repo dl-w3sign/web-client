@@ -1,6 +1,6 @@
 {
-  "name": "web3-sign-app",
-  "short_name": "web3-sign-app",
+  "name": "w3sign",
+  "short_name": "w3sign",
   "icons": [
     {
       "src": "/branding/android-chrome-192x192.png",
