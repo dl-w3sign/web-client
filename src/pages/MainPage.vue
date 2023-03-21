@@ -246,7 +246,7 @@ const ethereumMessage = computed(() => {
 .main-page__container {
   position: relative;
   display: flex;
-  gap: toRem(32);
+  gap: toRem(24);
   width: 100%;
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
@@ -255,6 +255,7 @@ const ethereumMessage = computed(() => {
 
   &--lifted {
     transition-delay: 3.7s;
+    transition-duration: var(--transition-duration-slowest);
     padding-top: 0;
   }
 

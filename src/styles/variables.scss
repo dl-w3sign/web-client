@@ -64,9 +64,10 @@
   --border-radius-large: #{toRem(16)};
 
   /* transition */
+  --transition-duration-fast: 0.1s;
   --transition-duration: 0.2s;
   --transition-duration-slow: 0.5s;
-  --transition-duration-fast: 0.1s;
+  --transition-duration-slowest: 0.8s;
 
   /* z-indexes */
   --z-layer-negative-10: -10;
