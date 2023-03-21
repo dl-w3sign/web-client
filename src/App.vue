@@ -2,20 +2,25 @@
   <transition name="fade">
     <div v-if="isAppInitialized" class="app__wrapper">
       <app-navbar class="app__navbar" />
-      <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <component v-if="Component" :is="Component" class="app__main" />
-          <div v-else class="app__main">
-            <div class="app__loader-wrp">
+      <div class="app__page">
+        <router-view v-slot="{ Component, route }">
+          <transition :name="route.meta.transition || 'fade'" mode="out-in">
+            <component v-if="Component" :is="Component" class="app__main" />
+            <div v-else class="app__main">
               <animation
                 class="app__loader"
                 :animation-data="LoaderJSON"
                 is-infinite
               />
             </div>
-          </div>
-        </transition>
-      </router-view>
+          </transition>
+        </router-view>
+        <footer class="app__footer">
+          <a href="https://github.com/dl-w3sign" target="_blank">
+            {{ $t('footer.link-name-github') }}
+          </a>
+        </footer>
+      </div>
       <invalid-network-modal
         :is-shown="web3Store.isInvalidNetworkModalShown"
         @update:is-shown="web3Store.isInvalidNetworkModalShown = false"
@@ -84,7 +89,9 @@ watch(
   }
 }
 
-.app__main {
+.app__page {
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
   height: calc(vh(100) - toRem(80));
 
@@ -93,19 +100,33 @@ watch(
   }
 
   @include respond-to(375px) {
+    min-height: calc(vh(100) - toRem(72) - toRem(4));
     height: max-content;
   }
 }
 
-.app__loader-wrp {
-  height: 100%;
+.app__main {
   display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .app__loader {
   margin: auto;
   max-height: toRem(500);
   max-width: toRem(500);
+}
+
+.app__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-top: toRem(1) solid var(--col-brittle);
+  height: toRem(52);
+  font-size: toRem(14);
+  line-height: toRem(20);
+  font-weight: 400;
 }
 
 .fade-enter-active {
