@@ -246,7 +246,8 @@ const ethereumMessage = computed(() => {
 .main-page__container {
   position: relative;
   display: flex;
-  gap: toRem(32);
+  gap: toRem(24);
+  width: 100%;
   padding-top: toRem(128);
   transition: padding var(--transition-duration-slow) ease;
   max-width: max-content;
@@ -254,11 +255,17 @@ const ethereumMessage = computed(() => {
 
   &--lifted {
     transition-delay: 3.7s;
+    transition-duration: var(--transition-duration-slowest);
     padding-top: 0;
+  }
+
+  @include respond-to(xmedium) {
+    margin-bottom: toRem(38);
   }
 
   @include respond-to(medium) {
     gap: toRem(16);
+    margin-bottom: toRem(36);
 
     &:not(.main-page__container--lifted) {
       padding-top: toRem(120);
@@ -268,7 +275,7 @@ const ethereumMessage = computed(() => {
   @include respond-to(tablet) {
     flex-direction: column;
     max-width: toRem(600);
-    margin: 0 auto toRem(32);
+    margin: 0 auto toRem(24);
     padding: 0 toRem(16);
 
     &:not(.main-page__container--lifted) {

@@ -5,6 +5,7 @@ import { FILE_TYPES } from '@/enums'
 
 export const config = {
   APP_NAME: import.meta.env.VITE_APP_NAME,
+  APP_GITHUB_LINK: import.meta.env.VITE_APP_GITHUB_LINK,
   LOG_LEVEL: 'trace' as LogLevelDesc,
   BUILD_VERSION: packageJson.version || import.meta.env.VITE_APP_BUILD_VERSION,
   CTR_ADDRESS_TIMESTAMP_ETHEREUM: import.meta.env
