@@ -18,7 +18,7 @@
         <footer class="app__footer">
           <a
             class="app__footer-link"
-            :href="$config.GITHUB_LINK"
+            :href="$config.APP_GITHUB_LINK"
             target="_blank"
           >
             {{ $t('footer.link-name-github') }}
