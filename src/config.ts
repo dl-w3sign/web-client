@@ -20,6 +20,7 @@ export const config = {
     .VITE_APP_CTR_ADDRESS_POSEIDON_HASH_Q,
   IS_MAINNET: import.meta.env.VITE_APP_IS_MAINNET,
   WEB3_PROVIDER_INSTALL_LINK: 'https://metamask.io/download/',
+  GITHUB_LINK: 'https://github.com/dl-w3sign',
   FILE_MIME_TYPES: [...Object.values(FILE_TYPES)],
 } as const
 

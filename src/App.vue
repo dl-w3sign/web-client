@@ -18,7 +18,7 @@
         <footer class="app__footer">
           <a
             class="app__footer-link"
-            href="https://github.com/dl-w3sign"
+            :href="$config.GITHUB_LINK"
             target="_blank"
           >
             {{ $t('footer.link-name-github') }}
