@@ -16,7 +16,11 @@
           </transition>
         </router-view>
         <footer class="app__footer">
-          <a href="https://github.com/dl-w3sign" target="_blank">
+          <a
+            class="app__footer-link"
+            href="https://github.com/dl-w3sign"
+            target="_blank"
+          >
             {{ $t('footer.link-name-github') }}
           </a>
         </footer>
@@ -82,10 +86,10 @@ watch(
 }
 
 .app__navbar {
-  height: toRem(80);
+  height: var(--app-navbar-height);
 
   @include respond-to(tablet) {
-    height: toRem(72);
+    height: var(--app-navbar-height-reduced);
   }
 }
 
@@ -93,14 +97,14 @@ watch(
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  height: calc(vh(100) - toRem(80));
+  height: calc(vh(100) - var(--app-navbar-height));
 
   @include respond-to(tablet) {
-    height: calc(vh(100) - toRem(72));
+    height: calc(vh(100) - var(--app-navbar-height-reduced));
   }
 
   @include respond-to(375px) {
-    min-height: calc(vh(100) - toRem(72) - toRem(4));
+    min-height: calc(vh(100) - var(--app-navbar-height-reduced) - toRem(4));
     height: max-content;
   }
 }
@@ -124,6 +128,9 @@ watch(
   flex-shrink: 0;
   border-top: toRem(1) solid var(--col-brittle);
   height: toRem(52);
+}
+
+.app__footer-link {
   font-size: toRem(14);
   line-height: toRem(20);
   font-weight: 400;
