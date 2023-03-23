@@ -26,7 +26,7 @@ data:
                                 VITE_APP_CTR_ADDRESS_POSEIDON_HASH_ETHEREUM: '0x3e9859b61CEb7b2B47373aCf04374e0Cd3b9Abf0',
                                 VITE_APP_CTR_ADDRESS_POSEIDON_HASH_POLYGON: '0x3e9859b61CEb7b2B47373aCf04374e0Cd3b9Abf0',
                                 VITE_APP_CTR_ADDRESS_POSEIDON_HASH_Q: '0x3e9859b61CEb7b2B47373aCf04374e0Cd3b9Abf0',
-                                VITE_APP_IS_MAINNET='true'
+                                VITE_APP_IS_MAINNET: 'true'
                                 {{ end }}
                               }
 {{- end }}
