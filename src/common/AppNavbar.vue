@@ -100,7 +100,7 @@ const web3Store = useWeb3ProvidersStore()
 
     @include respond-to(small) {
       position: absolute;
-      top: toRem(80);
+      top: calc(var(--app-navbar-height-reduced) + toRem(8));
       right: toRem(16);
       margin-top: 0;
     }

@@ -4,7 +4,6 @@
 :before,
 :after {
   /* brand colors */
-
   --col-intense: #{$intense};
   --col-rich: #{$rich};
   --col-great: #{$great};
@@ -58,15 +57,15 @@
   --col-visual: #{$visual};
 
   /* border radiuses */
-
   --border-radius: #{toRem(8)};
   --border-radius-medium: #{toRem(12)};
   --border-radius-large: #{toRem(16)};
 
   /* transition */
+  --transition-duration-fast: 0.1s;
   --transition-duration: 0.2s;
   --transition-duration-slow: 0.5s;
-  --transition-duration-fast: 0.1s;
+  --transition-duration-slowest: 0.8s;
 
   /* z-indexes */
   --z-layer-negative-10: -10;
@@ -80,5 +79,7 @@
   /* App variables */
   --app-font-family: 'Plus Jakarta Sans', 'Arial', sans-serif;
   --app-font-weight: 500;
+  --app-navbar-height: #{toRem(80)};
+  --app-navbar-height-reduced: #{toRem(72)};
   --transparent: transparent;
 }

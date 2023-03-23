@@ -118,5 +118,8 @@
   },
   "pagination-control": {
     "page-info": "{current} of {total}"
+  },
+  "footer": {
+    "link-name-github": "GitHub"
   }
 }

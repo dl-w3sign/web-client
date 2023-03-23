@@ -209,11 +209,20 @@ h5 {
 a {
   text-decoration: none;
   outline: none;
-  transition: var(--transition-duration);
+  cursor: pointer;
+  color: var(--col-primary);
 
-  &:hover,
-  &:focus,
+  &:hover {
+    text-decoration: none;
+    color: var(--col-basic);
+  }
+
   &:active {
+    text-decoration: none;
+    color: var(--col-initial);
+  }
+
+  &:focus {
     text-decoration: none;
   }
 }

@@ -27,6 +27,7 @@ imagePullSecret:
 config:
   create: true
   name: env.js
+  testnet: true
   mountPath: "/usr/share/nginx/html/static/env.js"
   mountPath2: "/usr/share/nginx/html/env.js"
   data:
