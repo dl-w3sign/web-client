@@ -8,7 +8,7 @@ metadata:
 data:
   {{ .Values.config.name  }}: |
                               document.ENV = {
-                                {{ if eq .Values.config.testnet 'true' }}
+                                {{ if .Values.config.testnet }}
                                 VITE_APP_NAME: 'w3sign',
                                 VITE_APP_GITHUB_LINK: 'https://github.com/dl-w3sign',
                                 VITE_APP_CTR_ADDRESS_TIMESTAMP_ETHEREUM: '0x320315E5DC678b3C6ED0A1EBb7B7577d4a518e64',
