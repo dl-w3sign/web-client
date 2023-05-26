@@ -1,5 +1,5 @@
 configVersion: 1
-project: 'blockchainua'
+project: 'web-client'
 ---
 image: builder              # Название собираемого образа.
 from: node:14               # Базовый образ.
