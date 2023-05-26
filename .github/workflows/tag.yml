@@ -31,6 +31,6 @@ jobs:
         run: |
           . $(werf ci-env github --as-file) 
           werf build --save-build-report=true --build-report-path=images-report.json
-          docker pull $(cat images-report.json | jq -r .Images.web.DockerImageName)
-          docker tag $(cat images-report.json | jq -r .Images.web.DockerImageName) ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
+          docker pull $(cat images-report.json | jq -r .Images.frontend.DockerImageName)
+          docker tag $(cat images-report.json | jq -r .Images.frontend.DockerImageName) ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
           docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF_NAME
